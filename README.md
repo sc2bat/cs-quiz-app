@@ -1,11 +1,14 @@
 # cs-quiz-app
 
-💻 CS Interview Master (CS 면접 대비 퀴즈 서비스)
+### 💻 CS Interview Master (CS 면접 대비 퀴즈 서비스)
+
 "단순 암기는 지루하니까, 직접 만든 서비스로 재미있게 학습하자."
 
 개발자 면접을 준비하며 CS(Computer Science) 지식을 체계적으로 학습하기 위해 개발한 웹 애플리케이션입니다.
 
-📅 프로젝트 개요
+---
+
+### 📅 프로젝트 개요
 개발 기간: 2025.11.30 ~ 2025.XX.XX (예정)
 
 개발 인원: 1인 (개인 프로젝트)
@@ -26,7 +29,8 @@ Vite: 빠른 개발 서버 구동과 HMR(Hot Module Replacement)을 위해 채�
 
 Axios: 백엔드 API와의 비동기 통신 처리.
 
-CSS/Styled-components: (사용하시는 스타일 라이브러리에 맞춰 수정하세요)
+CSS/Styled-components: 
+<!-- (사용하시는 스타일 라이브러리에 맞춰 수정하세요) -->
 
 Backend
 <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=Node.js&logoColor=white"/> <img src="https://img.shields.io/badge/Express-000000?style=flat-square&logo=Express&logoColor=white"/> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=TypeScript&logoColor=white"/>
@@ -40,8 +44,12 @@ Database
 
 RDBMS: 문제(Questions)와 보기(Choices)의 관계형 데이터 모델링.
 
-📌 Key Features (핵심 기능)
-1. 퀴즈 풀기 (Core)
+---
+
+### 📌 Key Features (핵심 기능)
+
+#### 1. 퀴즈 풀기 (Core)
+
 카테고리별 학습: OS, Network, Data Structure 등 주제별 문제 풀이 가능.
 
 다양한 문제 유형:
@@ -52,14 +60,16 @@ RDBMS: 문제(Questions)와 보기(Choices)의 관계형 데이터 모델링.
 
 랜덤 출제: 매번 문제 순서를 섞어 단순 위치 암기 방지 (ORDER BY RAND() 및 클라이언트 셔플 활용).
 
-2. 학습 보조 기능 (Advanced)
+#### 2. 학습 보조 기능 (Advanced)
+
 ⏱ 타임 어택: setInterval을 활용하여 한 문제당 30초 제한 기능 구현. 긴장감 조성 및 실제 면접 환경 모사.
 
 📝 오답 노트: 틀린 문제는 LocalStorage에 ID를 저장하여, 서버 로그인 없이도 브라우저 기반으로 다시 풀기 기능 제공.
 
 즉시 피드백: 답안 제출 시 정답 여부와 상세 해설(Explanation) 즉시 모달/UI로 노출.
 
-3. 관리자 (Admin)
+#### 3. 관리자 (Admin)
+
 별도의 관리자 페이지를 통해 CS 문제 CRUD(생성, 조회, 수정, 삭제) 관리.
 
 🗂 Database Schema (ERD)
@@ -71,10 +81,11 @@ Choices: 객관식 보기 내용, 정답 여부 플래그 (is_correct)
 
 <!-- (추후 이곳에 ERD 다이어그램 이미지를 캡처해서 넣으면 베스트입니다) -->
 
-🚀 Getting Started (실행 방법)
+---
+### 🚀 Getting Started (실행 방법)
 이 프로젝트는 Monorepo 구조로 되어 있습니다.
 
-1. 환경 변수 설정 (.env)
+### 1. 환경 변수 설정 (.env)
 루트 디렉토리에 .env 파일을 생성하고 DB 정보를 입력해야 합니다.
 
 
@@ -84,22 +95,22 @@ DB_PASS=yourpassword
 DB_NAME=cs_quiz
 PORT=3000
 
-2. 설치 및 실행
-# 레포지토리 클론
+### 2. 설치 및 실행
+### 레포지토리 클론
 git clone https://github.com/sc2bat/cs-quiz-app.git
 
-# 1. Backend 실행
+### 1. Backend 실행
 cd server
 npm install
 npm run dev
 
-# 2. Frontend 실행 (새 터미널)
+### 2. Frontend 실행 (새 터미널)
 cd client
 npm install
 npm run dev
 
-
-🧐 Retrospective (개발 회고 & 트러블 슈팅)
+---
+### 🧐 Retrospective (개발 회고 & 트러블 슈팅)
 <!-- (프로젝트를 진행하면서 겪은 어려움과 해결 과정을 이곳에 한두 줄씩 추가해 나가세요. 포트폴리오의 핵심입니다.)
 
 문제점: React와 Node.js 양쪽에서 TypeScript 타입을 공유하지 못해 중복 정의가 발생함.
@@ -109,8 +120,8 @@ npm run dev
 문제점: 타이머가 페이지를 이동해도 계속 돌아가거나 중복 실행되는 메모리 누수 발생.
 
 해결: useEffect의 cleanup 함수(return () => clearInterval(timer))를 사용하여 컴포넌트 언마운트 시 타이머 해제. -->
-
-## 📝 Commit Convention
+---
+### 📝 Commit Convention
 
 이 프로젝트는 **Git Conventional Commits** 규칙을 준수하여, 체계적인 변경 이력 관리를 지향합니다.
 
