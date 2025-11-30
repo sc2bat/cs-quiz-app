@@ -1,0 +1,33 @@
+/info
+
+# 1. 의존성 모듈 (절대 업로드 금지 - 용량이 매우 큼)
+node_modules/
+*/node_modules/
+
+# 2. 환경변수 및 보안 파일 (해킹 방지 - 가장 중요!)
+.env
+.env.*
+*.local
+.DS_Store
+
+# 3. 빌드 결과물 (코드로 생성 가능하므로 업로드 불필요)
+dist/
+build/
+out/
+coverage/
+
+# 4. 로그 파일
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# 5. IDE/에디터 설정 파일 (개인 설정이므로 공유 불필요)
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 6. TypeScript 컴파일 정보
+*.tsbuildinfo
