@@ -1,4 +1,5 @@
 /info
+/info/*
 
 # 1. 의존성 모듈 (절대 업로드 금지 - 용량이 매우 큼)
 node_modules/
@@ -31,3 +32,8 @@ logs/
 
 # 6. TypeScript 컴파일 정보
 *.tsbuildinfo
+
+# 7. 기타 및 OS/DB 파일
+.DS_Store
+Thumbs.db
+*.sql
