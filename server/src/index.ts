@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { db } from './config/db'; 
+import quizRoutes from './routes/quizRoutes';
 
 dotenv.config();
 
@@ -27,6 +28,8 @@ app.get('/api/test-db', async (req: Request, res: Response) => {
     res.status(500).json({ status: 'error', message: 'DB 연결 실패' });
   }
 });
+
+app.use('/api/quizzes', quizRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
