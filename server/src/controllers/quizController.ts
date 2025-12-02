@@ -8,6 +8,7 @@ interface QuestionRow extends RowDataPacket {
   question_type: string;
   question_text: string;
   explanation: string;
+  subjective_answer: string;
 }
 
 interface ChoiceRow extends RowDataPacket {
@@ -41,6 +42,7 @@ export const getQuizzes = async (req: Request, res: Response) => {
         question: q.question_text,
         explanation: q.explanation,
         // 주관식은 보기가 없으므로 빈 배열일 수 있음
+        subjectiveAnswer: q.subjective_answer,
         choices: relatedChoices.map((c) => ({
           id: c.id,
           text: c.choice_text,
