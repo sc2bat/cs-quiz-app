@@ -31,21 +31,24 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0); // 현재 몇 번째 문제인가?
   const [score, setScore] = useState(0); // 맞은 개수
   const [isFinished, setIsFinished] = useState(false); // 퀴즈 종료 여부
-  
+
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null); // 사용자가 고른 답 ID
   const [showExplanation, setShowExplanation] = useState(false); // 해설 보여주기 여부
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null); // 정답 여부 (O/X)
 
+  // 타이머 상태 (30초)
+  const [timeLeft, setTimeLeft] = useState(30);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
   // 2. 데이터 불러오기
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
-        const response = await axios.get<ApiResponse>(`${API_URL}/api/quizzes`);
+        const response = await axios.get<ApiResponse>(`${API_BASE_URL}/api/quizzes`);
         setQuestions(response.data.data);
         setLoading(false);
       } catch (err) {
@@ -57,8 +60,30 @@ function App() {
     fetchQuizzes();
   }, []);
 
-  // 3. 정답 처리 함수
 
+  // 6. 타이머 추가
+  useEffect(() => {
+    if (selectedAnswer !== null || isFinished || questions.length === 0) return;
+
+    if (timeLeft === 0) {
+      handleTimeOver();
+      return;
+    }
+
+    const timerId = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, [timeLeft, selectedAnswer, isFinished, questions]);
+
+  const handleTimeOver = () => {
+    setSelectedAnswer(999); // 시간 초과 상태로 변경 (임의의 값)
+    setShowExplanation(true);
+    setIsCorrect(false); // 시간 초과는 틀린 것으로 처리  
+  }
+
+  // 3. 정답 처리 함수
   // 객관식용
   const handleChoiceClick = (choiceId: number, isAnsCorrect: boolean) => {
     if (selectedAnswer !== null) return;
@@ -70,15 +95,15 @@ function App() {
   // 주관식용
   const handleSubjectiveSubmit = () => {
     if (selectedAnswer !== null) return; // 이미 제출했으면 중복 방지
-    
+
     // 정답 체크 (공백 제거 후 비교)
     const correctAnswer = currentQuestion.subjectiveAnswer || '';
     const isAnsCorrect = subjectiveInput.trim() === correctAnswer.trim();
-    
+
     setSelectedAnswer(999); // 제출 상태로 변경 (임의의 값)
     setShowExplanation(true);
     setIsCorrect(isAnsCorrect);
-    
+
     if (isAnsCorrect) setScore((prev) => prev + 1);
   };
 
@@ -87,11 +112,11 @@ function App() {
     const nextIndex = currentIndex + 1;
     if (nextIndex < questions.length) {
       setCurrentIndex(nextIndex);
-      // 상태 초기화
       setSelectedAnswer(null);
       setShowExplanation(false);
       setIsCorrect(null);
-      setSubjectiveInput(''); // 입력창 초기화
+      setSubjectiveInput('');
+      setTimeLeft(30); // 타이머 초기화
     } else {
       setIsFinished(true); // 끝남
     }
@@ -99,12 +124,12 @@ function App() {
 
   // 5. 다시 풀기 (Reset)
   const handleRetry = () => {
-    setCurrentIndex(0);
-    setScore(0);
-    setIsFinished(false);
-    setSelectedAnswer(null);
-    setShowExplanation(false);
-    window.location.reload(); // 데이터를 다시 섞으려면 새로고침이 제일 확실함
+    // setCurrentIndex(0);
+    // setScore(0);
+    // setIsFinished(false);
+    // setSelectedAnswer(null);
+    // setShowExplanation(false);
+    window.location.reload();
   };
 
   // -- 렌더링 부분 --
@@ -134,8 +159,16 @@ function App() {
 
   return (
     <div className="quiz-container">
-      <div className="progress-bar">
-        문제 {currentIndex + 1} / {questions.length}
+      {/* 타이머 UI */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+        <div className="progress-bar">문제 {currentIndex + 1} / {questions.length}</div>
+        <div style={{ 
+          color: timeLeft <= 5 ? 'red' : 'black', 
+          fontWeight: 'bold', 
+          fontSize: '1.2rem' 
+        }}>
+          ⏰ 남은 시간: {timeLeft}초
+        </div>
       </div>
 
       <div className="card">
@@ -167,25 +200,25 @@ function App() {
           {/* B. 주관식 경우 */}
           {currentQuestion.type === 'SUBJECTIVE' && (
             <div className="subjective-box">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className="subjective-input"
                 placeholder="정답을 입력하세요 (예: 443)"
                 value={subjectiveInput}
                 onChange={(e) => setSubjectiveInput(e.target.value)}
                 disabled={selectedAnswer !== null} // 제출 후엔 수정 불가
               />
-              <button 
+              <button
                 className="submit-btn"
                 onClick={handleSubjectiveSubmit}
                 disabled={selectedAnswer !== null || subjectiveInput.trim() === ''}
               >
                 제출하기
               </button>
-              
+
               {/* 내가 쓴 답이 틀렸을 때 정답 알려주기 */}
               {selectedAnswer !== null && !isCorrect && (
-                <div style={{marginTop: '10px', color: 'red'}}>
+                <div style={{ marginTop: '10px', color: 'red' }}>
                   <strong>정답: {currentQuestion.subjectiveAnswer}</strong>
                 </div>
               )}
