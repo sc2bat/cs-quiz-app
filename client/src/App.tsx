@@ -15,6 +15,7 @@ interface Question {
   type: string;
   question: string;
   explanation: string;
+  subjectiveAnswer?: string;
   choices: Choice[];
 }
 
@@ -26,6 +27,7 @@ interface ApiResponse {
 function App() {
   // 1. 상태 관리 (State)
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [subjectiveInput, setSubjectiveInput] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0); // 현재 몇 번째 문제인가?
   const [score, setScore] = useState(0); // 맞은 개수
   const [isFinished, setIsFinished] = useState(false); // 퀴즈 종료 여부
@@ -56,16 +58,28 @@ function App() {
   }, []);
 
   // 3. 정답 처리 함수
-  const handleAnswerClick = (choiceId: number, isAnsCorrect: boolean) => {
-    if (selectedAnswer !== null) return; // 이미 선택했으면 클릭 방지
 
-    setSelectedAnswer(choiceId);
-    setShowExplanation(true); // 해설 보여주기
+  // 객관식용
+  const handleChoiceClick = (choiceId: number, isAnsCorrect: boolean) => {
+    if (selectedAnswer !== null) return;
+    setSelectedAnswer(choiceId); // 객관식은 ID 저장
+    setShowExplanation(true);
     setIsCorrect(isAnsCorrect);
-
-    if (isAnsCorrect) {
-      setScore((prev) => prev + 1); // 점수 증가
-    }
+    if (isAnsCorrect) setScore((prev) => prev + 1);
+  };
+  // 주관식용
+  const handleSubjectiveSubmit = () => {
+    if (selectedAnswer !== null) return; // 이미 제출했으면 중복 방지
+    
+    // 정답 체크 (공백 제거 후 비교)
+    const correctAnswer = currentQuestion.subjectiveAnswer || '';
+    const isAnsCorrect = subjectiveInput.trim() === correctAnswer.trim();
+    
+    setSelectedAnswer(999); // 제출 상태로 변경 (임의의 값)
+    setShowExplanation(true);
+    setIsCorrect(isAnsCorrect);
+    
+    if (isAnsCorrect) setScore((prev) => prev + 1);
   };
 
   // 4. 다음 문제로 넘어가기
@@ -77,6 +91,7 @@ function App() {
       setSelectedAnswer(null);
       setShowExplanation(false);
       setIsCorrect(null);
+      setSubjectiveInput(''); // 입력창 초기화
     } else {
       setIsFinished(true); // 끝남
     }
@@ -128,8 +143,8 @@ function App() {
         <h2>Q. {currentQuestion.question}</h2>
 
         <div className="choices-list">
-          {/* 객관식 보기 */}
-          {currentQuestion.choices.map((choice) => {
+          {/* A. 객관식 경우 */}
+          {currentQuestion.type === 'MULTIPLE' && currentQuestion.choices.map((choice) => {
             // 정답/오답에 따른 버튼 색상 결정 로직
             let btnClass = 'answer-btn';
             if (selectedAnswer !== null) {
@@ -141,13 +156,41 @@ function App() {
               <button
                 key={choice.id}
                 className={btnClass}
-                onClick={() => handleAnswerClick(choice.id, choice.isCorrect)}
+                onClick={() => handleChoiceClick(choice.id, choice.isCorrect)}
                 disabled={selectedAnswer !== null} // 선택 후엔 클릭 불가
               >
                 {choice.text}
               </button>
             );
           })}
+
+          {/* B. 주관식 경우 */}
+          {currentQuestion.type === 'SUBJECTIVE' && (
+            <div className="subjective-box">
+              <input 
+                type="text" 
+                className="subjective-input"
+                placeholder="정답을 입력하세요 (예: 443)"
+                value={subjectiveInput}
+                onChange={(e) => setSubjectiveInput(e.target.value)}
+                disabled={selectedAnswer !== null} // 제출 후엔 수정 불가
+              />
+              <button 
+                className="submit-btn"
+                onClick={handleSubjectiveSubmit}
+                disabled={selectedAnswer !== null || subjectiveInput.trim() === ''}
+              >
+                제출하기
+              </button>
+              
+              {/* 내가 쓴 답이 틀렸을 때 정답 알려주기 */}
+              {selectedAnswer !== null && !isCorrect && (
+                <div style={{marginTop: '10px', color: 'red'}}>
+                  <strong>정답: {currentQuestion.subjectiveAnswer}</strong>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 정답 확인 및 해설 (선택했을 때만 보임) */}

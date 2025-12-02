@@ -107,3 +107,39 @@
   cursor: pointer;
   margin-top: 10px;
 }
+
+/* 주관식 스타일 */
+.subjective-box {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.subjective-input {
+  padding: 15px;
+  font-size: 1.1rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}
+
+.subjective-input:focus {
+  border-color: #646cff;
+}
+
+.submit-btn {
+  padding: 15px;
+  background-color: #28a745; /* 초록색 */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
