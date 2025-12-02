@@ -40,3 +40,70 @@
 .read-the-docs {
   color: #888;
 }
+
+
+/* 기본 레이아웃 */
+.quiz-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.badge {
+  background-color: #646cff;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+/* 보기 버튼 스타일 */
+.answer-btn {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.answer-btn:hover:not(:disabled) {
+  background-color: #f0f0f0;
+}
+
+/* 정답/오답 스타일 (중요!) */
+.answer-btn.correct {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+  color: #155724;
+}
+
+.answer-btn.wrong {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+/* 해설 박스 */
+.explanation-box {
+  background-color: #e9ecef;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  text-align: left;
+}
+
+.next-btn {
+  background-color: #646cff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
