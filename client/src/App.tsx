@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './App.css';
 
-// 타입 정의 (그대로 유지)
+
 interface Choice {
   id: number;
   text: string;
@@ -25,26 +25,25 @@ interface ApiResponse {
 }
 
 function App() {
-  // 1. 상태 관리 (State)
   const [questions, setQuestions] = useState<Question[]>([]);
   const [subjectiveInput, setSubjectiveInput] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0); // 현재 몇 번째 문제인가?
-  const [score, setScore] = useState(0); // 맞은 개수
-  const [isFinished, setIsFinished] = useState(false); // 퀴즈 종료 여부
+  const [currentIndex, setCurrentIndex] = useState(0); 
+  const [score, setScore] = useState(0); 
+  const [isFinished, setIsFinished] = useState(false); 
 
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null); // 사용자가 고른 답 ID
-  const [showExplanation, setShowExplanation] = useState(false); // 해설 보여주기 여부
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null); // 정답 여부 (O/X)
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null); 
+  const [showExplanation, setShowExplanation] = useState(false); 
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null); 
 
-  // 타이머 상태 (30초)
+  
   const [timeLeft, setTimeLeft] = useState(30);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http:/ /localhost:3000';
 
-  // 2. 데이터 불러오기
+  
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
@@ -61,7 +60,7 @@ function App() {
   }, []);
 
 
-  // 6. 타이머 추가
+  
   useEffect(() => {
     if (selectedAnswer !== null || isFinished || questions.length === 0) return;
 
@@ -78,36 +77,36 @@ function App() {
   }, [timeLeft, selectedAnswer, isFinished, questions]);
 
   const handleTimeOver = () => {
-    setSelectedAnswer(999); // 시간 초과 상태로 변경 (임의의 값)
+    setSelectedAnswer(999); 
     setShowExplanation(true);
-    setIsCorrect(false); // 시간 초과는 틀린 것으로 처리  
+    setIsCorrect(false); 
   }
 
-  // 3. 정답 처리 함수
-  // 객관식용
+  
+  
   const handleChoiceClick = (choiceId: number, isAnsCorrect: boolean) => {
     if (selectedAnswer !== null) return;
-    setSelectedAnswer(choiceId); // 객관식은 ID 저장
+    setSelectedAnswer(choiceId); 
     setShowExplanation(true);
     setIsCorrect(isAnsCorrect);
     if (isAnsCorrect) setScore((prev) => prev + 1);
   };
-  // 주관식용
+  
   const handleSubjectiveSubmit = () => {
-    if (selectedAnswer !== null) return; // 이미 제출했으면 중복 방지
+    if (selectedAnswer !== null) return; 
 
-    // 정답 체크 (공백 제거 후 비교)
+    
     const correctAnswer = currentQuestion.subjectiveAnswer || '';
     const isAnsCorrect = subjectiveInput.trim() === correctAnswer.trim();
 
-    setSelectedAnswer(999); // 제출 상태로 변경 (임의의 값)
+    setSelectedAnswer(999); 
     setShowExplanation(true);
     setIsCorrect(isAnsCorrect);
 
     if (isAnsCorrect) setScore((prev) => prev + 1);
   };
 
-  // 4. 다음 문제로 넘어가기
+  
   const handleNextQuestion = () => {
     const nextIndex = currentIndex + 1;
     if (nextIndex < questions.length) {
@@ -116,29 +115,29 @@ function App() {
       setShowExplanation(false);
       setIsCorrect(null);
       setSubjectiveInput('');
-      setTimeLeft(30); // 타이머 초기화
+      setTimeLeft(30); 
     } else {
-      setIsFinished(true); // 끝남
+      setIsFinished(true); 
     }
   };
 
-  // 5. 다시 풀기 (Reset)
+  
   const handleRetry = () => {
-    // setCurrentIndex(0);
-    // setScore(0);
-    // setIsFinished(false);
-    // setSelectedAnswer(null);
-    // setShowExplanation(false);
+    
+    
+    
+    
+    
     window.location.reload();
   };
 
-  // -- 렌더링 부분 --
+  
 
   if (loading) return <div className="loading">⏳ 문제 로딩 중...</div>;
   if (error) return <div className="error">❌ {error}</div>;
   if (questions.length === 0) return <div>등록된 문제가 없습니다.</div>;
 
-  // [결과 화면]
+  
   if (isFinished) {
     return (
       <div className="result-container">
@@ -154,7 +153,7 @@ function App() {
     );
   }
 
-  // [퀴즈 풀기 화면]
+  
   const currentQuestion = questions[currentIndex];
 
   return (
@@ -178,11 +177,11 @@ function App() {
         <div className="choices-list">
           {/* A. 객관식 경우 */}
           {currentQuestion.type === 'MULTIPLE' && currentQuestion.choices.map((choice) => {
-            // 정답/오답에 따른 버튼 색상 결정 로직
+            
             let btnClass = 'answer-btn';
             if (selectedAnswer !== null) {
-              if (choice.isCorrect) btnClass += ' correct'; // 정답인 버튼은 초록색
-              if (choice.id === selectedAnswer && !choice.isCorrect) btnClass += ' wrong'; // 내가 고른 오답은 빨간색
+              if (choice.isCorrect) btnClass += ' correct'; 
+              if (choice.id === selectedAnswer && !choice.isCorrect) btnClass += ' wrong'; 
             }
 
             return (
@@ -190,7 +189,7 @@ function App() {
                 key={choice.id}
                 className={btnClass}
                 onClick={() => handleChoiceClick(choice.id, choice.isCorrect)}
-                disabled={selectedAnswer !== null} // 선택 후엔 클릭 불가
+                disabled={selectedAnswer !== null} 
               >
                 {choice.text}
               </button>
@@ -206,7 +205,7 @@ function App() {
                 placeholder="정답을 입력하세요 (예: 443)"
                 value={subjectiveInput}
                 onChange={(e) => setSubjectiveInput(e.target.value)}
-                disabled={selectedAnswer !== null} // 제출 후엔 수정 불가
+                disabled={selectedAnswer !== null} 
               />
               <button
                 className="submit-btn"
