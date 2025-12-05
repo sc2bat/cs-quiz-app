@@ -3,23 +3,25 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { db } from './config/db';
 import quizRoutes from './routes/quizRoutes';
+import { QUERIES } from './models/queries';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const originList = [
+    process.env.CORS_ORIGIN_LOCAL,
+    process.env.CORS_ORIGIN_PROD,
+    process.env.CORS_ORIGIN_PROD_WWW,
+    process.env.CORS_ORIGIN_DEV,
+    process.env.CORS_ORIGIN_DEV_WWW
+  ].filter((origin): origin is string => !!origin);
 
 // 미들웨어 설정
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://dev-dero.shop',
-    'http://www.dev-dero.shop',
-    'http://dev-dero.shop:4000',
-    'http://www.dev-dero.shop:4000'
-  ],
+  origin: originList,
   credentials: true
-})); 
+}));
 app.use(express.json()); // JSON 데이터 파싱 허용
 
 app.get('/', (req: Request, res: Response) => {
@@ -30,7 +32,7 @@ app.get('/', (req: Request, res: Response) => {
 app.get('/api/test-db', async (req: Request, res: Response) => {
   try {
     // 간단한 쿼리 실행 (현재 시간 가져오기)
-    const [rows] = await db.query('SELECT NOW() as now');
+    const [rows] = await db.query(QUERIES.GET_NOW_TIMESTAMP);
     res.json({ status: 'success', data: rows });
   } catch (error) {
     console.error(error);
