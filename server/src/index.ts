@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { db } from './config/db'; 
+import { db } from './config/db';
 import quizRoutes from './routes/quizRoutes';
 
 dotenv.config();
@@ -10,7 +10,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 미들웨어 설정
-app.use(cors()); // 프론트엔드(5173)에서 오는 요청 허용
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://dev-dero.shop',
+    'http://www.dev-dero.shop',
+    'http://dev-dero.shop:4000',
+    'http://www.dev-dero.shop:4000'
+  ],
+  credentials: true
+})); 
 app.use(express.json()); // JSON 데이터 파싱 허용
 
 app.get('/', (req: Request, res: Response) => {
