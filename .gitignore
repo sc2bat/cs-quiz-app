@@ -37,3 +37,8 @@ logs/
 .DS_Store
 Thumbs.db
 *.sql
+
+# 8. 서버 로그 파일
+logs/
+server/logs/
+*.log
