@@ -22,7 +22,7 @@ jobs:
           port: ${{ secrets.WHITE_PORT }}
           script: |
             REPO_URL="https://github.com/sc2bat/cs-quiz-app.git"
-            TARGET_DIR="/home/apps/cs-quiz-app" 
+            TARGET_DIR="/home/apps/" 
 
             # 프로젝트 폴더로 이동
             cd $TARGET_DIR
