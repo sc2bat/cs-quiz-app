@@ -93,7 +93,7 @@ DB_HOST=localhost
 DB_USER=root
 DB_PASS=yourpassword
 DB_NAME=cs_quiz
-PORT=3000
+PORT=8081
 
 ### 2. 설치 및 실행
 ### 레포지토리 클론

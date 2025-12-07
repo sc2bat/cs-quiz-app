@@ -8,7 +8,7 @@ import { QUERIES } from './models/queries';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 const originList = [
     process.env.CORS_ORIGIN_LOCAL,
     process.env.CORS_ORIGIN_PROD,
