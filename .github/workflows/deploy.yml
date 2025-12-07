@@ -1,0 +1,56 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches: [ "main" ] # main 브랜치에 push 될 때만 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Server using SSH
+        uses: appleboy/ssh-action@v1.0.3 # SSH 접속을 도와주는 플러그인
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.WHITE_USERNAME }}
+          key: ${{ secrets.WHITE_KEY }}
+          port: ${{ secrets.WHITE_PORT }}
+          script: |
+            REPO_URL="https://github.com/sc2bat/cs-quiz-app.git"
+            TARGET_DIR="/home/apps/cs-quiz-app"
+
+            if [ ! -d "$TARGET_DIR" ]; then
+              echo "Directory not found. Cloning the repository..."
+              git clone $REPO_URL $TARGET_DIR
+            else
+              echo "Directory exists. Pulling the latest changes..."
+            fi
+
+            # 1. 프로젝트 폴더로 이동 (경로 수정 필수!)
+            cd $TARGET_DIR
+            
+            # 2. 최신 코드 받기
+            git pull origin main
+            
+            # --- Backend ---
+            echo "Deploying Backend..."
+            cd server
+            npm install
+            npm run build
+            # 서버 재시작 (Quiz API)
+            pm2 restart quiz-api || pm2 start dist/app.js --name "quiz-api"
+            
+            # --- Frontend ---
+            # (만약 프론트엔드도 같은 서버에서 빌드한다면)
+            echo "Deploying Frontend..."
+            cd ../client
+            npm install
+            npm run build
+            # Vite 빌드 결과물은 보통 정적 파일이므로 빌드만 하면 끝
+            # (Nginx가 dist 폴더를 보고 있다고 가정)
+            
+            echo "Deployment Finished!"
