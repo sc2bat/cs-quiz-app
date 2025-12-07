@@ -1,7 +1,6 @@
 import axios, { AxiosError } from 'axios';
 
-const QUIZ_API_BASE_URL = import.meta.env.VITE_API_PRD_URL;
-// const QUIZ_API_BASE_URL = import.meta.env.VITE_API_DEV_URL;
+const QUIZ_API_BASE_URL = import.meta.env.QUIZ_API_BASE_URL;
 
 if (!QUIZ_API_BASE_URL) console.warn('API_BASE_URL is missing. Please check your environment configuration.');
 
