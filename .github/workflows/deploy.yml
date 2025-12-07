@@ -26,8 +26,22 @@ jobs:
 
             # 프로젝트 폴더로 이동
             cd $TARGET_DIR
+
+            echo "Target Directory: $TARGET_DIR"
+
+            if [ ! -d "$TARGET_DIR/.git" ]; then
+              echo "First deployment detected. Cloning repository..."
+              rm -rf $TARGET_DIR
+
+              git clone $REPO_URL $TARGET_DIR
+
+              cd $TARGET_DIR
+            else
+              echo "Repository exists. Pulling changes..."
+              cd $TARGET_DIR
+              git pull origin main
+            fi
             
-            # 2. 최신 코드 받기
             git pull origin main
             
             # --- Backend ---
