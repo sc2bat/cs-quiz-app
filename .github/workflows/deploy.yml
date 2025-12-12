@@ -22,25 +22,10 @@ jobs:
           port: ${{ secrets.WHITE_PORT }}
           script: |
             REPO_URL="https://github.com/sc2bat/cs-quiz-app.git"
-            TARGET_DIR="/home/apps/" 
+            TARGET_DIR="/home/apps/cs-quiz-app"
 
-            # 프로젝트 폴더로 이동
             cd $TARGET_DIR
-
             echo "Target Directory: $TARGET_DIR"
-
-            if [ ! -d "$TARGET_DIR/.git" ]; then
-              echo "First deployment detected. Cloning repository..."
-              rm -rf $TARGET_DIR
-
-              git clone $REPO_URL $TARGET_DIR
-
-              cd $TARGET_DIR
-            else
-              echo "Repository exists. Pulling changes..."
-              cd $TARGET_DIR
-              git pull origin main
-            fi
             
             git pull origin main
             
@@ -49,7 +34,7 @@ jobs:
             cd server
             npm install
             npm run build
-            pm2 restart quiz-api || pm2 start dist/app.js --name "quiz-api"
+            pm2 restart quiz-api || pm2 start dist/index.js --name "quiz-api"
             
             # --- Frontend ---
             echo "Deploying Frontend..."

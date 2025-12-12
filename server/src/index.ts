@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { db } from './config/db';
 import quizRoutes from './routes/quizRoutes';
-import { QUERIES } from './models/queries';
+import { COMMON_QUERIES } from './models/queries';
 
 dotenv.config();
 
@@ -32,7 +32,7 @@ app.get('/', (req: Request, res: Response) => {
 app.get('/api/test-db', async (req: Request, res: Response) => {
   try {
     // 간단한 쿼리 실행 (현재 시간 가져오기)
-    const [rows] = await db.query(QUERIES.GET_NOW_TIMESTAMP);
+    const [rows] = await db.query(COMMON_QUERIES.GET_NOW);
     res.json({ status: 'success', data: rows });
   } catch (error) {
     console.error(error);
