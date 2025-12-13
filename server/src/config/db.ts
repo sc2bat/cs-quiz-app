@@ -34,8 +34,10 @@ export const db = {
 pool.getConnection()
   .then((conn) => {
     console.log('✅ MySQL Database Connected Successfully!');
+    logger.info('✅ MySQL Database Connected Successfully!');
     conn.release(); // 연결 반납
   })
   .catch((err) => {
     console.error('❌ Database Connection Failed:', err);
+    logger.error('❌ Database Connection Failed:', err);
   });

@@ -1,14 +1,15 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { db } from './config/db';
 import quizRoutes from './routes/quizRoutes';
-import { COMMON_QUERIES } from './models/queries';
+import { globalErrorHandler } from './utils/errorHandler';
+import systemRoutes from './routes/systemRoutes';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
+
 const originList = [
     process.env.CORS_ORIGIN_LOCAL,
     process.env.CORS_ORIGIN_PROD,
@@ -28,19 +29,11 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Welcome to CS Quiz Server! 🚀');
 });
 
-// DB 연결 테스트용 API
-app.get('/api/test-db', async (req: Request, res: Response) => {
-  try {
-    // 간단한 쿼리 실행 (현재 시간 가져오기)
-    const [rows] = await db.query(COMMON_QUERIES.GET_NOW);
-    res.json({ status: 'success', data: rows });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: 'error', message: 'DB 연결 실패' });
-  }
-});
+app.use('/api/quiz', quizRoutes);
+app.use('/api/system', systemRoutes);
 
-app.use('/api/quizzes', quizRoutes);
+// error handler
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

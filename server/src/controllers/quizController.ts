@@ -1,31 +1,57 @@
 import { Request, Response } from 'express';
 import { quizService } from '../services/quizService';
 import logger from '../utils/logger';
+import { asyncHandler } from '../utils/asyncHandler';
 
-export const getQuizzes = async (req: Request, res: Response) => {
-  try {
+export const quizController = {
+  getQuizzes:
+    asyncHandler(
+      async (req: Request, res: Response) => {
+        logger.debug(`quizController getQuizzes`);
+        const {categoryIds} = req.query;
+        const {quizLimit} = req.query;
 
-    const data = await quizService.getQuizzes();
+        let parsedCategoryIds: number[] = [];
 
-    if (data.length === 0) {
-      return res.status(404).json({ message: 'No quizzes found.' });
-    }
+        if (typeof categoryIds === 'string'){
+          parsedCategoryIds = categoryIds.split(',').map(id => Number(id));
+        }
+        
+        if (parsedCategoryIds.length === 0) {
+          return res.status(400).json({ message: 'Category IDs are required.' });
+        }
+        
+        const quizzes = await quizService.getQuizzesByCategoryIds(parsedCategoryIds, quizLimit ? Number(quizLimit) : undefined);
+        logger.info(`Fetched quizzes count: ${quizzes.length}`);
 
-    res.json({
-      status: 'success',
-      count: data.length,
-      data: data
-    });
+        if (quizzes.length === 0) {
+          return res.status(404).json({ message: 'No quizzes found.' });
+        }
 
-  } catch (error) {
-    console.error(error);
+        res.json({
+          status: 'success',
+          count: quizzes.length,
+          data: quizzes
+        });
+      }
+    ),
+  getCategories:
+    asyncHandler(
+      async (req: Request, res: Response) => {
+        logger.debug(`quizController getCategories`);
 
-    if(error instanceof Error){
-    logger.error(`[getQuizzes Error] ${error.message}`, { stack: error.stack});
-    }else {
-      logger.error(`[Unknown Error] ${String(error)}`);
-    }
-    
-    res.status(500).json({ message: 'An internal server error occurred.' });
-  }
-};
+        const categories = await quizService.getCategories();
+        logger.info(`Fetched categories count: ${categories.length}`);
+
+        if (categories.length === 0) {
+          return res.status(404).json({ message: 'No Categories found.' });
+        }
+
+        res.json({
+          status: 'success',
+          count: categories.length,
+          data: categories
+        });
+      }
+    )
+}
