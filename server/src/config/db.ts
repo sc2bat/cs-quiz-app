@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise'; // 비동기 처리를 위해 promise 버전 사용
+import mysql, { ResultSetHeader } from 'mysql2/promise'; // 비동기 처리를 위해 promise 버전 사용
 import dotenv from 'dotenv';
 import logger from '../utils/logger';
 
@@ -16,13 +16,23 @@ export const pool = mysql.createPool({
 });
 
 export const db = {
-  query: async <T extends mysql.RowDataPacket[]>(sql: string, params?: any[]) =>{
+  async query<T extends mysql.RowDataPacket[]>(sql: string, params?: any[]) {
     try {
-      logger.info(`[SQL Executing] ${sql}`)
+      logger.debug(`[SQL Executing] ${sql}`)
 
       const [rows, fields] = await pool.query<T>(sql, params);
 
       return [rows, fields] as const;
+    } catch (error: any) {
+      logger.error(`[SQL ERROR] ${error.message} \nQuery: ${sql}`);
+      throw error;
+    }
+  },
+  async execute(sql: string, params?: any[]){
+    try {
+      logger.debug(`[SQL EXECUTE] ${sql}`);
+      const [result] = await pool.query<ResultSetHeader>(sql, params);
+      return result;
     } catch (error: any) {
       logger.error(`[SQL ERROR] ${error.message} \nQuery: ${sql}`);
       throw error;
