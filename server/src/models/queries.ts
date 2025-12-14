@@ -1,4 +1,4 @@
-import { TABLES } from "./constants";
+import { QUIZ_SETTINGS, TABLES } from "./constants";
 
 export const COMMON_QUERIES = {
     GET_NOW:`
@@ -24,7 +24,7 @@ export const QUIZ_QUERIES = {
 
     GET_RANDOM_QUESTIONS_BY_CATEGORY_IDS: `
         SELECT 
-            q.id, 
+            q.question_id, 
             q.question_type, 
             q.question_text, 
             q.explanation, 
@@ -33,7 +33,7 @@ export const QUIZ_QUERIES = {
             q.category_id,
             c.name AS category_name
         FROM ${TABLES.QUESTIONS} q
-            JOIN ${TABLES.CATEGORIES} c ON q.category_id = c.id
+            JOIN ${TABLES.CATEGORIES} c ON q.category_id = c.category_id
                 WHERE 1=1
                     AND q.category_id IN (?)
         ORDER BY RAND()
@@ -48,6 +48,77 @@ export const QUIZ_QUERIES = {
     GET_CHOICES_BY_QUESTIONS_IDS: `
         SELECT * FROM ${TABLES.CHOICES}
             WHERE question_id IN (?)
-                ORDER BY id
+                ORDER BY choice_id
     `,
 } as const
+
+export const USER_QUERIES = {
+    GET_USER_BY_SNS_ID: `
+    SELECT 
+        user_id, 
+        email, 
+        nickname, 
+        profile_image_url, 
+        provider, 
+        sns_id, 
+        user_role, 
+        refresh_token, 
+        last_login_at, 
+        created_at
+    FROM ${TABLES.USERS}
+        WHERE 1=1
+            AND provider = ?
+            AND sns_id = ?
+    `,
+    GET_USER_BY_USER_ID: `
+    SELECT 
+        user_id, 
+        email, 
+        nickname, 
+        profile_image_url, 
+        provider, 
+        sns_id, 
+        user_role, 
+        refresh_token, 
+        last_login_at, 
+        created_at
+    FROM ${TABLES.USERS}
+        WHERE 1=1
+            AND user_id = ?
+    `,
+    CREATE_USER: `
+        INSERT INTO ${TABLES.USERS} (
+            email, 
+            nickname, 
+            profile_image_url, 
+            provider, 
+            sns_id, 
+            user_role, 
+            refresh_token, 
+            last_login_at, 
+            created_at
+            )
+        VALUES(
+            ?, 
+            ?, 
+            ?, 
+            ?, 
+            ?, 
+            ${QUIZ_SETTINGS.DEFAULT_USER_ROLE}, 
+            NULL, 
+            CURRENT_TIMESTAMP, 
+            CURRENT_TIMESTAMP
+        )
+    `,
+    UPDATE_USER_PROFILE: `
+        UPDATE cs_quiz.users
+            SET 
+                profile_image_url='', 
+                user_role='USER', 
+                last_login_at=CURRENT_TIMESTAMP, 
+                WHERE 1=1
+                    AND provider=? 
+                    AND sns_id=?
+    `,
+
+}
