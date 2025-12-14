@@ -1,7 +1,7 @@
 import { RowDataPacket } from "mysql2";
 
 export interface QuestionRow extends RowDataPacket {
-  id: number;
+  question_id: number;
   category_id: number;
   category_name: string;
   question_type: string;
@@ -11,7 +11,7 @@ export interface QuestionRow extends RowDataPacket {
 }
 
 export interface ChoiceRow extends RowDataPacket {
-  id: number;
+  choice_id: number;
   question_id: number;
   choice_text: string;
   is_correct: number;
