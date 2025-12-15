@@ -1,4 +1,4 @@
-import { QUIZ_SETTINGS, TABLES } from "./constants";
+import { TABLES } from "./constants";
 
 export const COMMON_QUERIES = {
     GET_NOW:`
@@ -104,7 +104,7 @@ export const USER_QUERIES = {
             ?, 
             ?, 
             ?, 
-            ${QUIZ_SETTINGS.DEFAULT_USER_ROLE}, 
+            ?, 
             NULL, 
             CURRENT_TIMESTAMP, 
             CURRENT_TIMESTAMP

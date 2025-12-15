@@ -2,6 +2,7 @@ import { ResultSetHeader } from "mysql2";
 import { db } from "../config/db";
 import { CreateUserDto, UpdateUserDto, UserRow } from "../types/user";
 import { USER_QUERIES } from "./queries";
+import { QUIZ_SETTINGS } from "./constants";
 
 export const userModel = {
     async getUserBySnsId(provider: string, snsId: string): Promise<UserRow | undefined> {
@@ -26,7 +27,8 @@ export const userModel = {
                 dto.nickname,
                 dto.profile_image_url,
                 dto.provider,
-                dto.sns_id
+                dto.sns_id,
+                QUIZ_SETTINGS.DEFAULT_USER_ROLE
             ]
         );
         return result.insertId;

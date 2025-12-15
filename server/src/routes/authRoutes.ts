@@ -3,6 +3,7 @@ import passport from '../config/passport'; // 설정한 passport 가져오기
 import { authController } from '../controllers/authController';
 
 const router = Router();
+// /auth 주소로 요청시
 
 // Google 로그인 라우터
 router.get('/google', 

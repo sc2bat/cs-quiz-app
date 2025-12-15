@@ -34,7 +34,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/api/quiz', quizRoutes);
 app.use('/api/system', systemRoutes);
-app.use('/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 
 // error handler
 app.use(globalErrorHandler);
