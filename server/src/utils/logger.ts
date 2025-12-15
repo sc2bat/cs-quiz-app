@@ -11,6 +11,8 @@ const logFormat = printf(({level, message, timestamp}) => {
 });
 
 const logger = winston.createLogger({
+    // level: 'info',
+    level: 'debug',
     format: combine(
         timestamp({ format: 'YYYY-MM-DD HH:mm:ss'}),
         logFormat

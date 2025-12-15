@@ -17,5 +17,18 @@ export const systemController = {
                     data: data
                 });
             }
-    ),
+        ),
+    getServerTime:
+        asyncHandler(
+            async (req: Request, res: Response) => {
+                logger.debug(`systemController getServerTime`);
+                const databaseDateTime = await systemService.getDatabaseDateTime();
+
+                res.json({
+                    status: 'success',
+                    serverTime: new Date(),
+                    databaseDateTime: databaseDateTime
+                });
+            }
+        ),
 }
