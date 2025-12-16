@@ -6,7 +6,7 @@ import logger from '../utils/logger';
 export const systemController = {
     checkDatabase:
         asyncHandler(
-            async (req: Request, res: Response) => {
+            async function(req: Request, res: Response) {
                 logger.debug(`systemController checkDatabase`);
                 const data = await systemService.checkDatabaseConnection();
                 logger.info(`Fetched quizzes count: ${data.length}`);
@@ -20,7 +20,7 @@ export const systemController = {
         ),
     getServerTime:
         asyncHandler(
-            async (req: Request, res: Response) => {
+            async function(req: Request, res: Response) {
                 logger.debug(`systemController getServerTime`);
                 const databaseDateTime = await systemService.getDatabaseDateTime();
 

@@ -6,7 +6,7 @@ import { asyncHandler } from '../utils/asyncHandler';
 export const quizController = {
   getQuizzes:
     asyncHandler(
-      async (req: Request, res: Response) => {
+      async function(req: Request, res: Response) {
         logger.debug(`quizController getQuizzes`);
         const {categoryIds} = req.query;
         const {quizLimit} = req.query;
@@ -37,7 +37,7 @@ export const quizController = {
     ),
   getCategories:
     asyncHandler(
-      async (req: Request, res: Response) => {
+      async function(req: Request, res: Response) {
         logger.debug(`quizController getCategories`);
 
         const categories = await quizService.getCategories();

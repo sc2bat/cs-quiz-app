@@ -8,12 +8,12 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const socialCallback = async (
+async function socialCallback (
     accessToken: string,
     refreshToken: string,
     profile: any,
     done: any,
-) => {
+) {
     try {
         const user = await authService.handleSocialLogin(profile.provider, profile);
         return done(null, user);
