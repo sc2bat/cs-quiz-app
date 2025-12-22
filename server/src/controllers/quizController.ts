@@ -6,21 +6,21 @@ import { asyncHandler } from '../utils/asyncHandler';
 export const quizController = {
   getQuizzes:
     asyncHandler(
-      async function(req: Request, res: Response) {
+      async function (req: Request, res: Response) {
         logger.debug(`quizController getQuizzes`);
-        const {categoryIds} = req.query;
-        const {quizLimit} = req.query;
+        const { categoryIds } = req.query;
+        const { quizLimit } = req.query;
 
         let parsedCategoryIds: number[] = [];
 
-        if (typeof categoryIds === 'string'){
+        if (typeof categoryIds === 'string') {
           parsedCategoryIds = categoryIds.split(',').map(id => Number(id));
         }
-        
+
         if (parsedCategoryIds.length === 0) {
           return res.status(400).json({ message: 'Category IDs are required.' });
         }
-        
+
         const quizzes = await quizService.getQuizzesByCategoryIds(parsedCategoryIds, quizLimit ? Number(quizLimit) : undefined);
         logger.info(`Fetched quizzes count: ${quizzes.length}`);
 
@@ -37,7 +37,7 @@ export const quizController = {
     ),
   getCategories:
     asyncHandler(
-      async function(req: Request, res: Response) {
+      async function (req: Request, res: Response) {
         logger.debug(`quizController getCategories`);
 
         const categories = await quizService.getCategories();
@@ -53,5 +53,5 @@ export const quizController = {
           data: categories
         });
       }
-    )
+    ),
 }

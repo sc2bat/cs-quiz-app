@@ -16,7 +16,7 @@ export const authController = {
             const token = generateToken(user);
             console.log('[!] 로그인 성공 유저:', user.nickname);
 
-            const clientUrl = process.env.CLIENT_URL;
+            const clientUrl = process.env.CORS_ORIGIN_LOCAL;
             
             const redirectUrl = `${clientUrl}/login/success?` + `token=${token}` + `&` + `snsId=${user.sns_id}`
             res.redirect(redirectUrl);

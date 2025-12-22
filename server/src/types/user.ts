@@ -19,3 +19,6 @@ export type CreateUserDto = Pick<
 
 export type UpdateUserDto = Pick<UserRow, 'user_id'> & 
     Partial<Pick<UserRow, 'nickname' | 'profile_image_url'>>;
+
+export type UpdateUserLoginInfoDto = Pick<UserRow, 'provider' | 'sns_id'> & 
+    Partial<Pick<UserRow, 'nickname' | 'profile_image_url'>>;

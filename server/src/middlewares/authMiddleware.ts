@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt";
 import logger from "../utils/logger";
+import { UserRow } from "../types/user";
 
 export function authenticateToken(
     req: Request,
@@ -30,6 +31,6 @@ export function authenticateToken(
         });
     }
 
-    req.user = decoded;
+    req.user = decoded as UserRow;
     next();
 }

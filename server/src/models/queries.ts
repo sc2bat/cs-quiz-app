@@ -110,15 +110,32 @@ export const USER_QUERIES = {
             CURRENT_TIMESTAMP
         )
     `,
-    UPDATE_USER_PROFILE: `
+    UPDATE_USER_LOGIN_INFO: `
         UPDATE cs_quiz.users
             SET 
-                profile_image_url='', 
-                user_role='USER', 
-                last_login_at=CURRENT_TIMESTAMP, 
+                profile_image_url=?, 
+                last_login_at=CURRENT_TIMESTAMP
                 WHERE 1=1
                     AND provider=? 
                     AND sns_id=?
     `,
-
 }
+
+export const QUIZ_RECORD_QUERIES = {
+    CREATE_QUIZ_RECORD: `
+        INSERT INTO ${TABLES.QUIZ_RECORDS} (
+            user_id, 
+            category_id, 
+            score, 
+            total_questions, 
+            taken_at
+            )
+        VALUES(
+            ?, 
+            ?, 
+            ?, 
+            ?,
+            CURRENT_TIMESTAMP
+        )
+    `,
+} as const;

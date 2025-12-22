@@ -1,5 +1,5 @@
 import { userModel } from "../models/userModel";
-import { CreateUserDto, UpdateUserDto, UserRow } from '../types/user';
+import { CreateUserDto, UpdateUserDto, UpdateUserLoginInfoDto, UserRow } from '../types/user';
 import logger from "../utils/logger";
 
 export const authService = {
@@ -9,6 +9,7 @@ export const authService = {
         const nickname = profile.displayName || profile.username || 'User';
         const photoUrl = profile.photos?.[0]?.value || null;
 
+        logger.debug(`provider ${provider}`);
         logger.debug(`snsId ${snsId}`);
         logger.debug(`email ${email}`);
         logger.debug(`nickname ${nickname}`);
@@ -18,11 +19,12 @@ export const authService = {
 
         if (user) {
             logger.debug(`가입된 유저`);
-            const updateUserDto: UpdateUserDto = {
-                user_id: user.user_id,
+            const updateUserLoginInfoDto: UpdateUserLoginInfoDto = {
                 profile_image_url: photoUrl,
+                provider: provider,
+                sns_id: snsId,
             };
-            await userModel.updateUserProfile(updateUserDto);
+            await userModel.updateUserLoginInfo(updateUserLoginInfoDto);
         } else {
             logger.debug(`신규 유저`);
             const createUserDto: CreateUserDto = {
