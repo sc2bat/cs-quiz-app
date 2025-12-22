@@ -1,5 +1,6 @@
 import { QUIZ_SETTINGS } from "../models/constants";
 import { quizModel } from "../models/quizModel";
+import { CreateQuizRecordDto } from "../types/quiz";
 
 export const quizService = {
     async getCategories() {
@@ -44,5 +45,9 @@ export const quizService = {
         });
 
         return formattedData;
+    },
+    async createQuizRecord(dto: CreateQuizRecordDto) {
+        const insertId = await quizModel.createQuizRecord(dto);
+        return insertId;
     }
 };

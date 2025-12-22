@@ -1,6 +1,7 @@
 import { db } from "../config/db";
-import { QuestionRow, ChoiceRow, CategoryRow } from "../types/quiz";
-import { QUIZ_QUERIES } from "./queries";
+import { QuestionRow, ChoiceRow, CategoryRow, QuizRecordRow, CreateQuizRecordDto } from "../types/quiz";
+import { CreateUserDto } from "../types/user";
+import { QUIZ_QUERIES, QUIZ_RECORD_QUERIES } from "./queries";
 
 // refactor: convert arrow functions to method shorthand
 export const quizModel = {
@@ -35,5 +36,18 @@ export const quizModel = {
             QUIZ_QUERIES.GET_ALL_CATEGORIES
         );
         return rows;
+    },
+    async createQuizRecord(dto: CreateQuizRecordDto): Promise<number> {
+        const result = await db.execute(
+            QUIZ_RECORD_QUERIES.CREATE_QUIZ_RECORD,
+            [
+                dto.user_id,
+                dto.category_id,
+                dto.score,
+                dto.total_questions,
+            ]
+        );
+        return result.insertId;
     }
+
 };

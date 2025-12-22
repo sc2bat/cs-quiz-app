@@ -21,3 +21,17 @@ export interface CategoryRow extends RowDataPacket{
   id: number;
   name: string;
 }
+
+export interface QuizRecordRow extends RowDataPacket{
+  quiz_record_id: number;
+  user_id: number;
+  category_id: number;
+  score: number;
+  total_questions: number;
+  taken_at: Date;
+}
+
+export type CreateQuizRecordDto = Pick<
+  QuizRecordRow, 
+  'user_id' | 'category_id' | 'score' | 'user_id' | 'total_questions'
+>; 

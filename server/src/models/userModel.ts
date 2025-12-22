@@ -1,6 +1,6 @@
 import { ResultSetHeader } from "mysql2";
 import { db } from "../config/db";
-import { CreateUserDto, UpdateUserDto, UserRow } from "../types/user";
+import { CreateUserDto, UpdateUserDto, UpdateUserLoginInfoDto, UserRow } from "../types/user";
 import { USER_QUERIES } from "./queries";
 import { QUIZ_SETTINGS } from "./constants";
 
@@ -33,13 +33,13 @@ export const userModel = {
         );
         return result.insertId;
     },
-    async updateUserProfile(dto: UpdateUserDto) {
+    async updateUserLoginInfo(dto: UpdateUserLoginInfoDto) {
         const result = await db.execute(
-            USER_QUERIES.UPDATE_USER_PROFILE,
+            USER_QUERIES.UPDATE_USER_LOGIN_INFO,
             [
-                dto.nickname,
                 dto.profile_image_url,
-                dto.user_id
+                dto.provider,
+                dto.sns_id
             ]
         );
         return result.affectedRows > 0;
