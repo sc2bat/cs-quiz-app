@@ -48,6 +48,13 @@ export const quizModel = {
             ]
         );
         return result.insertId;
+    },
+    async getAllQuizRecord(userId: number): Promise<QuizRecordRow[]> {
+        const [rows] = await db.query<QuizRecordRow[]>(
+            QUIZ_RECORD_QUERIES.GET_ALL_QUIZ_RECORDS,
+            [userId]
+        );
+        return rows;
     }
 
 };

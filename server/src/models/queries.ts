@@ -138,4 +138,15 @@ export const QUIZ_RECORD_QUERIES = {
             CURRENT_TIMESTAMP
         )
     `,
+    GET_ALL_QUIZ_RECORDS: `
+        SELECT
+            quiz_record_id, 
+            user_id, 
+            category_id, 
+            score, 
+            total_questions, 
+            taken_at
+        FROM cs_quiz.quiz_records
+            WHERE user_id = ?
+    `,
 } as const;

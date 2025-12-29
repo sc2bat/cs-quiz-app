@@ -49,5 +49,9 @@ export const quizService = {
     async createQuizRecord(dto: CreateQuizRecordDto) {
         const insertId = await quizModel.createQuizRecord(dto);
         return insertId;
+    },
+    async getAllQuizRecord(userId: number) {
+        const rows = await quizModel.getAllQuizRecord(userId);
+        return rows;
     }
 };

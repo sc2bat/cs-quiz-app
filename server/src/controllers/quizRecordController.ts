@@ -8,11 +8,13 @@ export const quizRecordController = {
   createQuizRecord:
     asyncHandler(
       async function (req: AuthRequest, res: Response) {
+        logger.debug(`quizRecordController createQuizRecord`);
         if (!req.user) {
           logger.debug(`User authentication failed`);
           return res.status(401).json({ message: 'User authentication failed' });
         }
         const userId = req.user.user_id;
+        logger.debug(`userId >> ${userId}`);
 
         const { categoryId, score, totalQuestions } = req.body;
         if (!categoryId || score == undefined || !totalQuestions) {
@@ -23,6 +25,11 @@ export const quizRecordController = {
           return res.status(400).json({ message: 'Missing required fields' });
         }
 
+        // logger.debug(`userId >> ${userId}`);
+        // logger.debug(`category_id >> ${categoryId}`);
+        // logger.debug(`score >> ${score}`);
+        // logger.debug(`total_questions >> ${totalQuestions}`);
+
         const recordId = await quizService.createQuizRecord({
           user_id: userId,
           category_id: categoryId,
@@ -30,10 +37,35 @@ export const quizRecordController = {
           total_questions: totalQuestions,
         });
 
+        
         res.status(201).json({
           message: 'Quiz record saved successfully',
           quizRecordId: recordId,
         });
+        logger.debug(`recordId >> ${recordId}`);
+        logger.debug(`Quiz record saved successfully`);  
+      }
+    ),
+  getAllQuizRecord:
+    asyncHandler(
+      async function (req: AuthRequest, res: Response) {
+        logger.debug(`quizRecordController getAllQuizRecord`);
+        if (!req.user) {
+          logger.debug(`User authentication failed`);
+          return res.status(401).json({ message: 'User authentication failed' });
+        }
+        const userId = req.user.user_id;
+        logger.debug(`userId >> ${userId}`);
+
+        const quizRecords = await quizService.getAllQuizRecord(userId);
+        
+        res.json({
+          status: 'success',
+          count: quizRecords.length,
+          data: quizRecords,
+        });
+        logger.debug(`records >> ${quizRecords.length}`);
+        logger.debug(`Get All Quiz record successfully`);  
       }
     ),
 
