@@ -111,7 +111,7 @@ export const USER_QUERIES = {
         )
     `,
     UPDATE_USER_LOGIN_INFO: `
-        UPDATE cs_quiz.users
+        UPDATE ${TABLES.USERS}
             SET 
                 profile_image_url=?, 
                 last_login_at=CURRENT_TIMESTAMP
@@ -137,5 +137,50 @@ export const QUIZ_RECORD_QUERIES = {
             ?,
             CURRENT_TIMESTAMP
         )
+    `,
+    GET_ALL_QUIZ_RECORDS: `
+        SELECT
+            quiz_record_id, 
+            user_id, 
+            category_id, 
+            score, 
+            total_questions, 
+            taken_at
+        FROM ${TABLES.QUIZ_RECORDS}
+            WHERE user_id = ?
+    `,
+    GET_RECENT_QUIZ_RECORDS: `
+        SELECT
+            quiz_record_id, 
+            user_id, 
+            category_id, 
+            score, 
+            total_questions, 
+            taken_at
+        FROM ${TABLES.QUIZ_RECORDS}
+            WHERE user_id = ?
+            ORDER BY taken_at DESC, quiz_record_id DESC 
+            LIMIT ?
+    `,
+    GET_QUIZ_RECORDS_BY_CURSOR: `
+        SELECT
+            quiz_record_id, 
+            user_id, 
+            category_id, 
+            score, 
+            total_questions, 
+            taken_at
+        FROM ${TABLES.QUIZ_RECORDS}
+            WHERE user_id = ?
+                AND (taken_at < ?
+                     OR (taken_at = ? AND quiz_record_id < ?)
+            ORDER BY taken_at DESC, quiz_record_id DESC 
+            LIMIT ?
+    `,
+    DELETE_QUIZ_RECORDS: `
+        DELETE FROM ${TABLES.QUIZ_RECORDS}
+            WHERE 1=1
+                AND user_id = ?
+                AND quiz_record_id = ?
     `,
 } as const;

@@ -46,8 +46,4 @@ export const quizService = {
 
         return formattedData;
     },
-    async createQuizRecord(dto: CreateQuizRecordDto) {
-        const insertId = await quizModel.createQuizRecord(dto);
-        return insertId;
-    }
 };

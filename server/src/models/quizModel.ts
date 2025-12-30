@@ -37,17 +37,4 @@ export const quizModel = {
         );
         return rows;
     },
-    async createQuizRecord(dto: CreateQuizRecordDto): Promise<number> {
-        const result = await db.execute(
-            QUIZ_RECORD_QUERIES.CREATE_QUIZ_RECORD,
-            [
-                dto.user_id,
-                dto.category_id,
-                dto.score,
-                dto.total_questions,
-            ]
-        );
-        return result.insertId;
-    }
-
 };
