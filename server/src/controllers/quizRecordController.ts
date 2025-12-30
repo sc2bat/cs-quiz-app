@@ -3,6 +3,7 @@ import { quizService } from '../services/quizService';
 import logger from '../utils/logger';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AuthRequest } from '../types/auth';
+import { quizRecordService } from '../services/quizRecordService';
 
 export const quizRecordController = {
   createQuizRecord:
@@ -30,7 +31,7 @@ export const quizRecordController = {
         // logger.debug(`score >> ${score}`);
         // logger.debug(`total_questions >> ${totalQuestions}`);
 
-        const recordId = await quizService.createQuizRecord({
+        const recordId = await quizRecordService.createQuizRecord({
           user_id: userId,
           category_id: categoryId,
           score: score,
@@ -57,7 +58,7 @@ export const quizRecordController = {
         const userId = req.user.user_id;
         logger.debug(`userId >> ${userId}`);
 
-        const quizRecords = await quizService.getAllQuizRecord(userId);
+        const quizRecords = await quizRecordService.getAllQuizRecord(userId);
         
         res.json({
           status: 'success',
@@ -85,7 +86,7 @@ export const quizRecordController = {
         } : undefined;
         logger.debug(`userId >> ${userId}`);
 
-        const quizRecords = await quizService.getQuizRecords(userId, reqlimit, cursor);
+        const quizRecords = await quizRecordService.getQuizRecords(userId, reqlimit, cursor);
         
         res.json({
           status: 'success',
