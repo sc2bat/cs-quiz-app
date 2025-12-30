@@ -53,5 +53,12 @@ export const quizService = {
     async getAllQuizRecord(userId: number) {
         const rows = await quizModel.getAllQuizRecord(userId);
         return rows;
+    },
+    async getQuizRecords(userId: number, limit: number, cursor?: {lastTakenAt: Date, lastQuizRecordId: number }) {
+        if (!cursor || !cursor.lastTakenAt || !cursor.lastQuizRecordId ){
+            return await quizModel.getRecentQuizRecord(userId, limit);
+        }
+        const rows = await quizModel.getQuizRecordByCursor(userId, cursor, limit);
+        return rows;
     }
 };

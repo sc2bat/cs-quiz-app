@@ -68,5 +68,32 @@ export const quizRecordController = {
         logger.debug(`Get All Quiz record successfully`);  
       }
     ),
+  getQuizRecords:
+    asyncHandler(
+      async function (req: AuthRequest, res: Response) {
+        logger.debug(`quizRecordController getAllQuizRecord`);
+        if (!req.user) {
+          logger.debug(`User authentication failed`);
+          return res.status(401).json({ message: 'User authentication failed' });
+        }
+        const userId = req.user.user_id;
+        const { limit, lastTakenAt, lastQuizRecordId } = req.query;
+        const reqlimit = limit ? Number(limit) : 10;
+        const cursor = (lastTakenAt && lastQuizRecordId) ? {
+            lastTakenAt: new Date(lastTakenAt as string),
+            lastQuizRecordId: Number(lastQuizRecordId)
+        } : undefined;
+        logger.debug(`userId >> ${userId}`);
 
+        const quizRecords = await quizService.getQuizRecords(userId, reqlimit, cursor);
+        
+        res.json({
+          status: 'success',
+          count: quizRecords.length,
+          data: quizRecords,
+        });
+        logger.debug(`records >> ${quizRecords.length}`);
+        logger.debug(`Get All Quiz record successfully`);  
+      }
+    ),
 }

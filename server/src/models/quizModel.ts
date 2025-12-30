@@ -55,6 +55,32 @@ export const quizModel = {
             [userId]
         );
         return rows;
-    }
-
+    },
+    async getRecentQuizRecord(userId: number, limit: number): Promise<QuizRecordRow[]> {
+        const [rows] = await db.query<QuizRecordRow[]>(
+            QUIZ_RECORD_QUERIES.GET_RECENT_QUIZ_RECORDS,
+            [ userId, limit ]
+        );
+        return rows;
+    },
+    async getQuizRecordByCursor(
+        userId: number,
+        cursor: {
+            lastTakenAt: Date;
+            lastQuizRecordId: number;
+        },
+        limit: number
+    ): Promise<QuizRecordRow[]> {
+        const [rows] = await db.query<QuizRecordRow[]>(
+            QUIZ_RECORD_QUERIES.GET_QUIZ_RECORDS_BY_CURSOR,
+            [
+                userId,
+                cursor.lastTakenAt,
+                cursor.lastTakenAt,
+                cursor.lastQuizRecordId,
+                limit
+            ]
+        );
+        return rows;
+    },
 };

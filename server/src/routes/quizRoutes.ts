@@ -11,6 +11,7 @@ router.get('/quizzes', quizController.getQuizzes);
 
 // POST /api/quiz 로 요청시
 router.post('/records', authenticateToken, quizRecordController.createQuizRecord);
-router.get('/records', authenticateToken, quizRecordController.getAllQuizRecord);
+// router.get('/records', authenticateToken, quizRecordController.getAllQuizRecord);
+router.get('/records', authenticateToken, quizRecordController.getQuizRecords);
 
 export default router;

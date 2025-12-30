@@ -149,4 +149,32 @@ export const QUIZ_RECORD_QUERIES = {
         FROM cs_quiz.quiz_records
             WHERE user_id = ?
     `,
+    GET_RECENT_QUIZ_RECORDS: `
+        SELECT
+            quiz_record_id, 
+            user_id, 
+            category_id, 
+            score, 
+            total_questions, 
+            taken_at
+        FROM cs_quiz.quiz_records
+            WHERE user_id = ?
+            ORDER BY taken_at DESC, quiz_record_id DESC 
+            LIMIT ?
+    `,
+    GET_QUIZ_RECORDS_BY_CURSOR: `
+        SELECT
+            quiz_record_id, 
+            user_id, 
+            category_id, 
+            score, 
+            total_questions, 
+            taken_at
+        FROM cs_quiz.quiz_records
+            WHERE user_id = ?
+                AND (taken_at < ?
+                     OR (taken_at = ? AND quiz_record_id < ?)
+            ORDER BY taken_at DESC, quiz_record_id DESC 
+            LIMIT ?
+    `,
 } as const;
