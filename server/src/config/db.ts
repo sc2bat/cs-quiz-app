@@ -18,23 +18,23 @@ export const pool = mysql.createPool({
 export const db = {
   async query<T extends mysql.RowDataPacket[]>(sql: string, params?: any[]) {
     try {
-      logger.debug(`[SQL Executing] ${sql}`)
+      logger.debug(`[SQL QUERY] ${sql}`)
 
       const [rows, fields] = await pool.query<T>(sql, params);
 
       return [rows, fields] as const;
     } catch (error: any) {
-      logger.error(`[SQL ERROR] ${error.message} \nQuery: ${sql}`);
+      logger.error(`[SQL QUERY ERROR] ${error.message} \nQuery: ${sql}`);
       throw error;
     }
   },
-  async execute(sql: string, params?: any[]){
+  async execute(sql: string, params?: any[]): Promise<ResultSetHeader> {
     try {
       logger.debug(`[SQL EXECUTE] ${sql}`);
-      const [result] = await pool.query<ResultSetHeader>(sql, params);
+      const [result] = await pool.execute<ResultSetHeader>(sql, params);
       return result;
     } catch (error: any) {
-      logger.error(`[SQL ERROR] ${error.message} \nQuery: ${sql}`);
+      logger.error(`[SQL EXECUTE ERROR] ${error.message} \nQuery: ${sql}`);
       throw error;
     }
   }
@@ -43,11 +43,11 @@ export const db = {
 // 연결 테스트용 로그
 pool.getConnection()
   .then((conn) => {
-    console.log('✅ MySQL Database Connected Successfully!');
-    logger.info('✅ MySQL Database Connected Successfully!');
+    console.log('(O) MySQL Database Connected Successfully!');
+    logger.info('(O) MySQL Database Connected Successfully!');
     conn.release(); // 연결 반납
   })
   .catch((err) => {
-    console.error('❌ Database Connection Failed:', err);
-    logger.error('❌ Database Connection Failed:', err);
+    console.error('(X) Database Connection Failed:', err);
+    logger.error('(X) Database Connection Failed:', err);
   });

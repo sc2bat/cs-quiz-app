@@ -1,5 +1,6 @@
 import { db } from "../config/db";
 import { QuizRecordRow, CreateQuizRecordDto } from "../types/quiz";
+import { TABLES } from "./constants";
 import { QUIZ_RECORD_QUERIES } from "./queries";
 
 // refactor: convert arrow functions to method shorthand
@@ -49,5 +50,24 @@ export const quizRecordModel = {
             ]
         );
         return rows;
+    },
+    async deleteQuizRecordsBulk(userId: number, quizRecordIds: number[]): Promise<number> {
+        if(quizRecordIds.length === 0) return 0;
+
+        const placeholders = quizRecordIds.map(() => '?').join(', ');
+
+        const deleteQuizRecordsBulk = `
+            DELETE FROM ${TABLES.QUIZ_RECORDS}
+                WHERE 1=1
+                    AND user_id = ?
+                    AND quiz_record_id IN (${placeholders})
+        `;
+
+        const result = await db.execute(
+            deleteQuizRecordsBulk,
+            [ userId, ...quizRecordIds ]
+        );
+
+        return result.affectedRows;
     },
 };

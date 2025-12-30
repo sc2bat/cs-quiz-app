@@ -97,4 +97,32 @@ export const quizRecordController = {
         logger.debug(`Get All Quiz record successfully`);  
       }
     ),
+  deleteQuizRecordsBulk:
+    asyncHandler(
+      async function (req: AuthRequest, res: Response) {
+        logger.debug(`quizRecordController deleteQuizRecordsBulk`);
+        if (!req.user) {
+          logger.debug(`User authentication failed`);
+          return res.status(401).json({ message: 'User authentication failed' });
+        }
+        const userId = req.user.user_id;
+        logger.debug(`userId >> ${userId}`);
+
+        const { quizRecordIds } = req.body;
+
+        if( !quizRecordIds || !Array.isArray(quizRecordIds) || quizRecordIds.length === 0 ){
+          logger.debug(`Invalid record IDs provided`);
+          return res.status(400).json({ message: "Invalid record IDs provided"});
+        }
+
+        const deletedCount = await quizRecordService.deleteQuizRecordsBulk(userId, quizRecordIds);
+        
+        res.status(200).json({
+          message: "Quiz records deleted successfully",
+          deletedCount,
+        });
+        logger.debug(`Deleted Count >> ${deletedCount}`);
+        logger.debug(`Delete Quiz record successfully`);  
+      }
+    ),
 }

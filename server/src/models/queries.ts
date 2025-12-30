@@ -177,9 +177,10 @@ export const QUIZ_RECORD_QUERIES = {
             ORDER BY taken_at DESC, quiz_record_id DESC 
             LIMIT ?
     `,
-    DELETE_QUIZ_RECORD: `
-        DELET FROM ${TABLES.QUIZ_RECORDS}
-            WHERE quiz_record_id = ?
+    DELETE_QUIZ_RECORDS: `
+        DELETE FROM ${TABLES.QUIZ_RECORDS}
+            WHERE 1=1
                 AND user_id = ?
+                AND quiz_record_id = ?
     `,
 } as const;

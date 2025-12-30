@@ -17,4 +17,7 @@ export const quizRecordService = {
         const rows = await quizRecordModel.getQuizRecordByCursor(userId, cursor, limit);
         return rows;
     },
+    async deleteQuizRecordsBulk(userId: number, quizRecordIds: number[]) {
+        return await quizRecordModel.deleteQuizRecordsBulk(userId, quizRecordIds);
+    },
 };
