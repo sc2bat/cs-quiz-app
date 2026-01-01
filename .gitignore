@@ -41,4 +41,12 @@ Thumbs.db
 # 8. 서버 로그 파일
 logs/
 server/logs/
+client/logs/
 *.log
+
+# 9. 개발 서버 on off
+dev-*.pid
+dev-manager.sh
+
+# 10. client env 설정 관련
+client/src/api/axiosClient.ts

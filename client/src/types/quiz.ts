@@ -1,14 +1,15 @@
 export interface Choice {
-  id: number;
-  text: string;
+  choiceId: number;
+  choiceText: string;
   isCorrect: boolean;
 }
 
 export interface Question {
-  id: number;
-  category: string;
-  type: string;
-  question: string;
+  questionId: number;
+  categoryId: string;
+  categoryName: string;
+  questionType: string;
+  questionText: string;
   explanation: string;
   subjectiveAnswer?: string;
   choices: Choice[];

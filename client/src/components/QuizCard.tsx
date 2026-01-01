@@ -28,33 +28,33 @@ const QuizCard = ({
     return (
 
         <div className="card">
-            <span className="badge">{question.category}</span>
-            <h2>Q. {question.question}</h2>
+            <span className="badge">{question.categoryName}</span>
+            <h2>Q. {question.questionText}</h2>
 
             <div className="choices-list">
                 {/* A. 객관식 경우 */}
-                {question.type === 'MULTIPLE' && question.choices.map((choice) => {
+                {question.questionType === 'MULTIPLE' && question.choices.map((choice) => {
 
                     let btnClass = 'answer-btn';
                     if (selectedAnswer !== null) {
                         if (choice.isCorrect) btnClass += ' correct';
-                        if (choice.id === selectedAnswer && !choice.isCorrect) btnClass += ' wrong';
+                        if (choice.choiceId === selectedAnswer && !choice.isCorrect) btnClass += ' wrong';
                     }
 
                     return (
                         <button
-                            key={choice.id}
+                            key={choice.choiceId}
                             className={btnClass}
-                            onClick={() => onChoiceClick(choice.id, choice.isCorrect)}
+                            onClick={() => onChoiceClick(choice.choiceId, choice.isCorrect)}
                             disabled={selectedAnswer !== null}
                         >
-                            {choice.text}
+                            {choice.choiceText}
                         </button>
                     );
                 })}
 
                 {/* B. 주관식 경우 */}
-                {question.type === 'SUBJECTIVE' && (
+                {question.questionType === 'SUBJECTIVE' && (
                     <div className="subjective-box">
                         <input
                             type="text"
