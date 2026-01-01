@@ -29,11 +29,11 @@ const QuizCard = ({
 
         <div className="card">
             <span className="badge">{question.categoryName}</span>
-            <h2>Q. {question.questionText}</h2>
+            <h2>Q. {question.question}</h2>
 
             <div className="choices-list">
                 {/* A. 객관식 경우 */}
-                {question.questionType === 'MULTIPLE' && question.choices.map((choice) => {
+                {question.type === 'MULTIPLE' && question.choices.map((choice) => {
 
                     let btnClass = 'answer-btn';
                     if (selectedAnswer !== null) {
@@ -54,7 +54,7 @@ const QuizCard = ({
                 })}
 
                 {/* B. 주관식 경우 */}
-                {question.questionType === 'SUBJECTIVE' && (
+                {question.type === 'SUBJECTIVE' && (
                     <div className="subjective-box">
                         <input
                             type="text"

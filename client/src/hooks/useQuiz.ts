@@ -23,8 +23,9 @@ export const useQuiz = () => {
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
+        const categoryIds = await quizApi.fetchCategories();
         setLoading(true);
-        const data = await quizApi.fetchQuizzes();
+        const data = await quizApi.fetchQuizzes(categoryIds);
         setQuestions(data.data);
       } catch (err: any) {
         console.error(err);

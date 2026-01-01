@@ -8,8 +8,8 @@ export interface Question {
   questionId: number;
   categoryId: string;
   categoryName: string;
-  questionType: string;
-  questionText: string;
+  type: string;
+  question: string;
   explanation: string;
   subjectiveAnswer?: string;
   choices: Choice[];
@@ -18,4 +18,9 @@ export interface Question {
 export interface ApiResponse {
   status: string;
   data: Question[];
+}
+
+export interface Category {
+  categoryId: number;
+  categoryName: string;
 }
