@@ -1,15 +1,40 @@
 import { db } from "../config/db";
-import { QuestionRow, ChoiceRow } from "../types/quiz";
-import { QUERIES } from "./queries";
+import { QuestionRow, ChoiceRow, CategoryRow, QuizRecordRow, CreateQuizRecordDto } from "../types/quiz";
+import { CreateUserDto } from "../types/user";
+import { QUIZ_QUERIES, QUIZ_RECORD_QUERIES } from "./queries";
 
+// refactor: convert arrow functions to method shorthand
 export const quizModel = {
-    getAllQuestions: async (): Promise<QuestionRow[]> => {
-        const [rows] = await db.query<QuestionRow[]>(QUERIES.GET_ALL_QUESTIONS);
+    async getAllQuestions(): Promise<QuestionRow[]> {
+        const [rows] = await db.query<QuestionRow[]>(
+            QUIZ_QUERIES.GET_ALL_RANDOM_QUESTIONS
+        );
         return rows;
     },
-
-    getAllChoices: async (): Promise<ChoiceRow[]> => {
-        const [rows] = await db.query<ChoiceRow[]>(QUERIES.GET_ALL_CHOICES);
+    async getAllChoices(): Promise<ChoiceRow[]> {
+        const [rows] = await db.query<ChoiceRow[]>(
+            QUIZ_QUERIES.GET_ALL_CHOICES
+        );
         return rows;
-    }
+    },
+    async getQuestionsByCategoryIds(categoryIds: number[], limit: number): Promise<QuestionRow[]> {
+        const [rows] = await db.query<QuestionRow[]>(
+            QUIZ_QUERIES.GET_RANDOM_QUESTIONS_BY_CATEGORY_IDS, 
+            [categoryIds, limit]
+        );
+        return rows;
+    },
+    async getChoicesByQuestionsIds(questionIds: number[]): Promise<ChoiceRow[]> {
+        const [rows] = await db.query<ChoiceRow[]>(
+            QUIZ_QUERIES.GET_CHOICES_BY_QUESTIONS_IDS, 
+            [questionIds]
+        );
+        return rows;
+    },
+    async getCategories(): Promise<CategoryRow[]> {
+        const [rows] = await db.query<CategoryRow[]>(
+            QUIZ_QUERIES.GET_ALL_CATEGORIES
+        );
+        return rows;
+    },
 };

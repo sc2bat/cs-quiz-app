@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Question } from '../types';
 import { STORAGE_KEYS } from '../constants';
-import { quizService } from '../services/quizService';
+import { quizApi } from '../api/quizApi';
 
 export const useQuiz = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -23,8 +23,9 @@ export const useQuiz = () => {
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
+        const categoryIds = await quizApi.fetchCategories();
         setLoading(true);
-        const data = await quizService.fetchQuizzes();
+        const data = await quizApi.fetchQuizzes(categoryIds);
         setQuestions(data.data);
       } catch (err: any) {
         console.error(err);
@@ -49,7 +50,7 @@ export const useQuiz = () => {
     setShowExplanation(true);
     setIsCorrect(false);
     if (!isReviewMode && questions[currentIndex]) {
-        saveWrongAnswer(questions[currentIndex].id);
+        saveWrongAnswer(questions[currentIndex].questionId);
     }
   }, [currentIndex, isReviewMode, questions, saveWrongAnswer]);
 
@@ -79,7 +80,7 @@ export const useQuiz = () => {
     if (isAnsCorrect) {
       setScore((prev) => prev + 1);
     } else {
-      if (!isReviewMode) saveWrongAnswer(questions[currentIndex].id);
+      if (!isReviewMode) saveWrongAnswer(questions[currentIndex].questionId);
     }
   };
 
@@ -95,7 +96,7 @@ export const useQuiz = () => {
     if (isAnsCorrect) {
       setScore((prev) => prev + 1);
     } else {
-      if (!isReviewMode) saveWrongAnswer(questions[currentIndex].id);
+      if (!isReviewMode) saveWrongAnswer(questions[currentIndex].questionId);
     }
   };
 
@@ -123,7 +124,7 @@ export const useQuiz = () => {
       alert('저장된 오답이 없습니다');
       return;
     }
-    const wrongQuestions = questions.filter(q => stored.includes(q.id));
+    const wrongQuestions = questions.filter(q => stored.includes(q.questionId));
     setQuestions(wrongQuestions);
     setIsReviewMode(true);
     setCurrentIndex(0);
