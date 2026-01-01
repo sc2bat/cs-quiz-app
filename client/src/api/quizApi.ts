@@ -1,5 +1,5 @@
 import { apiClient } from "./axiosClient";
-import type { ApiResponse, Category } from "../types";
+import type { ApiResponse } from "../types";
 
 export const quizApi = {
     fetchQuizzes: async (categoryIds: number[]): Promise<ApiResponse> => {
