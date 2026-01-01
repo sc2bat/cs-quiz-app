@@ -1,6 +1,5 @@
 import { QUIZ_SETTINGS } from "../models/constants";
 import { quizModel } from "../models/quizModel";
-import { CreateQuizRecordDto } from "../types/quiz";
 
 export const quizService = {
     async getCategories() {
@@ -21,15 +20,15 @@ export const quizService = {
             return [];
         }
 
-        const questionIds = questions.map(q => q.id);
+        const questionIds = questions.map(question => question.question_id);
 
         const choices = await quizModel.getChoicesByQuestionsIds(questionIds);
 
         const formattedData = questions.map((question) => {
-            const relatedChoices = choices.filter((choice) => choice.question_id === question.id);
+            const relatedChoices = choices.filter((choice) => choice.question_id === question.question_id);
 
             return {
-                id: question.id,
+                questionId: question.question_id,
                 categoryId: question.category_id,
                 categoryName: question.category_name,
                 type: question.question_type,
@@ -37,8 +36,8 @@ export const quizService = {
                 explanation: question.explanation,
                 subjectiveAnswer: question.subjective_answer,
                 choices: relatedChoices.map((choice) => ({
-                    id: choice.id,
-                    text: choice.choice_text,
+                    choiceId: choice.choice_id,
+                    choiceText: choice.choice_text,
                     isCorrect: Boolean(choice.is_correct),
                 }))
             };

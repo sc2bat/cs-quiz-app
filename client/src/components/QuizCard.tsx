@@ -28,7 +28,7 @@ const QuizCard = ({
     return (
 
         <div className="card">
-            <span className="badge">{question.category}</span>
+            <span className="badge">{question.categoryName}</span>
             <h2>Q. {question.question}</h2>
 
             <div className="choices-list">
@@ -38,17 +38,17 @@ const QuizCard = ({
                     let btnClass = 'answer-btn';
                     if (selectedAnswer !== null) {
                         if (choice.isCorrect) btnClass += ' correct';
-                        if (choice.id === selectedAnswer && !choice.isCorrect) btnClass += ' wrong';
+                        if (choice.choiceId === selectedAnswer && !choice.isCorrect) btnClass += ' wrong';
                     }
 
                     return (
                         <button
-                            key={choice.id}
+                            key={choice.choiceId}
                             className={btnClass}
-                            onClick={() => onChoiceClick(choice.id, choice.isCorrect)}
+                            onClick={() => onChoiceClick(choice.choiceId, choice.isCorrect)}
                             disabled={selectedAnswer !== null}
                         >
-                            {choice.text}
+                            {choice.choiceText}
                         </button>
                     );
                 })}

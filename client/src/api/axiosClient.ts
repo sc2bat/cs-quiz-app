@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 
-const QUIZ_API_BASE_URL = import.meta.env.QUIZ_API_BASE_URL;
+const QUIZ_API_BASE_URL = import.meta.env.VITE_QUIZ_API_BASE_URL;
 
 if (!QUIZ_API_BASE_URL) console.warn('API_BASE_URL is missing. Please check your environment configuration.');
 
@@ -12,15 +12,22 @@ export const apiClient = axios.create({
     },
 });
 
+interface ErrorResponse {
+    message?: string;
+}
+
 apiClient.interceptors.response.use(
     (response) => {
         return response;
     },
-    (error: AxiosError) => {
+    (error: AxiosError<ErrorResponse>) => {
         let message = 'An unknown error has occured';
 
         if (error.response) {
             const status = error.response.status;
+            const serverMessage = error.response.data?.message;
+            console.log(`status >> ${status}`);
+            console.log(`serverMessage >> ${serverMessage}`);
             if (status == 404) message = `Resource not found ${status}`;
             else if (status == 500) message = `Internal server error occurred ${status}`;
             else message = `Error occurred ${status}`;

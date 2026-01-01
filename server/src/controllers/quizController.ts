@@ -21,6 +21,7 @@ export const quizController = {
           return res.status(400).json({ message: 'Category IDs are required.' });
         }
 
+        logger.debug(`quizLimit: ${quizLimit}`);
         const quizzes = await quizService.getQuizzesByCategoryIds(parsedCategoryIds, quizLimit ? Number(quizLimit) : undefined);
         logger.info(`Fetched quizzes count: ${quizzes.length}`);
 

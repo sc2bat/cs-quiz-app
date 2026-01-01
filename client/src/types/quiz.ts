@@ -1,12 +1,13 @@
 export interface Choice {
-  id: number;
-  text: string;
+  choiceId: number;
+  choiceText: string;
   isCorrect: boolean;
 }
 
 export interface Question {
-  id: number;
-  category: string;
+  questionId: number;
+  categoryId: string;
+  categoryName: string;
   type: string;
   question: string;
   explanation: string;
@@ -17,4 +18,9 @@ export interface Question {
 export interface ApiResponse {
   status: string;
   data: Question[];
+}
+
+export interface Category {
+  categoryId: number;
+  categoryName: string;
 }
