@@ -13,14 +13,22 @@ export const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10, // 동시에 최대 10개 연결 허용
   queueLimit: 0
-});
+});1
 
 export const db = {
   async query<T extends mysql.RowDataPacket[]>(sql: string, params?: any[]) {
+    const start = Date.now();
     try {
-      logger.debug(`[SQL QUERY] ${sql}`)
+      logger.debug(`[SQL QUERY] ${sql}`);
 
       const [rows, fields] = await pool.query<T>(sql, params);
+
+      const duration = Date.now() - start;
+      
+      if (Array.isArray(rows)) {
+          logger.debug(`[SQL RESULT] (${duration}ms) Fetched ${rows.length} rows`);
+          logger.debug(`[SQL DATA]`, {rows}); 
+      }
 
       return [rows, fields] as const;
     } catch (error: any) {
@@ -29,9 +37,16 @@ export const db = {
     }
   },
   async execute(sql: string, params?: any[]): Promise<ResultSetHeader> {
+    const start = Date.now();
     try {
       logger.debug(`[SQL EXECUTE] ${sql}`);
+      
       const [result] = await pool.execute<ResultSetHeader>(sql, params);
+
+      const duration = Date.now() - start;
+
+      logger.debug(`[SQL RESULT] (${duration}ms) Affected: ${result.affectedRows}, InsertId: ${result.insertId}`);
+
       return result;
     } catch (error: any) {
       logger.error(`[SQL EXECUTE ERROR] ${error.message} \nQuery: ${sql}`);
@@ -43,11 +58,9 @@ export const db = {
 // 연결 테스트용 로그
 pool.getConnection()
   .then((conn) => {
-    console.log('(O) MySQL Database Connected Successfully!');
     logger.info('(O) MySQL Database Connected Successfully!');
     conn.release(); // 연결 반납
   })
   .catch((err) => {
-    console.error('(X) Database Connection Failed:', err);
     logger.error('(X) Database Connection Failed:', err);
   });

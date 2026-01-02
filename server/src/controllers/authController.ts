@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { asyncHandler } from '../utils/asyncHandler';
 import { generateToken } from '../utils/jwt'; 
+import logger from '../utils/logger';
 
 export const authController = {
     socialLoginCallback: 
@@ -14,7 +15,7 @@ export const authController = {
 
             // TODO: JWT 토큰(Access/Refresh) 발급
             const token = generateToken(user);
-            console.log('[!] 로그인 성공 유저:', user.nickname);
+            logger.debug('[!] 로그인 성공 유저:', user.nickname);
 
             const clientUrl = process.env.CORS_ORIGIN_LOCAL;
             

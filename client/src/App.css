@@ -1,19 +1,100 @@
+:root {
+  /* ☀️ Light Mode (기존 색상 유지) */
+  --bg-color: #ffffff;
+  --text-color: #213547;
+  --text-muted: #888;
+
+  /* 카드/컨테이너 */
+  --card-padding: 2rem;
+
+  /* 버튼 기본 */
+  --btn-bg: #ffffff;
+  --btn-text: #000000;
+  --btn-border: #ccc;
+  --btn-hover: #f0f0f0;
+
+  /* 정답/오답 상태 (파스텔 톤) */
+  --correct-bg: #d4edda;
+  --correct-border: #c3e6cb;
+  --correct-text: #155724;
+
+  --wrong-bg: #f8d7da;
+  --wrong-border: #f5c6cb;
+  --wrong-text: #721c24;
+
+  /* 기타 UI */
+  --explanation-bg: #e9ecef;
+  --input-bg: #ffffff;
+  --input-border: #ddd;
+  --primary-color: #646cff;
+}
+
+/* 🌙 Dark Mode (자동 감지) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #242424;
+    --text-color: rgba(255, 255, 255, 0.87);
+    --text-muted: #aaa;
+
+    /* 버튼 기본 (어둡게) */
+    --btn-bg: #1a1a1a;
+    --btn-text: #ffffff;
+    --btn-border: #444;
+    --btn-hover: #333;
+
+    /* 정답/오답 상태 (눈부심 방지를 위해 톤 다운) */
+    --correct-bg: #1e4620;
+    --correct-border: #2b7a30;
+    --correct-text: #e2e6ea;
+
+    --wrong-bg: #5a1e22;
+    --wrong-border: #8a2a30;
+    --wrong-text: #e2e6ea;
+
+    /* 기타 UI */
+    --explanation-bg: #333;
+    --input-bg: #1a1a1a;
+    --input-border: #555;
+    /* primary-color는 유지하거나 살짝 밝게 조정 */
+  }
+}
+
+/* ========================================= */
+/* 기본 스타일 적용 (변수 사용) */
+/* ========================================= */
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  width: 100%;
+  /* 모바일 대응 */
 }
 
+/* 로고 스타일 (유지) */
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -22,6 +103,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -33,23 +115,21 @@
   }
 }
 
-.card {
-  padding: 2em;
-}
-
 .read-the-docs {
-  color: #888;
+  color: var(--text-muted);
 }
 
+/* ========================================= */
+/* 퀴즈 앱 전용 스타일 */
+/* ========================================= */
 
-/* 기본 레이아웃 */
 .quiz-container {
   max-width: 600px;
   margin: 0 auto;
 }
 
 .badge {
-  background-color: #646cff;
+  background-color: var(--primary-color);
   color: white;
   padding: 4px 8px;
   border-radius: 4px;
@@ -57,58 +137,73 @@
   font-weight: bold;
 }
 
-/* 보기 버튼 스타일 */
+/* 🔘 보기 버튼 스타일 */
 .answer-btn {
   display: block;
   width: 100%;
   padding: 15px;
   margin: 10px 0;
-  border: 1px solid #ccc;
+
+  /* 변수 적용 */
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--text-color);
+
   border-radius: 8px;
-  background: white;
   cursor: pointer;
   font-size: 1rem;
   transition: all 0.2s;
 }
 
 .answer-btn:hover:not(:disabled) {
-  background-color: #f0f0f0;
+  background-color: var(--btn-hover);
 }
 
-/* 정답/오답 스타일 (중요!) */
+/* ✅ 정답 스타일 */
 .answer-btn.correct {
-  background-color: #d4edda;
-  border-color: #c3e6cb;
-  color: #155724;
+  background-color: var(--correct-bg);
+  border-color: var(--correct-border);
+  color: var(--correct-text);
+  font-weight: bold;
 }
 
+/* ❌ 오답 스타일 */
 .answer-btn.wrong {
-  background-color: #f8d7da;
-  border-color: #f5c6cb;
-  color: #721c24;
+  background-color: var(--wrong-bg);
+  border-color: var(--wrong-border);
+  color: var(--wrong-text);
+  font-weight: bold;
 }
 
-/* 해설 박스 */
+/* 📘 해설 박스 */
 .explanation-box {
-  background-color: #e9ecef;
+  background-color: var(--explanation-bg);
+  color: var(--text-color);
   padding: 15px;
   border-radius: 8px;
   margin: 15px 0;
   text-align: left;
+  line-height: 1.5;
 }
 
+/* 다음 버튼 */
 .next-btn {
-  background-color: #646cff;
+  background-color: var(--primary-color);
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-size: 1rem;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 20px;
+  transition: opacity 0.2s;
 }
 
-/* 주관식 스타일 */
+.next-btn:hover {
+  opacity: 0.9;
+}
+
+/* 📝 주관식 스타일 */
 .subjective-box {
   margin: 20px 0;
   display: flex;
@@ -119,18 +214,25 @@
 .subjective-input {
   padding: 15px;
   font-size: 1.1rem;
-  border: 2px solid #ddd;
+
+  /* 변수 적용 */
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 2px solid var(--input-border);
+
   border-radius: 8px;
   outline: none;
+  transition: border-color 0.2s;
 }
 
 .subjective-input:focus {
-  border-color: #646cff;
+  border-color: var(--primary-color);
 }
 
+/* 제출 버튼 */
 .submit-btn {
   padding: 15px;
-  background-color: #28a745; /* 초록색 */
+  background-color: #28a745;
   color: white;
   border: none;
   border-radius: 8px;
@@ -140,6 +242,16 @@
 }
 
 .submit-btn:disabled {
-  background-color: #ccc;
+  background-color: #666;
+  /* 다크모드 고려하여 회색 조정 */
   cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* 로딩/에러 메시지 */
+.loading,
+.error {
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  color: var(--text-color);
 }
