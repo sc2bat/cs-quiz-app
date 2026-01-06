@@ -1,7 +1,6 @@
 import { db } from "../config/db";
-import { QuestionRow, ChoiceRow, CategoryRow, QuizRecordRow, CreateQuizRecordDto } from "../types/quiz";
-import { CreateUserDto } from "../types/user";
-import { QUIZ_QUERIES, QUIZ_RECORD_QUERIES } from "./queries";
+import { QuestionRow, ChoiceRow, CategoryRow } from "../types/quiz";
+import { QUIZ_QUERIES } from "./queries";
 
 // refactor: convert arrow functions to method shorthand
 export const quizModel = {

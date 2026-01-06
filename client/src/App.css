@@ -1,257 +1,605 @@
+/* =========================================
+\/\/.*|\/\*[\s\S]*?\*\/
+   ========================================= */
+
+/* =========================================
+   1. CSS Variables & Dark Mode System
+   ========================================= */
 :root {
-  /* ☀️ Light Mode (기존 색상 유지) */
-  --bg-color: #ffffff;
-  --text-color: #213547;
-  --text-muted: #888;
+  
+  --primary-color: #3b82f6;      
+  --primary-hover: #2563eb;
+  --bg-color: #f3f4f6;           
+  --card-bg: #ffffff;            
+  --text-color: #1f2937;         
+  --sub-text: #6b7280;           
+  --border-color: #e5e7eb;
+  
+  --success-color: #10b981;      
+  --error-color: #ef4444;        
+  --warning-color: #f59e0b;      
 
-  /* 카드/컨테이너 */
-  --card-padding: 2rem;
-
-  /* 버튼 기본 */
   --btn-bg: #ffffff;
-  --btn-text: #000000;
-  --btn-border: #ccc;
-  --btn-hover: #f0f0f0;
-
-  /* 정답/오답 상태 (파스텔 톤) */
-  --correct-bg: #d4edda;
-  --correct-border: #c3e6cb;
-  --correct-text: #155724;
-
-  --wrong-bg: #f8d7da;
-  --wrong-border: #f5c6cb;
-  --wrong-text: #721c24;
-
-  /* 기타 UI */
-  --explanation-bg: #e9ecef;
-  --input-bg: #ffffff;
-  --input-border: #ddd;
-  --primary-color: #646cff;
+  --btn-text: #374151;
+  --btn-border: #d1d5db;
 }
 
-/* 🌙 Dark Mode (자동 감지) */
+
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-color: #242424;
-    --text-color: rgba(255, 255, 255, 0.87);
-    --text-muted: #aaa;
+    --primary-color: #60a5fa;
+    --primary-hover: #3b82f6;
+    --bg-color: #111827;
+    --card-bg: #1f2937;
+    --text-color: #f9fafb;
+    --sub-text: #9ca3af;
+    --border-color: #374151;
+    
+    --success-color: #34d399;
+    --error-color: #f87171;
+    --warning-color: #fbbf24;
 
-    /* 버튼 기본 (어둡게) */
-    --btn-bg: #1a1a1a;
-    --btn-text: #ffffff;
-    --btn-border: #444;
-    --btn-hover: #333;
-
-    /* 정답/오답 상태 (눈부심 방지를 위해 톤 다운) */
-    --correct-bg: #1e4620;
-    --correct-border: #2b7a30;
-    --correct-text: #e2e6ea;
-
-    --wrong-bg: #5a1e22;
-    --wrong-border: #8a2a30;
-    --wrong-text: #e2e6ea;
-
-    /* 기타 UI */
-    --explanation-bg: #333;
-    --input-bg: #1a1a1a;
-    --input-border: #555;
-    /* primary-color는 유지하거나 살짝 밝게 조정 */
+    --btn-bg: #374151;
+    --btn-text: #e5e7eb;
+    --btn-border: #4b5563;
   }
 }
 
-/* ========================================= */
-/* 기본 스타일 적용 (변수 사용) */
-/* ========================================= */
+/* =========================================
+   2. Global Reset & Layout Fix (왼쪽 쏠림 해결)
+   ========================================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; 
+}
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: background-color 0.3s, color 0.3s;
+  line-height: 1.5;
 }
+
 
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
   width: 100%;
-  /* 모바일 대응 */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-color);
 }
 
-/* 로고 스타일 (유지) */
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+
+.container {
+  width: 100%;            
+  max-width: 600px;       
+  margin: 0 auto;         
+  padding: 20px;
+  flex: 1;                
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;     
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+/* =========================================
+   3. Card Style (크기 일관성 통합)
+   ========================================= */
+
+.card, .setup-container, .result-container {
+  width: 100%;
+  min-height: 60vh;       
+  max-height: 85vh;       
+  
+  background-color: var(--card-bg);
+  border-radius: 20px;
+  padding: 30px;
+  
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  
+  overflow-y: auto;       
+  transition: all 0.3s ease;
 }
 
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+
+.card::-webkit-scrollbar,
+.setup-container::-webkit-scrollbar,
+.result-container::-webkit-scrollbar {
+  width: 6px;
+}
+.card::-webkit-scrollbar-thumb,
+.setup-container::-webkit-scrollbar-thumb,
+.result-container::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 3px;
+}
+.card::-webkit-scrollbar-track,
+.setup-container::-webkit-scrollbar-track,
+.result-container::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+
+h1, h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  min-height: 40px; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* =========================================
+   4. Header
+   ========================================= */
+.app-header {
+  width: 100%;
+  height: 60px;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  
+  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  
+  position: sticky;
+  top: 0;
+  z-index: 1000; 
+  padding: 0 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+}
+
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-logo {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  cursor: pointer; 
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  background-color: var(--bg-color);
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: var(--text-color);
+  font-weight: 600;
+  border: 1px solid var(--border-color);
+}
+
+
+.header-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  color: var(--text-color);
+}
+
+.header-btn:hover {
+  background-color: var(--bg-color);
+}
+
+
+.header-btn.quit {
+  color: var(--error-color);
+  border: 1px solid transparent;
+}
+
+.header-btn.quit:hover {
+  background-color: rgba(239, 68, 68, 0.1); 
+}
+
+
+.header-btn.settings {
+  font-size: 1.2rem;
+  color: var(--sub-text);
+}
+
+
+@media (max-width: 400px) {
+  .btn-text {
+    display: none;
   }
-
-  to {
-    transform: rotate(360deg);
+  .header-btn {
+    padding: 8px;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* =========================================
+   5. Setup Screen Styles
+   ========================================= */
+.auth-section {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.read-the-docs {
-  color: var(--text-muted);
+.auth-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-/* ========================================= */
-/* 퀴즈 앱 전용 스타일 */
-/* ========================================= */
+.auth-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+}
 
-.quiz-container {
-  max-width: 600px;
-  margin: 0 auto;
+.auth-btn.google { background-color: #db4437; }
+.auth-btn.github { background-color: #333; }
+
+.welcome-msg {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.category-grid {
+  display: flex;       
+  flex-wrap: wrap;     
+  gap: 10px;           
+  margin: 15px 0 25px 0;
+  justify-content: center; 
+}
+
+.cat-btn {
+  flex: 0 1 auto; 
+  padding: 10px 16px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border-radius: 20px; 
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap; 
+}
+
+.cat-btn:hover {
+  border-color: var(--primary-color);
+}
+
+.cat-btn.selected {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.4);
+}
+
+.slider {
+  width: 100%;
+  margin: 10px 0 20px;
+  cursor: pointer;
+}
+
+/* =========================================
+   6. Quiz & Playing Styles
+   ========================================= */
+.quiz-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.quit-btn {
+  background: none;
+  border: 1px solid var(--error-color);
+  color: var(--error-color);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.quit-btn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
 }
 
 .badge {
-  background-color: var(--primary-color);
-  color: white;
+  display: inline-flex;
+  align-items: center;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 0.8rem;
-  font-weight: bold;
+  font-weight: 700;
+  background-color: var(--bg-color);
+  color: var(--sub-text);
+  margin-bottom: 10px;
 }
 
-/* 🔘 보기 버튼 스타일 */
+.badge.warning {
+  background-color: rgba(245, 158, 11, 0.2);
+  color: var(--warning-color);
+  border: 1px solid var(--warning-color);
+}
+
+.choices-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  flex-grow: 1; 
+}
+
 .answer-btn {
-  display: block;
   width: 100%;
-  padding: 15px;
-  margin: 10px 0;
-
-  /* 변수 적용 */
+  padding: 14px 20px;
+  text-align: left;
+  background-color: var(--btn-bg);
   border: 1px solid var(--btn-border);
-  background: var(--btn-bg);
-  color: var(--text-color);
-
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 10px;
+  color: var(--btn-text);
   font-size: 1rem;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
 .answer-btn:hover:not(:disabled) {
-  background-color: var(--btn-hover);
-}
-
-/* ✅ 정답 스타일 */
-.answer-btn.correct {
-  background-color: var(--correct-bg);
-  border-color: var(--correct-border);
-  color: var(--correct-text);
-  font-weight: bold;
-}
-
-/* ❌ 오답 스타일 */
-.answer-btn.wrong {
-  background-color: var(--wrong-bg);
-  border-color: var(--wrong-border);
-  color: var(--wrong-text);
-  font-weight: bold;
-}
-
-/* 📘 해설 박스 */
-.explanation-box {
-  background-color: var(--explanation-bg);
-  color: var(--text-color);
-  padding: 15px;
-  border-radius: 8px;
-  margin: 15px 0;
-  text-align: left;
-  line-height: 1.5;
-}
-
-/* 다음 버튼 */
-.next-btn {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  font-size: 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 20px;
-  transition: opacity 0.2s;
-}
-
-.next-btn:hover {
-  opacity: 0.9;
-}
-
-/* 📝 주관식 스타일 */
-.subjective-box {
-  margin: 20px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.subjective-input {
-  padding: 15px;
-  font-size: 1.1rem;
-
-  /* 변수 적용 */
-  background-color: var(--input-bg);
-  color: var(--text-color);
-  border: 2px solid var(--input-border);
-
-  border-radius: 8px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.subjective-input:focus {
+  background-color: var(--bg-color);
   border-color: var(--primary-color);
 }
 
-/* 제출 버튼 */
+.answer-btn.correct {
+  background-color: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+}
+
+.answer-btn.wrong {
+  background-color: var(--error-color);
+  color: white;
+  border-color: var(--error-color);
+}
+
+.answer-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+
+.subjective-box {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.subjective-input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
 .submit-btn {
-  padding: 15px;
-  background-color: #28a745;
+  padding: 0 20px;
+  background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
-  font-weight: bold;
   cursor: pointer;
 }
 
 .submit-btn:disabled {
-  background-color: #666;
-  /* 다크모드 고려하여 회색 조정 */
+  background-color: var(--sub-text);
   cursor: not-allowed;
-  opacity: 0.7;
 }
 
-/* 로딩/에러 메시지 */
-.loading,
-.error {
-  font-size: 1.2rem;
-  margin-top: 2rem;
+
+.feedback-section {
+  margin-top: 20px;
+  padding: 16px;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.explanation-box {
+  margin: 10px 0 15px;
+  font-size: 0.95rem;
   color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* =========================================
+   7. Button Utilities (하단 고정용)
+   ========================================= */
+
+.start-btn-large, 
+.next-btn, 
+.result-actions {
+  margin-top: auto; 
+}
+
+.start-btn-large {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.start-btn-large:hover {
+  background-color: var(--primary-hover);
+}
+
+.next-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* =========================================
+   8. Result Screen Styles
+   ========================================= */
+.result-container {
+  
+  width: 100%;
+  min-height: 60vh; 
+  
+  
+  background-color: var(--card-bg);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.score-board {
+  background-color: var(--bg-color);
+  padding: 30px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.score-text {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin-top: 10px;
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 20px;
+  margin-top: auto; 
+}
+
+.result-actions button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  transition: transform 0.1s, background-color 0.2s;
+}
+
+.result-actions button:active {
+  transform: scale(0.98);
+}
+
+.retry-btn { background-color: var(--primary-color); }
+.retry-btn:hover { background-color: var(--primary-hover); }
+
+.review-btn { background-color: var(--warning-color); }
+.review-btn:hover { filter: brightness(0.9); }
+
+.clear-btn { background-color: var(--error-color); }
+.clear-btn:hover { filter: brightness(0.9); }
+
+.home-btn { background-color: var(--sub-text); }
+.home-btn:hover { filter: brightness(0.9); }
+
+/* =========================================
+   9. Loading & Animations
+   ========================================= */
+.loading, .error {
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: var(--sub-text);
+  text-align: center;
+  width: 100%;
+}
+
+.error {
+  color: var(--error-color);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.icon-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

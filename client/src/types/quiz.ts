@@ -17,7 +17,7 @@ export interface Question {
 
 export interface ApiResponse {
   status: string;
-  data: Question[];
+  questionRow: Question[];
 }
 
 export interface Category {

@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import logger from '../utils/logger';
 
 const QUIZ_API_BASE_URL = import.meta.env.VITE_QUIZ_API_BASE_URL;
 
@@ -26,8 +27,8 @@ apiClient.interceptors.response.use(
         if (error.response) {
             const status = error.response.status;
             const serverMessage = error.response.data?.message;
-            console.log(`status >> ${status}`);
-            console.log(`serverMessage >> ${serverMessage}`);
+            logger.info(`status >> ${status}`);
+            logger.info(`serverMessage >> ${serverMessage}`);
             if (status == 404) message = `Resource not found ${status}`;
             else if (status == 500) message = `Internal server error occurred ${status}`;
             else message = `Error occurred ${status}`;

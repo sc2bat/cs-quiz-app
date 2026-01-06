@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Question } from '../types';
+import type { Question, QuizConfig } from '../types';
 import { STORAGE_KEYS } from '../constants';
 import { quizApi } from '../api/quizApi';
+import logger from '../utils/logger';
 
-export const useQuiz = () => {
+export const useQuiz = (quizConfig: QuizConfig | null) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -21,21 +22,37 @@ export const useQuiz = () => {
 
   // data fetching
   useEffect(() => {
-    const fetchQuizzes = async () => {
+    if (!quizConfig) {
+      setQuestions([]);
+      setLoading(false);
+      return;
+    }const fetchQuizzes = async () => {
       try {
-        const categoryIds = await quizApi.fetchCategories();
         setLoading(true);
-        const data = await quizApi.fetchQuizzes(categoryIds);
-        setQuestions(data.data);
+        setError(null);
+        setIsFinished(false);
+        setCurrentIndex(0);
+        setScore(0);
+
+        logger.debug('[useQuiz] Fetching questions with config:', quizConfig);
+        
+        const data = await quizApi.fetchQuizzes(quizConfig.categoryIds, quizConfig.limit);
+        
+        if (!data || data.length === 0) {
+          throw new Error('조건에 맞는 문제가 없습니다.');
+        }
+
+        setQuestions(data);
       } catch (err: any) {
-        console.error(err);
+        logger.error('[useQuiz] Error:', err);
         setError(err.message || '문제 로딩 실패');
       } finally {
         setLoading(false);
       }
     };
+
     fetchQuizzes();
-  }, []);
+  }, [quizConfig]);
 
   const saveWrongAnswer = useCallback((qId: number) => {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.WRONG_ANSWER) || '[]');
