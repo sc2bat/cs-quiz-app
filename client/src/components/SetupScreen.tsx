@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
 import type { Category } from "../types";
 import { 
-  FaGoogle, 
-  FaGithub, 
   FaListUl, 
   FaSortNumericDown, 
   FaRocket, 
-  FaSignInAlt,
   FaCheck,
   FaCheckDouble 
 } from 'react-icons/fa';
@@ -14,17 +11,17 @@ import {
 interface SetupScreenProps {
   categories: Category[]; 
   onStart: (config: { limit: number; categoryIds: number[] }) => void;
-  onLogin: (provider: 'github' | 'google') => void;
-  isLoggedIn: boolean;
 }
 
-export const SetupScreen = ({ categories, onStart, onLogin, isLoggedIn }: SetupScreenProps) => {
+export const SetupScreen = ({ categories, onStart }: SetupScreenProps) => {
   const [limit, setLimit] = useState(10);
   const [selectedCats, setSelectedCats] = useState<number[]>([]);
 
+  // 카테고리 로드 시 초기값 설정 (필요 시 로직 추가, 현재는 빈 값)
   useEffect(() => {
     if (Array.isArray(categories) && categories.length > 0) {
-       // 필요하다면 초기 전체 선택 로직
+       // 예: 전체 선택을 기본으로 하고 싶다면 아래 주석 해제
+       // setSelectedCats(categories.map(c => c.categoryId));
     }
   }, [categories]);
 
@@ -54,30 +51,8 @@ export const SetupScreen = ({ categories, onStart, onLogin, isLoggedIn }: SetupS
     <div className="setup-container card">
       <h1>CS Quiz App</h1>
       
-      {/* 1. 로그인 섹션 (로그인 안 했을 때만 보임) */}
-      {!isLoggedIn && (
-        <>
-          <div className="auth-section">
-            <p style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px', color: 'var(--sub-text)' }}>
-               <FaSignInAlt />
-               로그인하고 기록을 저장하세요
-            </p>
-            <div className="auth-buttons">
-              <button className="auth-btn google" onClick={() => onLogin('google')}>
-                <FaGoogle style={{ marginRight: '8px' }} /> Google
-              </button>
-              <button className="auth-btn github" onClick={() => onLogin('github')}>
-                <FaGithub style={{ marginRight: '8px' }} /> GitHub
-              </button>
-            </div>
-          </div>
-          {/* 구분선도 로그인 안 했을 때만 필요 */}
-          <hr style={{ margin: '20px 0', border: '0', borderTop: '1px solid var(--border-color)' }} />
-        </>
-      )}
-
-      {/* 2. 퀴즈 설정 섹션 */}
       <div className="settings-section">
+        
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <h3>
                 <FaListUl style={{ marginRight: '8px' }} /> 카테고리 선택
@@ -85,6 +60,7 @@ export const SetupScreen = ({ categories, onStart, onLogin, isLoggedIn }: SetupS
             
             <button 
                 onClick={handleSelectAll}
+                className="text-btn"
                 style={{
                     background: 'none',
                     border: 'none',
@@ -117,7 +93,7 @@ export const SetupScreen = ({ categories, onStart, onLogin, isLoggedIn }: SetupS
               );
             })
           ) : (
-             <div style={{ gridColumn: '1 / -1', color: 'var(--error-color)', textAlign: 'center' }}>
+             <div style={{ gridColumn: '1 / -1', color: 'var(--error-color)', textAlign: 'center', padding: '20px' }}>
                 카테고리 데이터를 불러오지 못했습니다.
              </div>
           )}
@@ -125,7 +101,7 @@ export const SetupScreen = ({ categories, onStart, onLogin, isLoggedIn }: SetupS
 
         <h3 style={{ marginTop: '30px' }}>
             <FaSortNumericDown style={{ marginRight: '8px' }} /> 
-            문제 수 설정: {limit}문제
+            문제 수 설정: <span style={{ color: 'var(--primary-color)' }}>{limit}</span>문제
         </h3>
         <input 
           type="range" 
@@ -136,6 +112,10 @@ export const SetupScreen = ({ categories, onStart, onLogin, isLoggedIn }: SetupS
           onChange={(e) => setLimit(Number(e.target.value))} 
           className="slider"
         />
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#888', marginTop: '5px' }}>
+            <span>5</span>
+            <span>50</span>
+        </div>
       </div>
 
       <button className="start-btn-large" onClick={handleStart}>

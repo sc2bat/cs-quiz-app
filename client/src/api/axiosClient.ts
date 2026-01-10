@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import logger from '../utils/logger';
 
-const QUIZ_API_BASE_URL = import.meta.env.VITE_QUIZ_API_BASE_URL;
+export const QUIZ_API_BASE_URL = import.meta.env.VITE_QUIZ_API_BASE_URL;
 
 if (!QUIZ_API_BASE_URL) console.warn('API_BASE_URL is missing. Please check your environment configuration.');
 
@@ -11,6 +11,7 @@ export const apiClient = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
+    withCredentials: true, // include cookies for session-based authentication
 });
 
 interface ErrorResponse {
@@ -27,11 +28,14 @@ apiClient.interceptors.response.use(
         if (error.response) {
             const status = error.response.status;
             const serverMessage = error.response.data?.message;
+
             logger.info(`status >> ${status}`);
             logger.info(`serverMessage >> ${serverMessage}`);
+
             if (status == 404) message = `Resource not found ${status}`;
             else if (status == 500) message = `Internal server error occurred ${status}`;
             else message = `Error occurred ${status}`;
+            
         } else if (error.request) {
             message = 'Unable to connect to the server. Please check backend availability.'
         }

@@ -7,23 +7,19 @@ import { Header } from './components/Header';
 import { SetupScreen } from './components/SetupScreen';
 import { useCategory } from './hooks/useCategory';
 import { FaSpinner, FaExclamationCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { useAuth } from './hooks/useAuth';
 
 function App() {
   const [appMode, setAppMode] = useState<AppMode>('SETUP');
   const [quizConfig, setQuizConfig] = useState<QuizConfig | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
+  const { state: authState, actions: authActions } = useAuth();
   const { state, actions } = useQuiz(quizConfig);
   const { categories, loading: loadingCats, error: catError } = useCategory();
 
   const handleStartQuiz = (config: QuizConfig) => {
     setQuizConfig(config);
     setAppMode('PLAYING');
-  };
-
-  const handleLogin = (provider: 'github' | 'google') => {
-    console.log(`${provider} 로그인 시도...`);
-    setIsLoggedIn(true);
   };
 
   const handleQuitQuiz = () => {
@@ -39,7 +35,9 @@ function App() {
         appMode={appMode}
         onOpenSettings={() => setAppMode('SETUP')}
         onQuitQuiz={handleQuitQuiz}
-        isLoggedIn={isLoggedIn}
+        user={authState.user}       
+        onLogin={authActions.login}
+        onLogout={authActions.logout}
       />
 
       <div className='container'>
@@ -60,16 +58,12 @@ function App() {
             <SetupScreen
               categories={categories}
               onStart={handleStartQuiz}
-              onLogin={handleLogin}
-              isLoggedIn={isLoggedIn}
             />
           )
         )}
 
-        {/* [모드 2] 게임 진행 화면 */}
         {appMode === 'PLAYING' && (
           <>
-            {/* 1. 로딩/에러/빈값 처리 (Wrapper 없이 전체 화면 사용) */}
             {state.loading ? (
               <div className="loading">
                 <FaSpinner className="icon-spin" style={{ marginRight: '8px' }} />

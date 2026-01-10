@@ -236,6 +236,133 @@ h1, h2 {
   }
 }
 
+/* Header User Info */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: 15px;
+  padding-right: 15px;
+  border-right: 1px solid #444; /* 구분선 */
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #646cff;
+}
+
+.user-nickname {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.login-btn-trigger {
+  background-color: transparent;
+  border: 1px solid #646cff;
+  color: #646cff;
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-right: 10px;
+  transition: all 0.2s;
+}
+
+.login-btn-trigger:hover {
+  background-color: #646cff;
+  color: white;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* 어두운 배경 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Modal Content */
+.modal-content {
+  background: #2a2a2a; /* 다크모드 배경 */
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 360px;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.modal-title {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.modal-desc {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* SSO Buttons */
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sso-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.sso-btn:hover {
+  opacity: 0.9;
+}
+
+.sso-btn.google {
+  background-color: #fff;
+  color: #333;
+}
+
+.sso-btn.github {
+  background-color: #24292e;
+  color: #fff;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* =========================================
    5. Setup Screen Styles
    ========================================= */

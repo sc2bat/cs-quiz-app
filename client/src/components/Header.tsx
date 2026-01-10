@@ -1,45 +1,94 @@
-import { FaCog, FaTimes, FaUserCircle, FaBrain } from 'react-icons/fa';
+import { FaCog, FaTimes, FaUserCircle, FaBrain, FaSignOutAlt } from 'react-icons/fa';
 import type { AppMode } from '../types';
+import type { User } from '../types/user';
+import { useState } from 'react';
+import { LoginModal } from './LoginModal';
 
 interface HeaderProps {
   appMode: AppMode;
   onOpenSettings: () => void;
   onQuitQuiz: () => void;
-  isLoggedIn: boolean;
+  user: User | null;         // user info
+  onLogin: (provider: any) => void; // login action
+  onLogout: () => void;
 }
 
-export const Header = ({ appMode, onOpenSettings, onQuitQuiz, isLoggedIn }: HeaderProps) => {
+export const Header = ({
+  appMode,
+  onOpenSettings,
+  onQuitQuiz,
+  user,
+  onLogin,
+  onLogout
+}: HeaderProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleLoginClick = (provider: any) => {
+    onLogin(provider);
+    setIsModalOpen(false);
+  };
+
   return (
-    <header className="app-header">
-      <div className="header-left">
-        <div className="header-logo" style={{ display: 'flex', alignItems: 'center' }}>
-          <FaBrain style={{ marginRight: '8px', fontSize: '1.4rem' }} />
-          CS Quiz
-        </div>
-      </div>
-
-      <div className="header-right">
-        {/* 1. 로그인 상태 표시 */}
-        {isLoggedIn && (
-          <div className="user-badge">
-            <FaUserCircle style={{ marginRight: '5px', fontSize: '1.1rem' }} />
-            User
+    <>
+      <header className="app-header">
+        <div className="header-left">
+          <div className="header-logo">
+            <FaBrain style={{ marginRight: '8px', fontSize: '1.4rem' }} />
+            CS Quiz
           </div>
-        )}
+        </div>
 
-        {/* 2. 모드에 따른 버튼 변경 */}
-        {appMode === 'PLAYING' ? (
-          // [게임 중] -> 중단 버튼
-          <button className="header-btn quit" onClick={onQuitQuiz} aria-label="퀴즈 중단">
-            <FaTimes /> <span className="btn-text">중단</span>
-          </button>
-        ) : (
-          // [설정/대기 중] -> 설정 버튼
-          <button className="header-btn settings" onClick={onOpenSettings} aria-label="설정">
-            <FaCog />
-          </button>
-        )}
-      </div>
-    </header>
+        <div className="header-right">
+          {user ? (
+            <div className="user-info">
+              {user.profileImageUrl ? (
+                <img src={user.profileImageUrl} alt="profile" className="user-avatar" />
+              ) : (
+                <FaUserCircle className="user-icon-default" />
+              )}
+              <span className="user-nickname">{user.nickname}</span>
+
+              <button
+                onClick={onLogout}
+                className="header-icon-btn logout"
+                title="Log out"
+              >
+                <FaSignOutAlt />
+              </button>
+            </div>
+          ) : (
+            <button
+              className="login-btn-trigger"
+              onClick={() => setIsModalOpen(true)}
+            >
+              Log in
+            </button>
+          )}
+
+          {appMode === 'PLAYING' ? (
+            <button
+              className="header-btn quit"
+              onClick={onQuitQuiz}
+              aria-label="Quit quiz"
+            >
+              <FaTimes /> <span className="btn-text">Quit</span>
+            </button>
+          ) : (
+            <button
+              className="header-btn settings"
+              onClick={onOpenSettings}
+              aria-label="Settings"
+            >
+              <FaCog />
+            </button>
+          )}
+        </div>
+      </header>
+      <LoginModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onLogin={handleLoginClick}
+      />
+    </>
   );
 };
