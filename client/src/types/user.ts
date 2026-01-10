@@ -21,3 +21,7 @@ export interface RawUserFromDB {
   sns_id: string;
   last_login_at: string;
 }
+
+export interface AuthResponse {
+  user: RawUserFromDB;
+}
