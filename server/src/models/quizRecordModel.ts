@@ -1,22 +1,45 @@
+import { ResultSetHeader } from "mysql2/promise";
 import { db } from "../config/db";
-import { QuizRecordRow, CreateQuizRecordDto } from "../types/quiz";
+import { CreateFullRecordDTO, QuizRecordRow } from "../types/quiz";
 import { TABLES } from "./constants";
 import { QUIZ_RECORD_QUERIES } from "./queries";
 
 // refactor: convert arrow functions to method shorthand
 export const quizRecordModel = {
-    async createQuizRecord(dto: CreateQuizRecordDto): Promise<number> {
-        const result = await db.execute(
-            QUIZ_RECORD_QUERIES.CREATE_QUIZ_RECORD,
-            [
-                dto.user_id,
-                dto.category_id,
-                dto.score,
-                dto.total_questions,
-            ]
+    async createQuizRecord(dto: CreateFullRecordDTO): Promise<number> {
+    return await db.transaction(async (conn) => {
+      
+      const [recordResult] = await conn.execute<ResultSetHeader>(
+        QUIZ_RECORD_QUERIES.CREATE_QUIZ_RECORD,
+        [dto.user_id, dto.score, dto.total_questions]
+      );
+      const recordId = recordResult.insertId;
+
+      if (dto.category_ids && dto.category_ids.length > 0) {
+        const categoryValues = dto.category_ids.map(catId => [recordId, catId]);
+        await conn.query(
+          QUIZ_RECORD_QUERIES.CREATE_RECORD_CATEGORIES,
+          [categoryValues]
         );
-        return result.insertId;
-    },
+      }
+
+      if (dto.submissions && dto.submissions.length > 0) {
+        const submissionValues = dto.submissions.map(sub => [
+          recordId,
+          sub.questionId,
+          sub.choiceId || null,
+          sub.subjectiveAnswer || null,
+          sub.isCorrect ? 1 : 0
+        ]);
+        await conn.query(
+          QUIZ_RECORD_QUERIES.CREATE_SUBMISSIONS,
+          [submissionValues]
+        );
+      }
+
+      return recordId;
+    });
+  },
     async getAllQuizRecord(userId: number): Promise<QuizRecordRow[]> {
         const [rows] = await db.query<QuizRecordRow[]>(
             QUIZ_RECORD_QUERIES.GET_ALL_QUIZ_RECORDS,
@@ -51,6 +74,7 @@ export const quizRecordModel = {
         );
         return rows;
     },
+    // TODO: Refactor bulk delete logic to handle Foreign Key constraints (consider using ON DELETE CASCADE or transactional deletion of child records first).
     async deleteQuizRecordsBulk(userId: number, quizRecordIds: number[]): Promise<number> {
         if(quizRecordIds.length === 0) return 0;
 

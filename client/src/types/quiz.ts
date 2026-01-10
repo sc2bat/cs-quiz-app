@@ -24,3 +24,17 @@ export interface Category {
   categoryId: number;
   categoryName: string;
 }
+
+export interface QuizRecordPayload {
+  categoryId: number;
+  score: number;
+  totalQuestions: number;
+}
+
+export interface QuizHistoryItem {
+  quiz_record_id: number;
+  category_name?: string;
+  score: number;
+  total_questions: number;
+  created_at: string;
+}

@@ -31,7 +31,25 @@ export interface QuizRecordRow extends RowDataPacket{
   taken_at: Date;
 }
 
-export type CreateQuizRecordDto = Pick<
-  QuizRecordRow, 
-  'user_id' | 'category_id' | 'score' | 'user_id' | 'total_questions'
->; 
+export interface CreateFullRecordDTO {
+  user_id: number;
+  category_ids: number[];
+  score: number;
+  total_questions: number;
+  submissions: SubmissionItem[]; // 추가됨
+}
+
+export interface SubmissionItem {
+  questionId: number;
+  choiceId?: number | null;
+  subjectiveAnswer?: string | null;
+  isCorrect: boolean;
+}
+
+export interface CreateRecordServiceParams {
+  user_id: number;
+  category_ids: number[];
+  score: number;
+  total_questions: number;
+  submissions: any[];
+}

@@ -1,5 +1,5 @@
-import mysql, { ResultSetHeader } from 'mysql2/promise'; // 비동기 처리를 위해 promise 버전 사용
 import dotenv from 'dotenv';
+import mysql, { PoolConnection, ResultSetHeader } from 'mysql2/promise'; // 비동기 처리를 위해 promise 버전 사용
 import logger from '../utils/logger';
 
 dotenv.config(); // .env 파일 로드
@@ -52,8 +52,30 @@ export const db = {
       logger.error(`[SQL EXECUTE ERROR] ${error.message} \nQuery: ${sql}`);
       throw error;
     }
-  }
+  },
+  async transaction<T>(callback: (conn: PoolConnection) => Promise<T>): Promise<T> {
+      const conn = await pool.getConnection();
+      
+      try {
+        await conn.beginTransaction(); // 트랜잭션 시작
+        logger.debug('[Transaction] STARTED');
+  
+        const result = await callback(conn);
+  
+        await conn.commit();
+        logger.debug('[Transaction] COMMITTED');
+        
+        return result;
+      } catch (error) {
+        await conn.rollback();
+        logger.error('[Transaction] ROLLED BACK', error);
+        throw error;
+      } finally {
+        conn.release(); // 연결 반납
+      }
+    },
 };
+
 
 // 연결 테스트용 로그
 pool.getConnection()

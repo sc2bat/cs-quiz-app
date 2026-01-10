@@ -4,6 +4,7 @@ export const TABLES ={
     QUESTIONS: 'questions',
     QUIZ_RECORDS: 'quiz_records',
     QUIZ_SUBMISSIONS: 'quiz_submissions',
+    QUIZ_RECORD_CATEGORIES: 'quiz_record_categories',
     USERS: 'users',
 } as const;
 

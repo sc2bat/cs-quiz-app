@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { asyncHandler } from '../utils/asyncHandler';
 import { generateToken } from '../utils/jwt';
 import logger from '../utils/logger';

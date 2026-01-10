@@ -125,57 +125,76 @@ export const QUIZ_RECORD_QUERIES = {
     CREATE_QUIZ_RECORD: `
         INSERT INTO ${TABLES.QUIZ_RECORDS} (
             user_id, 
-            category_id, 
             score, 
             total_questions, 
             taken_at
-            )
-        VALUES(
-            ?, 
-            ?, 
-            ?, 
-            ?,
-            CURRENT_TIMESTAMP
         )
+        VALUES(?, ?, ?, CURRENT_TIMESTAMP)
+    `,
+    CREATE_RECORD_CATEGORIES: `
+        INSERT INTO ${TABLES.QUIZ_RECORD_CATEGORIES} (
+            quiz_record_id, 
+            category_id
+        )
+        VALUES ?
+    `,
+    CREATE_SUBMISSIONS: `
+        INSERT INTO ${TABLES.QUIZ_SUBMISSIONS} (
+            quiz_record_id, 
+            question_id, 
+            choice_id, 
+            subjective_answer, 
+            is_correct
+        )
+        VALUES ?
     `,
     GET_ALL_QUIZ_RECORDS: `
         SELECT
-            quiz_record_id, 
-            user_id, 
-            category_id, 
-            score, 
-            total_questions, 
-            taken_at
-        FROM ${TABLES.QUIZ_RECORDS}
-            WHERE user_id = ?
+            qr.quiz_record_id, 
+            qr.user_id, 
+            qr.score, 
+            qr.total_questions, 
+            qr.taken_at,
+            GROUP_CONCAT(c.name SEPARATOR ', ') as category_names
+        FROM ${TABLES.QUIZ_RECORDS} qr
+            LEFT JOIN ${TABLES.QUIZ_RECORD_CATEGORIES} qrc ON qr.quiz_record_id = qrc.quiz_record_id
+            LEFT JOIN ${TABLES.CATEGORIES} c ON qrc.category_id = c.category_id
+        WHERE qr.user_id = ?
+            GROUP BY qr.quiz_record_id
+        ORDER BY qr.taken_at DESC
     `,
     GET_RECENT_QUIZ_RECORDS: `
         SELECT
-            quiz_record_id, 
-            user_id, 
-            category_id, 
-            score, 
-            total_questions, 
-            taken_at
-        FROM ${TABLES.QUIZ_RECORDS}
-            WHERE user_id = ?
-            ORDER BY taken_at DESC, quiz_record_id DESC 
-            LIMIT ?
+            qr.quiz_record_id, 
+            qr.user_id, 
+            qr.score, 
+            qr.total_questions, 
+            qr.taken_at,
+            GROUP_CONCAT(c.name SEPARATOR ', ') as category_names
+        FROM ${TABLES.QUIZ_RECORDS} qr
+            LEFT JOIN ${TABLES.QUIZ_RECORD_CATEGORIES} qrc ON qr.quiz_record_id = qrc.quiz_record_id
+            LEFT JOIN ${TABLES.CATEGORIES} c ON qrc.category_id = c.category_id
+        WHERE qr.user_id = ?
+            GROUP BY qr.quiz_record_id
+        ORDER BY qr.taken_at DESC, qr.quiz_record_id DESC 
+        LIMIT ?
     `,
     GET_QUIZ_RECORDS_BY_CURSOR: `
         SELECT
-            quiz_record_id, 
-            user_id, 
-            category_id, 
-            score, 
-            total_questions, 
-            taken_at
-        FROM ${TABLES.QUIZ_RECORDS}
-            WHERE user_id = ?
-                AND (taken_at < ?
-                     OR (taken_at = ? AND quiz_record_id < ?)
-            ORDER BY taken_at DESC, quiz_record_id DESC 
-            LIMIT ?
+            qr.quiz_record_id, 
+            qr.user_id, 
+            qr.score, 
+            qr.total_questions, 
+            qr.taken_at,
+            GROUP_CONCAT(c.name SEPARATOR ', ') as category_names
+        FROM ${TABLES.QUIZ_RECORDS} qr
+        LEFT JOIN ${TABLES.QUIZ_RECORD_CATEGORIES} qrc ON qr.quiz_record_id = qrc.quiz_record_id
+        LEFT JOIN ${TABLES.CATEGORIES} c ON qrc.category_id = c.category_id
+        WHERE qr.user_id = ?
+          AND (qr.taken_at < ? OR (qr.taken_at = ? AND qr.quiz_record_id < ?))
+            GROUP BY qr.quiz_record_id
+        ORDER BY qr.taken_at DESC, qr.quiz_record_id DESC 
+        LIMIT ?
     `,
     DELETE_QUIZ_RECORDS: `
         DELETE FROM ${TABLES.QUIZ_RECORDS}
