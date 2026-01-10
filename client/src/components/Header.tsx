@@ -23,6 +23,12 @@ export const Header = ({
 }: HeaderProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  console.log('Header User Check:', {
+     userObj: user,
+     url: user?.profileImageUrl,
+    //  isError: imgError
+  });
+
   const handleLoginClick = (provider: any) => {
     onLogin(provider);
     setIsModalOpen(false);

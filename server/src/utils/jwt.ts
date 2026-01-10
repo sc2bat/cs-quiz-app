@@ -9,6 +9,8 @@ export function generateToken(user: UserRow) {
         email: user.email,
         nickname: user.nickname,
         role: user.user_role,
+        profile_image_url: user.profile_image_url, 
+        provider: user.provider,
     };
     // expire 2hour
     return jwt.sign(payload, SECRET_KEY, { expiresIn: '2h' });

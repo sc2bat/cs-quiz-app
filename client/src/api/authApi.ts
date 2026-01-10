@@ -1,6 +1,6 @@
 import { apiClient } from "./axiosClient";
 import logger from "../utils/logger";
-import type { RawUserFromDB, User } from "../types/user";
+import type { AuthResponse, User } from "../types/user";
 
 
 export const authApi = {
@@ -8,10 +8,10 @@ export const authApi = {
   checkSession: async (): Promise<User | null> => {
     logger.info('authApi checkSession');
     try {
-      const response = await apiClient.get<RawUserFromDB>('/auth/');
+      const response = await apiClient.get<AuthResponse>('/api/auth/me');
       logger.debug(`checkSession status: ${response.status}`);
 
-      const rawData = response.data;
+      const rawData = response.data.user;
 
       if (!rawData) return null;
 
@@ -40,13 +40,12 @@ export const authApi = {
   // 로그아웃
   logout: async (): Promise<void> => {
     logger.info('authApi logout');
-    await apiClient.post('/auth/logout');
+    await apiClient.post('/api/auth/logout');
   },
 
   // 로그인 (OAuth 리다이렉트 URL 생성)
   getLoginUrl: (provider: 'google' | 'github') => {
-    // 환경변수에서 API URL 가져오기 (axiosClient의 baseURL 활용 가능하면 베스트)
     const API_URL = import.meta.env.VITE_QUIZ_API_BASE_URL || 'http://localhost:4000';
-    return `${API_URL}/auth/${provider}`;
+    return `${API_URL}/api/auth/${provider}`;
   }
 };
