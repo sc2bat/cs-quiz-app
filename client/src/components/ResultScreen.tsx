@@ -1,35 +1,67 @@
+import { FaTrophy, FaRedoAlt, FaClipboardList, FaTrashAlt, FaHome } from 'react-icons/fa';
+
 interface ResultScreenProps {
-    score: number;
-    total: number;
-    isReviewMode: boolean;
-    onRetryAll: () => void;
-    onRetryWrong: () => void;
-    onClearWrong: () => void;
+  score: number;
+  total: number;
+  isReviewMode: boolean;
+  onRetryAll: () => void;
+  onRetryWrong: () => void;
+  onClearWrong: () => void;
+  onGoHome: () => void;
 }
 
-const ResultScreen = ({ score, total, isReviewMode, onRetryAll, onRetryWrong, onClearWrong }: ResultScreenProps) => {
-    return (
-        <div className="result-container">
-            <h1>{isReviewMode ? '오답 복습 완료' : '퀴즈 종료'}</h1>
-            <p>당신의 점수: {score} / {total}</p>
-
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
-                <button onClick={onRetryAll} style={{ padding: '15px 30px' }}>
-                    처음부터 다시 하기
-                </button>
-                {!isReviewMode && (
-                    <button onClick={onRetryWrong} style={{ padding: '15px 30px', backgroundColor: '#ff9800' }}>틀린 문제 다시 풀기</button>
-                )}
-            </div>
-            {isReviewMode && (
-                <div style={{ marginTop: '20px' }}>
-                    <button onClick={onClearWrong} style={{ padding: '10px', backgroundColor: '#f44336', fontSize: '0.9rem' }}>
-                        틀린 문제 초기화
-                    </button>
-                </div>
-            )}
+const ResultScreen = ({
+  score,
+  total,
+  isReviewMode,
+  onRetryAll,
+  onRetryWrong,
+  onClearWrong,
+  onGoHome
+}: ResultScreenProps) => {
+  return (
+    <div className="result-container card">
+      <h2>
+        <FaTrophy style={{ color: '#FFD700', marginRight: '8px' }} /> 
+        퀴즈 종료!
+      </h2>
+      
+      <div className="score-board">
+        <p>당신의 점수는?</p>
+        <div className="score-text">
+          {score} / {total}
         </div>
-    );
+      </div>
+
+      <div className="result-actions">
+        {/* 다시 풀기 */}
+        <button onClick={onRetryAll} className="retry-btn">
+          <FaRedoAlt style={{ marginRight: '6px' }} /> 전체 다시 풀기
+        </button>
+        
+        {!isReviewMode && score < total && (
+          // 오답 노트
+          <button onClick={onRetryWrong} className="review-btn">
+            <FaClipboardList style={{ marginRight: '6px' }} /> 오답만 다시 풀기
+          </button>
+        )}
+
+        {/* 삭제 */}
+        <button onClick={onClearWrong} className="clear-btn">
+          <FaTrashAlt style={{ marginRight: '6px' }} /> 오답 기록 삭제
+        </button>
+
+        {/* 홈으로 */}
+        <button 
+            onClick={onGoHome} 
+            className="home-btn" 
+            style={{ marginTop: '10px', backgroundColor: '#6c757d' }}
+        >
+          <FaHome style={{ marginRight: '6px' }} /> 홈으로 돌아가기
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default ResultScreen;

@@ -4,7 +4,15 @@ import { quizModel } from "../models/quizModel";
 export const quizService = {
     async getCategories() {
         const categoryRow = await quizModel.getCategories();
-        return categoryRow;
+
+        const formattedData = categoryRow.map((category) => {
+            return {
+                categoryId: category.category_id,
+                categoryName: category.name
+            }
+        });
+        
+        return formattedData;
     },
     async getQuizzesByCategoryIds(
         categoryId: number[], 

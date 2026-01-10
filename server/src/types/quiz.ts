@@ -18,8 +18,8 @@ export interface ChoiceRow extends RowDataPacket {
 }
 
 export interface CategoryRow extends RowDataPacket{
-  id: number;
-  name: string;
+  category_id: number;
+  category_name: string;
 }
 
 export interface QuizRecordRow extends RowDataPacket{

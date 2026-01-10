@@ -1,52 +1,129 @@
+import { useState } from 'react';
 import './App.css';
 import { ProgressBar, ResultScreen, QuizCard } from './components';
 import { useQuiz } from './hooks/useQuiz';
+import type { AppMode, QuizConfig } from './types';
+import { Header } from './components/Header';
+import { SetupScreen } from './components/SetupScreen';
+import { useCategory } from './hooks/useCategory';
+import { FaSpinner, FaExclamationCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { useAuth } from './hooks/useAuth';
 
 function App() {
-  const {state, actions} = useQuiz();
+  const [appMode, setAppMode] = useState<AppMode>('SETUP');
+  const [quizConfig, setQuizConfig] = useState<QuizConfig | null>(null);
 
-  if (state.loading) return <div className="loading">⏳ 문제 로딩 중...</div>;
-  if (state.error) return <div className="error">❌ {state.error}</div>;
-  if (state.questions.length === 0) return <div>등록된 문제가 없습니다.</div>;
+  const { state: authState, actions: authActions } = useAuth();
+  const { state, actions } = useQuiz(quizConfig);
+  const { categories, loading: loadingCats, error: catError } = useCategory();
 
-  if (state.isFinished) {
-    return (
-      <ResultScreen
-        score={state.score}
-        total={state.questions.length}
-        isReviewMode={state.isReviewMode}
-        onRetryAll={actions.handleRetryAll}
-        onRetryWrong={actions.handleReviewWrongAnswers}
-        onClearWrong={actions.clearWrongAnswers}
-      />
-    );
-  }
+  const handleStartQuiz = (config: QuizConfig) => {
+    setQuizConfig(config);
+    setAppMode('PLAYING');
+  };
+
+  const handleQuitQuiz = () => {
+    if (confirm("정말 퀴즈를 중단하고 홈으로 돌아가시겠습니까?")) {
+      setAppMode('SETUP');
+      setQuizConfig(null);
+    }
+  };
 
   return (
-    <div className='quiz-container'>
-      {state.isReviewMode && <div className='badge' style={{ marginBottom: '10px', backgroundColor: '#ff9800' }}>
-        오답 복습 모드
-      </div>}
-
-      <ProgressBar
-        current={state.currentIndex + 1}
-        total={state.questions.length}
-        timeLeft={state.timeLeft}
+    <>
+      <Header
+        appMode={appMode}
+        onOpenSettings={() => setAppMode('SETUP')}
+        onQuitQuiz={handleQuitQuiz}
+        user={authState.user}       
+        onLogin={authActions.login}
+        onLogout={authActions.logout}
       />
 
-      <QuizCard
-        question={state.questions[state.currentIndex]}
-        selectedAnswer={state.selectedAnswer}
-        isCorrect={state.isCorrect}
-        showExplanation={state.showExplanation}
-        timeLeft={state.timeLeft}
-        subjectiveInput={state.subjectiveInput}
-        onChoiceClick={actions.handleChoiceClick}
-        onSubjectiveChange={actions.setSubjectiveInput}
-        onSubjectiveSubmit={actions.handleSubjectiveSubmit}
-        onNext={actions.handleNextQuestion}
-      />
-    </div>
+      <div className='container'>
+
+        {/* [모드 1] 설정 화면 */}
+        {appMode === 'SETUP' && (
+          loadingCats ? (
+            <div className="loading">
+              <FaSpinner className="icon-spin" style={{ marginRight: '8px' }} />
+              카테고리 불러오는 중...
+            </div>
+          ) : catError ? (
+            <div className="error">
+              <FaExclamationCircle style={{ marginRight: '8px' }} />
+              {catError}
+            </div>
+          ) : (
+            <SetupScreen
+              categories={categories}
+              onStart={handleStartQuiz}
+            />
+          )
+        )}
+
+        {appMode === 'PLAYING' && (
+          <>
+            {state.loading ? (
+              <div className="loading">
+                <FaSpinner className="icon-spin" style={{ marginRight: '8px' }} />
+                문제 생성 중...
+              </div>
+            ) : state.error ? (
+              <div className="error">
+                <FaExclamationCircle style={{ marginRight: '8px' }} />
+                {state.error}
+              </div>
+            ) : state.questions.length === 0 ? (
+              <div className="error">
+                <FaExclamationCircle style={{ marginRight: '8px' }} />
+                등록된 문제가 없습니다.
+              </div>
+            ) : state.isFinished ? (
+              <ResultScreen
+                score={state.score}
+                total={state.questions.length}
+                isReviewMode={state.isReviewMode}
+                onRetryAll={actions.handleRetryAll}
+                onRetryWrong={actions.handleReviewWrongAnswers}
+                onClearWrong={actions.clearWrongAnswers}
+                onGoHome={() => setAppMode('SETUP')}
+              />
+            ) : (
+              <div className='quiz-container' style={{ width: '100%' }}>
+                
+                {state.isReviewMode && (
+                  <div style={{ textAlign: 'right', marginBottom: '10px' }}>
+                    <span className='badge warning'>
+                      <FaExclamationTriangle style={{ marginRight: '4px' }} /> 오답 복습 모드
+                    </span>
+                  </div>
+                )}
+
+                <ProgressBar
+                  current={state.currentIndex + 1}
+                  total={state.questions.length}
+                  timeLeft={state.timeLeft}
+                />
+
+                <QuizCard
+                  question={state.questions[state.currentIndex]}
+                  selectedAnswer={state.selectedAnswer}
+                  isCorrect={state.isCorrect}
+                  showExplanation={state.showExplanation}
+                  timeLeft={state.timeLeft}
+                  subjectiveInput={state.subjectiveInput}
+                  onChoiceClick={actions.handleChoiceClick}
+                  onSubjectiveChange={actions.setSubjectiveInput}
+                  onSubjectiveSubmit={actions.handleSubjectiveSubmit}
+                  onNext={actions.handleNextQuestion}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 }
 

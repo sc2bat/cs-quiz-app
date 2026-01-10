@@ -6,6 +6,7 @@ import { globalErrorHandler } from './utils/errorHandler';
 import systemRoutes from './routes/systemRoutes';
 import passport from 'passport';
 import authRoutes from './routes/authRoutes';
+import logger from './utils/logger';
 
 dotenv.config();
 
@@ -40,5 +41,5 @@ app.use('/api/auth', authRoutes);
 app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  logger.info(`Server is running on http://localhost:${PORT}`);
 });

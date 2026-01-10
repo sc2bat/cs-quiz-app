@@ -1,21 +1,25 @@
 import { apiClient } from "./axiosClient";
-import type { ApiResponse, Category } from "../types";
+import type { Category, Question } from "../types";
+import logger from "../utils/logger";
 
 export const quizApi = {
-    fetchQuizzes: async (categoryIds: number[]): Promise<ApiResponse> => {
-        console.log('quizApi');
-        const response = await apiClient.get<ApiResponse>(`/api/quiz/quizzes`, {
+    fetchQuizzes: async (categoryIds: number[], limit: number = 10): Promise<Question[]> => {
+        logger.info('quizApi fetchQuizzes');
+        const response = await apiClient.get(`/api/quiz/quizzes`, {
             params: {
-                categoryIds: categoryIds.join(',')
+                categoryIds: categoryIds.join(','),
+                quizLimit: limit
             }
         });
-        console.log(response.data);
-        return response.data;
+        logger.debug(response.data.status);
+        logger.debug(response.data.data.length);
+        return response.data.data;
     },
-    fetchCategories: async (): Promise<number[]> => {
-        console.log('fetchCategories');
-        const { data } = await apiClient.get(`/api/quiz/categories`);
+    fetchCategories: async (): Promise<Category[]> => {
+        logger.info('quizApi fetchCategories');
+        const response = await apiClient.get(`/api/quiz/categories`);
+        logger.debug(`result length: ${response.data.data.length}`);
 
-        return data.data.map((item: any) => item.category_id);
+        return response.data.data;
     },
 }
