@@ -1,9 +1,8 @@
-import { Request, Response } from 'express';
-import { quizService } from '../services/quizService';
-import logger from '../utils/logger';
-import { asyncHandler } from '../utils/asyncHandler';
-import { AuthRequest } from '../types/auth';
+import { Response } from 'express';
 import { quizRecordService } from '../services/quizRecordService';
+import { AuthRequest } from '../types/auth';
+import { asyncHandler } from '../utils/asyncHandler';
+import logger from '../utils/logger';
 
 export const quizRecordController = {
   createQuizRecord:
@@ -17,12 +16,15 @@ export const quizRecordController = {
         const userId = req.user.user_id;
         logger.debug(`userId >> ${userId}`);
 
-        const { categoryId, score, totalQuestions } = req.body;
-        if (!categoryId || score == undefined || !totalQuestions) {
+        const { categoryIds, score, totalQuestions, submissions } = req.body;
+        if (!categoryIds || !Array.isArray(categoryIds) || categoryIds.length === 0 ||
+          score == undefined || !totalQuestions ||
+          !submissions || !Array.isArray(submissions)) {
           logger.debug(`quiz controller create quiz record error`);
-          logger.debug(`categoryId >> ${categoryId}`);
+          logger.debug(`categoryIds >> ${categoryIds}`);
           logger.debug(`scroe >> ${score}`);
           logger.debug(`totalQuestions >> ${totalQuestions}`);
+          logger.debug(`submissions >> ${submissions}`);
           return res.status(400).json({ message: 'Missing required fields' });
         }
 
@@ -33,18 +35,22 @@ export const quizRecordController = {
 
         const recordId = await quizRecordService.createQuizRecord({
           user_id: userId,
-          category_id: categoryId,
+          category_ids: categoryIds,
           score: score,
           total_questions: totalQuestions,
+          submissions: submissions,
         });
 
-        
-        res.status(201).json({
-          message: 'Quiz record saved successfully',
-          quizRecordId: recordId,
-        });
         logger.debug(`recordId >> ${recordId}`);
-        logger.debug(`Quiz record saved successfully`);  
+        logger.debug(`Quiz record saved successfully`);
+
+        return res.status(201).json({
+          status: 'success',
+          message: 'Quiz record saved successfully',
+          data: {
+            quizRecordId: recordId
+          }
+        });
       }
     ),
   getAllQuizRecord:
@@ -59,14 +65,15 @@ export const quizRecordController = {
         logger.debug(`userId >> ${userId}`);
 
         const quizRecords = await quizRecordService.getAllQuizRecord(userId);
-        
-        res.json({
+
+        logger.debug(`records >> ${quizRecords.length}`);
+        logger.debug(`Get All Quiz record successfully`);
+
+        return res.status(200).json({
           status: 'success',
           count: quizRecords.length,
           data: quizRecords,
         });
-        logger.debug(`records >> ${quizRecords.length}`);
-        logger.debug(`Get All Quiz record successfully`);  
       }
     ),
   getQuizRecords:
@@ -81,20 +88,21 @@ export const quizRecordController = {
         const { limit, lastTakenAt, lastQuizRecordId } = req.query;
         const reqlimit = limit ? Number(limit) : 10;
         const cursor = (lastTakenAt && lastQuizRecordId) ? {
-            lastTakenAt: new Date(lastTakenAt as string),
-            lastQuizRecordId: Number(lastQuizRecordId)
+          lastTakenAt: new Date(lastTakenAt as string),
+          lastQuizRecordId: Number(lastQuizRecordId)
         } : undefined;
         logger.debug(`userId >> ${userId}`);
 
         const quizRecords = await quizRecordService.getQuizRecords(userId, reqlimit, cursor);
-        
-        res.json({
+
+        logger.debug(`records >> ${quizRecords.length}`);
+        logger.debug(`Get All Quiz record successfully`);
+
+        return res.status(200).json({
           status: 'success',
           count: quizRecords.length,
           data: quizRecords,
         });
-        logger.debug(`records >> ${quizRecords.length}`);
-        logger.debug(`Get All Quiz record successfully`);  
       }
     ),
   deleteQuizRecordsBulk:
@@ -110,19 +118,23 @@ export const quizRecordController = {
 
         const { quizRecordIds } = req.body;
 
-        if( !quizRecordIds || !Array.isArray(quizRecordIds) || quizRecordIds.length === 0 ){
+        if (!quizRecordIds || !Array.isArray(quizRecordIds) || quizRecordIds.length === 0) {
           logger.debug(`Invalid record IDs provided`);
-          return res.status(400).json({ message: "Invalid record IDs provided"});
+          return res.status(400).json({ message: "Invalid record IDs provided" });
         }
 
         const deletedCount = await quizRecordService.deleteQuizRecordsBulk(userId, quizRecordIds);
-        
-        res.status(200).json({
-          message: "Quiz records deleted successfully",
-          deletedCount,
-        });
+
         logger.debug(`Deleted Count >> ${deletedCount}`);
-        logger.debug(`Delete Quiz record successfully`);  
+        logger.debug(`Delete Quiz record successfully`);
+
+        return res.status(200).json({
+          status: 'success',
+          message: "Quiz records deleted successfully",
+          data: {
+            deletedCount: deletedCount
+          }
+        });
       }
     ),
 }

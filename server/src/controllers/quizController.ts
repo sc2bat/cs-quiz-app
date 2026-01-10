@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { quizService } from '../services/quizService';
-import logger from '../utils/logger';
 import { asyncHandler } from '../utils/asyncHandler';
+import logger from '../utils/logger';
 
 export const quizController = {
   getQuizzes:
