@@ -5,6 +5,7 @@ export const TABLES ={
     QUESTIONS: 'questions',
     QUIZ_RECORDS: 'quiz_records',
     QUIZ_SUBMISSIONS: 'quiz_submissions',
+    WRONG_ANSWERS: 'wrong_answers',
     USERS: 'users',
 } as const;
 

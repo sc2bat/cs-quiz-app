@@ -72,15 +72,21 @@ export const quizRecordController = {
           return res.status(401).json({ message: 'User authentication failed' });
         }
         const userId = req.user.user_id;
-        const { limit, lastTakenAt, lastQuizRecordId } = req.query;
+        const { limit, lastTakenAt, lastQuizRecordId, trackId } = req.query;
         const reqlimit = limit ? Number(limit) : 10;
         const cursor = (lastTakenAt && lastQuizRecordId) ? {
             lastTakenAt: new Date(lastTakenAt as string),
             lastQuizRecordId: Number(lastQuizRecordId)
         } : undefined;
+        const parsedTrackId = trackId ? Number(trackId) : undefined;
         logger.debug(`userId >> ${userId}`);
 
-        const quizRecords = await quizRecordService.getQuizRecords(userId, reqlimit, cursor);
+        const quizRecords = await quizRecordService.getQuizRecords(
+          userId,
+          reqlimit,
+          cursor,
+          parsedTrackId && !Number.isNaN(parsedTrackId) ? parsedTrackId : undefined
+        );
         
         res.json({
           status: 'success',

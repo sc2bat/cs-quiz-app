@@ -240,4 +240,52 @@ export const QUIZ_RECORD_QUERIES = {
                 AND user_id = ?
                 AND quiz_record_id = ?
     `,
+    GET_QUIZ_RECORDS_BY_TRACK: `
+        SELECT
+            quiz_record_id,
+            user_id,
+            track_id,
+            score,
+            total_questions,
+            taken_at
+        FROM ${TABLES.QUIZ_RECORDS}
+            WHERE user_id = ?
+                AND track_id = ?
+            ORDER BY taken_at DESC, quiz_record_id DESC
+            LIMIT ?
+    `,
+} as const;
+
+export const WRONG_ANSWER_QUERIES = {
+    UPSERT_WRONG_ANSWER: `
+        INSERT INTO ${TABLES.WRONG_ANSWERS} (user_id, track_id, question_id, wrong_count, last_wrong_at)
+        VALUES (?, ?, ?, 1, CURRENT_TIMESTAMP)
+        ON DUPLICATE KEY UPDATE
+            wrong_count = wrong_count + 1,
+            last_wrong_at = CURRENT_TIMESTAMP
+    `,
+    GET_WRONG_ANSWERS_BY_TRACK: `
+        SELECT user_id, track_id, question_id, wrong_count, last_wrong_at
+        FROM ${TABLES.WRONG_ANSWERS}
+            WHERE user_id = ?
+                AND track_id = ?
+        ORDER BY last_wrong_at DESC
+    `,
+    GET_ALL_WRONG_ANSWERS: `
+        SELECT user_id, track_id, question_id, wrong_count, last_wrong_at
+        FROM ${TABLES.WRONG_ANSWERS}
+            WHERE user_id = ?
+        ORDER BY last_wrong_at DESC
+    `,
+    DELETE_WRONG_ANSWER: `
+        DELETE FROM ${TABLES.WRONG_ANSWERS}
+            WHERE user_id = ?
+                AND track_id = ?
+                AND question_id = ?
+    `,
+    CLEAR_WRONG_ANSWERS_BY_TRACK: `
+        DELETE FROM ${TABLES.WRONG_ANSWERS}
+            WHERE user_id = ?
+                AND track_id = ?
+    `,
 } as const;

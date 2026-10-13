@@ -13,10 +13,8 @@ export function authenticateToken(
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    logger.debug(`token >> ${token}`);
-
     if (!token) {
-        logger.debug(`token >> 토큰이 없는 경우`);
+        logger.debug(`authenticateToken: missing access token`);
         return res.status(401).json({
             message: 'Access token required'
         });

@@ -10,12 +10,19 @@ export const quizRecordService = {
         const rows = await quizRecordModel.getAllQuizRecord(userId);
         return rows;
     },
-    async getQuizRecords(userId: number, limit: number, cursor?: {lastTakenAt: Date, lastQuizRecordId: number }) {
-        if (!cursor || !cursor.lastTakenAt || !cursor.lastQuizRecordId ){
+    async getQuizRecords(
+        userId: number,
+        limit: number,
+        cursor?: { lastTakenAt: Date; lastQuizRecordId: number },
+        trackId?: number
+    ) {
+        if (trackId && (!cursor || !cursor.lastTakenAt || !cursor.lastQuizRecordId)) {
+            return await quizRecordModel.getRecentQuizRecordByTrack(userId, trackId, limit);
+        }
+        if (!cursor || !cursor.lastTakenAt || !cursor.lastQuizRecordId) {
             return await quizRecordModel.getRecentQuizRecord(userId, limit);
         }
-        const rows = await quizRecordModel.getQuizRecordByCursor(userId, cursor, limit);
-        return rows;
+        return await quizRecordModel.getQuizRecordByCursor(userId, cursor, limit);
     },
     async deleteQuizRecordsBulk(userId: number, quizRecordIds: number[]) {
         return await quizRecordModel.deleteQuizRecordsBulk(userId, quizRecordIds);

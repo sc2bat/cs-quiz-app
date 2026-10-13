@@ -1,23 +1,21 @@
 import { Router } from 'express';
 import { quizController } from '../controllers/quizController';
 import { quizRecordController } from '../controllers/quizRecordController';
+import { wrongAnswerController } from '../controllers/wrongAnswerController';
 import { authenticateToken } from '../middlewares/authMiddleware';
 
 const router = Router();
 
-// GET /api/quiz 주소로 요청시
-// question
 router.get('/categories', quizController.getCategories);
 router.get('/quizzes', quizController.getQuizzes);
 router.get('/questions', quizController.getQuestionsByIds);
 
-// quiz record
-// router.get('/records', authenticateToken, quizRecordController.getAllQuizRecord);
 router.get('/records', authenticateToken, quizRecordController.getQuizRecords);
-
-// POST /api/quiz 로 요청시
-// quiz record
 router.post('/records', authenticateToken, quizRecordController.createQuizRecord);
 router.delete('/records', authenticateToken, quizRecordController.deleteQuizRecordsBulk);
+
+router.get('/wrong-answers', authenticateToken, wrongAnswerController.list);
+router.post('/wrong-answers/merge', authenticateToken, wrongAnswerController.merge);
+router.delete('/wrong-answers', authenticateToken, wrongAnswerController.clearTrack);
 
 export default router;

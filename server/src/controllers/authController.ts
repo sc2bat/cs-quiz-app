@@ -1,27 +1,47 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { asyncHandler } from '../utils/asyncHandler';
-import { generateToken } from '../utils/jwt'; 
+import { generateToken } from '../utils/jwt';
+import { issueLoginCode, consumeLoginCode } from '../utils/loginCodeStore';
+import { resolveClientAppUrl } from '../utils/clientUrl';
+import logger from '../utils/logger';
 
 export const authController = {
-    socialLoginCallback: 
-        asyncHandler(
-            async function(req: Request, res: Response) {
-            const user = req.user as any;
+    socialLoginCallback: asyncHandler(async function (req: Request, res: Response) {
+        const user = req.user as Express.User | undefined;
 
-            if (!user) {
-                return res.status(401).json({ message: 'Login failed' });
-            }
+        if (!user) {
+            return res.status(401).json({ message: 'Login failed' });
+        }
 
-            // TODO: JWT 토큰(Access/Refresh) 발급
-            const token = generateToken(user);
-            console.log('[!] 로그인 성공 유저:', user.nickname);
+        const token = generateToken(user as any);
+        const code = issueLoginCode(token);
+        const clientUrl = resolveClientAppUrl();
 
-            const clientUrl = process.env.CORS_ORIGIN_LOCAL;
-            
-            const redirectUrl = `${clientUrl}/login/success?` + `token=${token}` + `&` + `snsId=${user.sns_id}`
-            res.redirect(redirectUrl);
-        }),
-    logout(req: Request, res: Response, next: NextFunction) {
+        logger.info(`Login success user=${user.nickname} redirect=${clientUrl}`);
+        res.redirect(`${clientUrl}/login/success?code=${encodeURIComponent(code)}`);
+    }),
+
+    exchangeCode: asyncHandler(async function (req: Request, res: Response) {
+        const code = typeof req.body?.code === 'string' ? req.body.code : '';
+        if (!code) {
+            return res.status(400).json({ message: 'code is required' });
+        }
+
+        const token = consumeLoginCode(code);
+        if (!token) {
+            return res.status(400).json({ message: 'Invalid or expired code' });
+        }
+
+        res.json({ status: 'success', token });
+    }),
+
+    logout: asyncHandler(async function (_req: Request, res: Response) {
+        // Client discards JWT; endpoint exists for symmetry / future cookie clear.
         res.status(200).json({ message: 'Logged out successfully' });
-    }
+    }),
+
+    loginFailed: asyncHandler(async function (_req: Request, res: Response) {
+        const clientUrl = resolveClientAppUrl();
+        res.redirect(`${clientUrl}/login/failed`);
+    }),
 };

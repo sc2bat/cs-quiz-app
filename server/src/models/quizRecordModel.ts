@@ -31,6 +31,17 @@ export const quizRecordModel = {
         );
         return rows;
     },
+    async getRecentQuizRecordByTrack(
+        userId: number,
+        trackId: number,
+        limit: number
+    ): Promise<QuizRecordRow[]> {
+        const [rows] = await db.query<QuizRecordRow[]>(
+            QUIZ_RECORD_QUERIES.GET_QUIZ_RECORDS_BY_TRACK,
+            [userId, trackId, limit]
+        );
+        return rows;
+    },
     async getQuizRecordByCursor(
         userId: number,
         cursor: {

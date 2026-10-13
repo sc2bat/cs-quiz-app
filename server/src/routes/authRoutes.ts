@@ -1,34 +1,36 @@
 import { Router } from 'express';
-import passport from '../config/passport'; // 설정한 passport 가져오기
+import passport from '../config/passport';
 import { authController } from '../controllers/authController';
+import { authenticateToken } from '../middlewares/authMiddleware';
 
 const router = Router();
-// /auth 주소로 요청시
 
-// Google 로그인 라우터
-router.get('/google', 
+router.get('/google',
     passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
-router.get('/google/callback', 
-    passport.authenticate('google', { 
-        failureRedirect: '/auth/login/failed', // 실패 시 이동할 주소
-        session: false // JWT 쓸거라 세션 끔
+router.get('/google/callback',
+    passport.authenticate('google', {
+        failureRedirect: '/api/auth/login/failed',
+        session: false
     }),
     authController.socialLoginCallback
 );
 
-// GitHub 로그인 라우터
-router.get('/github', 
+router.get('/github',
     passport.authenticate('github', { scope: ['user:email'] })
 );
 
-router.get('/github/callback', 
-    passport.authenticate('github', { 
-        failureRedirect: '/auth/login/failed', 
-        session: false 
+router.get('/github/callback',
+    passport.authenticate('github', {
+        failureRedirect: '/api/auth/login/failed',
+        session: false
     }),
     authController.socialLoginCallback
 );
+
+router.get('/login/failed', authController.loginFailed);
+router.post('/exchange', authController.exchangeCode);
+router.post('/logout', authenticateToken, authController.logout);
 
 export default router;
