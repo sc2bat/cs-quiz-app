@@ -8,6 +8,7 @@ export interface QuestionRow extends RowDataPacket {
   question_text: string;
   explanation: string;
   subjective_answer: string;
+  track_id?: number;
 }
 
 export interface ChoiceRow extends RowDataPacket {

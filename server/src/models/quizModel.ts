@@ -54,4 +54,12 @@ export const quizModel = {
         );
         return rows;
     },
+    async getQuestionsByIds(questionIds: number[]): Promise<QuestionRow[]> {
+        if (questionIds.length === 0) return [];
+        const [rows] = await db.query<QuestionRow[]>(
+            QUIZ_QUERIES.GET_QUESTIONS_BY_IDS,
+            [questionIds]
+        );
+        return rows;
+    },
 };

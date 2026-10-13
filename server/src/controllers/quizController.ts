@@ -71,4 +71,39 @@ export const quizController = {
         });
       }
     ),
+  getQuestionsByIds:
+    asyncHandler(
+      async function (req: Request, res: Response) {
+        const { ids, track } = req.query;
+        if (typeof ids !== 'string' || ids.trim().length === 0) {
+          return res.status(400).json({ message: 'Question IDs are required.' });
+        }
+
+        const parsedIds = ids
+          .split(',')
+          .map((id) => Number(id))
+          .filter((id) => !Number.isNaN(id));
+
+        if (parsedIds.length === 0) {
+          return res.status(400).json({ message: 'Question IDs are required.' });
+        }
+
+        const trackSlug = typeof track === 'string' && track.length > 0 ? track : undefined;
+        const quizzes = await quizService.getQuizzesByIds(parsedIds, trackSlug);
+
+        if (quizzes === null) {
+          return res.status(404).json({ message: 'Track not found.' });
+        }
+
+        if (quizzes.length === 0) {
+          return res.status(404).json({ message: 'No quizzes found.' });
+        }
+
+        res.json({
+          status: 'success',
+          count: quizzes.length,
+          data: quizzes,
+        });
+      }
+    ),
 };

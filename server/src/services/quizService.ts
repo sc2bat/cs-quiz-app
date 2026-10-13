@@ -78,4 +78,35 @@ export const quizService = {
         const choices = await quizModel.getChoicesByQuestionsIds(questionIds);
         return formatQuizzes(questions, choices);
     },
+    async getQuizzesByIds(questionIds: number[], trackSlug?: string) {
+        const uniqueIds = [...new Set(questionIds.filter((id) => !Number.isNaN(id)))];
+        if (uniqueIds.length === 0) {
+            return [];
+        }
+
+        let trackId: number | undefined;
+        if (trackSlug) {
+            const track = await trackModel.getTrackBySlug(trackSlug);
+            if (!track) return null;
+            trackId = track.track_id;
+        }
+
+        const questions = await quizModel.getQuestionsByIds(uniqueIds);
+        const filtered = trackId == null
+            ? questions
+            : questions.filter((q) => q.track_id === trackId);
+
+        const order = new Map(uniqueIds.map((id, index) => [id, index]));
+        filtered.sort(
+            (a, b) => (order.get(a.question_id) ?? 0) - (order.get(b.question_id) ?? 0)
+        );
+
+        if (filtered.length === 0) {
+            return [];
+        }
+
+        const ids = filtered.map((q) => q.question_id);
+        const choices = await quizModel.getChoicesByQuestionsIds(ids);
+        return formatQuizzes(filtered, choices);
+    },
 };

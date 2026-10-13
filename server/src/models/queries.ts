@@ -89,6 +89,22 @@ export const QUIZ_QUERIES = {
             WHERE question_id IN (?)
                 ORDER BY choice_id
     `,
+
+    GET_QUESTIONS_BY_IDS: `
+        SELECT
+            q.question_id,
+            q.question_type,
+            q.question_text,
+            q.explanation,
+            q.created_at,
+            q.subjective_answer,
+            q.category_id,
+            c.name AS category_name,
+            c.track_id
+        FROM ${TABLES.QUESTIONS} q
+            JOIN ${TABLES.CATEGORIES} c ON q.category_id = c.category_id
+                WHERE q.question_id IN (?)
+    `,
 } as const;
 
 export const USER_QUERIES = {
