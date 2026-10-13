@@ -157,12 +157,15 @@
 
 ## CI/CD (현행·목표)
 
-**현행:** push `main` → SSH → `npm install/build` → pm2 restart, lint/test 없음.
+**현행:**
 
-**목표 (Phase 1 이후 권장):**
+- push `main` → SSH deploy (`deploy.yml`: `npm install/build` → pm2 restart)
+- push/PR (`main`, `dev`) → CI (`ci.yml`: client eslint + `tsc -b`, server `tsc`)
 
-- PR/push 시 `client` eslint + `tsc -b`, `server` `tsc` job 추가
+**목표 (추가 권장):**
+
 - (Phase 3+) 핵심 훅/API 통합 테스트 최소 1 suite
+- feature → `dev` PR → `main` 병합 흐름을 다시 쓰려면 `dev`를 `main`에 맞추거나 리베이스 필요 (현재 분기 분기됨)
 
 ---
 

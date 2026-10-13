@@ -2,17 +2,18 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminApi } from '../api/adminApi';
 import { useAuth, getTokenRole } from '../auth/AuthContext';
+import type { Category, Question, Track } from '../types';
 
 export default function AdminPage() {
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const isAdmin = getTokenRole() === 'ADMIN';
 
-  const [tracks, setTracks] = useState<any[]>([]);
+  const [tracks, setTracks] = useState<Track[]>([]);
   const [trackId, setTrackId] = useState<number | ''>('');
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [categoryId, setCategoryId] = useState<number | ''>('');
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -30,44 +31,68 @@ export default function AdminPage() {
     choicesText: '보기1|false\n보기2|true\n보기3|false\n보기4|false',
   });
 
-  const reloadTracks = async () => {
-    const data = await adminApi.listTracks();
-    setTracks(data);
-    if (!trackId && data[0]) setTrackId(data[0].trackId);
-  };
-
   useEffect(() => {
     if (!isLoggedIn || !isAdmin) return;
-    reloadTracks().catch((e) => setError(e.message));
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await adminApi.listTracks();
+        if (cancelled) return;
+        setTracks(data);
+        setTrackId((prev) => prev || data[0]?.trackId || '');
+      } catch (e: unknown) {
+        if (!cancelled) setError(adminApi.errMessage(e));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [isLoggedIn, isAdmin]);
 
   useEffect(() => {
     if (!trackId) return;
-    adminApi
-      .listCategories(Number(trackId))
-      .then((data) => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await adminApi.listCategories(Number(trackId));
+        if (cancelled) return;
         setCategories(data);
         setCategoryId(data[0]?.categoryId ?? '');
-      })
-      .catch((e) => setError(e.message));
+      } catch (e: unknown) {
+        if (!cancelled) setError(adminApi.errMessage(e));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [trackId]);
 
   useEffect(() => {
-    if (!categoryId) {
-      setQuestions([]);
-      return;
-    }
-    adminApi
-      .listQuestions(Number(categoryId))
-      .then(setQuestions)
-      .catch((e) => setError(e.message));
+    if (!categoryId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await adminApi.listQuestions(Number(categoryId));
+        if (cancelled) return;
+        setQuestions(data);
+      } catch (e: unknown) {
+        if (!cancelled) setError(adminApi.errMessage(e));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [categoryId]);
+
+  const visibleQuestions = categoryId ? questions : [];
 
   if (!isLoggedIn) {
     return (
       <div className="error-panel">
         <div>로그인이 필요합니다.</div>
-        <button type="button" className="next-btn" onClick={() => navigate('/')}>홈</button>
+        <button type="button" className="next-btn" onClick={() => navigate('/')}>
+          홈
+        </button>
       </div>
     );
   }
@@ -76,14 +101,18 @@ export default function AdminPage() {
     return (
       <div className="error-panel">
         <div className="error">ADMIN 권한이 필요합니다. (docs/ADMIN.md 참고)</div>
-        <button type="button" className="next-btn" onClick={() => navigate('/')}>홈</button>
+        <button type="button" className="next-btn" onClick={() => navigate('/')}>
+          홈
+        </button>
       </div>
     );
   }
 
   return (
     <div className="admin-page">
-      <button type="button" className="link-btn" onClick={() => navigate('/')}>← 홈</button>
+      <button type="button" className="link-btn" onClick={() => navigate('/')}>
+        ← 홈
+      </button>
       <h1>Admin</h1>
       {message && <p className="admin-msg">{message}</p>}
       {error && <p className="error">{error}</p>}
@@ -115,9 +144,10 @@ export default function AdminPage() {
                 await adminApi.createTrack(trackForm);
                 setMessage('트랙 생성 완료');
                 setTrackForm({ slug: '', name: '', description: '' });
-                await reloadTracks();
-              } catch (e: any) {
-                setError(e.message);
+                const data = await adminApi.listTracks();
+                setTracks(data);
+              } catch (e: unknown) {
+                setError(adminApi.errMessage(e));
               }
             }}
           >
@@ -135,9 +165,10 @@ export default function AdminPage() {
                   if (!confirm('삭제할까요? (하위 카테고리/문제 FK 주의)')) return;
                   try {
                     await adminApi.deleteTrack(t.trackId);
-                    await reloadTracks();
-                  } catch (e: any) {
-                    setError(e.message);
+                    const data = await adminApi.listTracks();
+                    setTracks(data);
+                  } catch (e: unknown) {
+                    setError(adminApi.errMessage(e));
                   }
                 }}
               >
@@ -172,13 +203,13 @@ export default function AdminPage() {
             onClick={async () => {
               if (!trackId || !categoryName) return;
               try {
-                await adminApi.createCategory({ trackId, name: categoryName });
+                await adminApi.createCategory({ trackId: Number(trackId), name: categoryName });
                 setCategoryName('');
                 const data = await adminApi.listCategories(Number(trackId));
                 setCategories(data);
                 setMessage('카테고리 생성 완료');
-              } catch (e: any) {
-                setError(e.message);
+              } catch (e: unknown) {
+                setError(adminApi.errMessage(e));
               }
             }}
           >
@@ -189,7 +220,11 @@ export default function AdminPage() {
           {categories.map((c) => (
             <li key={c.categoryId}>
               #{c.categoryId} {c.name}{' '}
-              <button type="button" className="ghost-btn" onClick={() => setCategoryId(c.categoryId)}>
+              <button
+                type="button"
+                className="ghost-btn"
+                onClick={() => setCategoryId(c.categoryId)}
+              >
                 선택
               </button>
               <button
@@ -201,8 +236,8 @@ export default function AdminPage() {
                     await adminApi.deleteCategory(c.categoryId);
                     const data = await adminApi.listCategories(Number(trackId));
                     setCategories(data);
-                  } catch (e: any) {
-                    setError(e.message);
+                  } catch (e: unknown) {
+                    setError(adminApi.errMessage(e));
                   }
                 }}
               >
@@ -281,7 +316,7 @@ export default function AdminPage() {
                         })
                     : [];
                 await adminApi.createQuestion({
-                  categoryId,
+                  categoryId: Number(categoryId),
                   questionType: questionForm.questionType,
                   questionText: questionForm.questionText,
                   explanation: questionForm.explanation,
@@ -293,8 +328,8 @@ export default function AdminPage() {
                 });
                 setMessage('문제 생성 완료');
                 setQuestions(await adminApi.listQuestions(Number(categoryId)));
-              } catch (e: any) {
-                setError(e.message);
+              } catch (e: unknown) {
+                setError(adminApi.errMessage(e));
               }
             }}
           >
@@ -302,7 +337,7 @@ export default function AdminPage() {
           </button>
         </div>
         <ul>
-          {questions.map((q) => (
+          {visibleQuestions.map((q) => (
             <li key={q.questionId}>
               #{q.questionId} [{q.type}] {q.question.slice(0, 60)}
               ...
@@ -314,8 +349,8 @@ export default function AdminPage() {
                   try {
                     await adminApi.deleteQuestion(q.questionId);
                     setQuestions(await adminApi.listQuestions(Number(categoryId)));
-                  } catch (e: any) {
-                    setError(e.message);
+                  } catch (e: unknown) {
+                    setError(adminApi.errMessage(e));
                   }
                 }}
               >

@@ -21,7 +21,7 @@ CS 면접, 정보처리기사, SQLP, AWS 등 **여러 학습 트랙**을 하나�
 
 - TypeScript 풀스택(React + Express + MySQL) 경험
 - 트랙(Track) 단위로 콘텐츠를 나누는 확장 가능한 퀴즈 도메인
-- Practice(타이머·오답·해설) 중심 UX, 이후 Exam·Admin·기록 연동
+- Practice(타이머·오답·해설) + Exam·Admin·기록 연동
 
 ---
 
@@ -45,8 +45,8 @@ CS 면접, 정보처리기사, SQLP, AWS 등 **여러 학습 트랙**을 하나�
 
 <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=MySQL&logoColor=white"/>
 
-- `categories` → `questions` → `choices` (+ `users`, `quiz_records`)
-- 목표 스키마: `tracks` 및 트랙별 카테고리 — [ARCHITECTURE.md](docs/ARCHITECTURE.md) 참고
+- `tracks` → `categories` → `questions` → `choices` (+ `users`, `quiz_records`, `wrong_answers`)
+- 스키마·도메인: [ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ---
 
@@ -54,23 +54,21 @@ CS 면접, 정보처리기사, SQLP, AWS 등 **여러 학습 트랙**을 하나�
 
 #### 구현됨 (현재)
 
-- 객관식 / 주관식 퀴즈, 문제당 30초 타이머
-- 랜덤 출제 (`ORDER BY RAND()`)
-- 즉시 정오답·해설 UI
-- 오답 ID localStorage 저장 및 결과 화면에서 복습(현재 세션 문제 기준 — [ROADMAP Phase 3](docs/ROADMAP.md))
-- 백엔드: OAuth, JWT, quiz records API
+- **멀티 트랙:** CS Interview / 정보처리기사 / SQLP / AWS 등 트랙 선택 후 학습
+- **Practice:** 카테고리 선택 출제, 문제당 타이머, 즉시 정오답·해설, 오답 localStorage + ID 재조회 복습
+- **Exam:** 진행 중 정답 비노출, `POST /api/quiz/exam/submit` 서버 채점, 종료 후 해설
+- **계정·이력:** Google/GitHub OAuth, JWT(one-time code 교환), `/history` 기록·삭제, `wrong_answers` 동기화
+- **Admin:** `/admin` + `/api/admin/*` 트랙·카테고리·문제 CRUD (`docs/ADMIN.md`)
+- 랜덤 출제 (`ORDER BY RAND()`), React Router (`/` → `/tracks/:slug` → quiz|exam)
 
-#### 로드맵 (예정)
+#### 로드맵 (다음)
 
-| 기능 | Phase |
-|------|-------|
-| 트랙 선택 (CS / 정보처리기사 등) | 2 |
-| 카테고리 선택 UI, 오답 ID 재조회 | 3 |
-| 로그인·풀이 기록 UI | 4 |
-| Admin 문제 CRUD | 5 |
-| Exam 모드(서버 채점) | 6 |
-
-자세한 완료 조건은 [ROADMAP.md](docs/ROADMAP.md)를 본다.
+| 항목 | 상태 |
+|------|------|
+| Phase 0–6 (설계 → Exam) | 완료 — [ROADMAP.md](docs/ROADMAP.md) |
+| CI (PR/push lint·tsc) | `.github/workflows/ci.yml` |
+| 콘텐츠 보강 (SQLP/AWS 문제) | Admin/시드로 확장 |
+| 통합 테스트 suite | 예정 |
 
 ---
 

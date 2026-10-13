@@ -19,5 +19,12 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Auth helpers (getTokenRole 등)를 Context 파일에서 함께 export
+      'react-refresh/only-export-components': [
+        'error',
+        { allowConstantExport: true, allowExportNames: ['useAuth', 'getStoredNickname', 'getTokenRole'] },
+      ],
+    },
   },
 ])
