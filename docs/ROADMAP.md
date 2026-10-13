@@ -67,13 +67,13 @@
 
 **목표:** 트랙 단위 **Practice** 플로우를 끝까지 연결한다.
 
-| 작업 | 설명 |
-|------|------|
-| CategorySelect UI | 미사용 `CategoryFilter` 흡수, 프로젝트 CSS 기준 스타일 |
-| 출제 | 선택한 `categoryIds`만 전달 (전체 자동 선택 제거) |
-| 오답 API | `GET /api/quiz/questions?ids=` |
-| Review | localStorage ID → API 재조회 후 복습 (트랙별 storage 키) |
-| React Router | TrackSelect → CategorySelect → Quiz → Result 경로 |
+| 작업 | 상태 | 설명 |
+|------|------|------|
+| CategorySelect UI | 완료 | CSS 기반 체크리스트, CategoryFilter 제거 |
+| 출제 | 완료 | `?cats=` 로 선택 카테고리만 출제 |
+| 오답 API | 완료 | `GET /api/quiz/questions?ids=` |
+| Review | 완료 | localStorage ID → API 재조회 |
+| React Router | 완료 | `/` → `/tracks/:slug` → `/tracks/:slug/quiz` |
 
 **Definition of Done**
 

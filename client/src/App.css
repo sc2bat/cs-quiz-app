@@ -109,13 +109,35 @@
   margin-bottom: 12px;
 }
 
-.link-btn {
-  background: none;
-  border: none;
-  color: #646cff;
+/* index.css 전역 button 규칙을 이기도록 구체성 높임 */
+button.link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  background-color: #fff;
+  border: 1px solid #c5c5c5;
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: #333;
   cursor: pointer;
   font-size: 0.9rem;
-  text-decoration: underline;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: none;
+}
+
+button.link-btn:hover {
+  color: #646cff;
+  border-color: #646cff;
+  background: #f7f8ff;
+  background-color: #f7f8ff;
+}
+
+button.link-btn:focus,
+button.link-btn:focus-visible {
+  outline: 2px solid #646cff;
+  outline-offset: 2px;
 }
 
 .error-panel {
@@ -125,6 +147,111 @@
   flex-direction: column;
   gap: 12px;
   align-items: center;
+}
+
+.category-select {
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.category-select > button.link-btn {
+  margin-bottom: 4px;
+}
+
+.category-select__title {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 1.6rem;
+}
+
+.category-select__subtitle {
+  margin: 0 0 1rem;
+  color: #555;
+}
+
+.category-select__actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.category-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.category-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.category-check.is-checked {
+  border-color: #646cff;
+  background: #f7f8ff;
+}
+
+.category-select__start {
+  width: 100%;
+}
+
+.category-select__start:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+button.ghost-btn {
+  background: #fff;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+button.ghost-btn:hover {
+  border-color: #646cff;
+  background: #f7f8ff;
+}
+
+.danger-btn {
+  background: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.result-actions__wrong {
+  background-color: #ff9800;
+}
+
+.result-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 16px;
 }
 
 .badge {

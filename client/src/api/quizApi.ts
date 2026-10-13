@@ -15,6 +15,18 @@ export const quizApi = {
         });
         return response.data;
     },
+    fetchQuestionsByIds: async (
+        questionIds: number[],
+        trackSlug?: string
+    ): Promise<ApiResponse> => {
+        const response = await apiClient.get<ApiResponse>(`/api/quiz/questions`, {
+            params: {
+                ids: questionIds.join(','),
+                ...(trackSlug ? { track: trackSlug } : {}),
+            }
+        });
+        return response.data;
+    },
     fetchCategories: async (trackSlug?: string): Promise<Category[]> => {
         const { data } = await apiClient.get<{ status: string; data: Category[] }>(
             `/api/quiz/categories`,

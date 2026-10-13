@@ -3,7 +3,13 @@ import type { Question, Track } from '../types';
 import { STORAGE_KEYS } from '../constants';
 import { quizApi } from '../api/quizApi';
 
-export const useQuiz = (track: Track | null) => {
+interface UseQuizOptions {
+  track: Track | null;
+  categoryIds: number[];
+  enabled: boolean;
+}
+
+export const useQuiz = ({ track, categoryIds, enabled }: UseQuizOptions) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -24,55 +30,60 @@ export const useQuiz = (track: Track | null) => {
     ? `${STORAGE_KEYS.WRONG_ANSWER}:${track.slug}`
     : STORAGE_KEYS.WRONG_ANSWER;
 
+  const resetSessionUi = useCallback((seconds: number) => {
+    setCurrentIndex(0);
+    setScore(0);
+    setIsFinished(false);
+    setSelectedAnswer(null);
+    setShowExplanation(false);
+    setIsCorrect(null);
+    setSubjectiveInput('');
+    setTimeLeft(seconds);
+  }, []);
+
+  const categoryKey = categoryIds.join(',');
+
   useEffect(() => {
-    if (!track) {
-      setQuestions([]);
-      setLoading(false);
-      setError(null);
+    if (!enabled || !track || categoryIds.length === 0) {
       return;
     }
+
+    let cancelled = false;
+    const ids = categoryKey.split(',').map(Number);
 
     const fetchQuizzes = async () => {
       try {
         setLoading(true);
         setError(null);
-        const categories = await quizApi.fetchCategories(track.slug);
-        const categoryIds = categories.map((c) => c.categoryId);
-        if (categoryIds.length === 0) {
-          setQuestions([]);
-          setError('이 트랙에 등록된 카테고리가 없습니다.');
-          return;
-        }
-        const data = await quizApi.fetchQuizzes(categoryIds, {
+        const data = await quizApi.fetchQuizzes(ids, {
           trackSlug: track.slug,
           quizLimit: track.defaults?.questionLimit,
         });
+        if (cancelled) return;
         setQuestions(data.data);
-        setCurrentIndex(0);
-        setScore(0);
-        setIsFinished(false);
-        setSelectedAnswer(null);
-        setShowExplanation(false);
-        setIsCorrect(null);
-        setSubjectiveInput('');
         setIsReviewMode(false);
-        setTimeLeft(track.defaults?.secondsPerQuestion ?? 30);
+        resetSessionUi(track.defaults?.secondsPerQuestion ?? 30);
       } catch (err: unknown) {
+        if (cancelled) return;
         console.error(err);
         const message = err instanceof Error ? err.message : '문제 로딩 실패';
         setError(message);
+        setQuestions([]);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
+
     fetchQuizzes();
-  }, [track]);
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled, track, categoryKey, categoryIds.length, resetSessionUi]);
 
   const saveWrongAnswer = useCallback((qId: number) => {
-    const stored = JSON.parse(localStorage.getItem(wrongStorageKey) || '[]');
+    const stored = JSON.parse(localStorage.getItem(wrongStorageKey) || '[]') as number[];
     if (!stored.includes(qId)) {
-      const newWrongAnswers = [...stored, qId];
-      localStorage.setItem(wrongStorageKey, JSON.stringify(newWrongAnswers));
+      localStorage.setItem(wrongStorageKey, JSON.stringify([...stored, qId]));
     }
   }, [wrongStorageKey]);
 
@@ -81,12 +92,12 @@ export const useQuiz = (track: Track | null) => {
     setShowExplanation(true);
     setIsCorrect(false);
     if (!isReviewMode && questions[currentIndex]) {
-        saveWrongAnswer(questions[currentIndex].questionId);
+      saveWrongAnswer(questions[currentIndex].questionId);
     }
   }, [currentIndex, isReviewMode, questions, saveWrongAnswer]);
 
   useEffect(() => {
-    if (!track || selectedAnswer !== null || isFinished || questions.length === 0) return;
+    if (!enabled || selectedAnswer !== null || isFinished || questions.length === 0) return;
 
     if (timeLeft === 0) {
       handleTimeOver();
@@ -98,7 +109,7 @@ export const useQuiz = (track: Track | null) => {
     }, 1000);
 
     return () => clearInterval(timerId);
-  }, [track, timeLeft, selectedAnswer, isFinished, questions, handleTimeOver]);
+  }, [enabled, timeLeft, selectedAnswer, isFinished, questions, handleTimeOver]);
 
   const handleChoiceClick = (choiceId: number, isAnsCorrect: boolean) => {
     if (selectedAnswer !== null) return;
@@ -108,8 +119,8 @@ export const useQuiz = (track: Track | null) => {
 
     if (isAnsCorrect) {
       setScore((prev) => prev + 1);
-    } else {
-      if (!isReviewMode) saveWrongAnswer(questions[currentIndex].questionId);
+    } else if (!isReviewMode) {
+      saveWrongAnswer(questions[currentIndex].questionId);
     }
   };
 
@@ -124,8 +135,8 @@ export const useQuiz = (track: Track | null) => {
 
     if (isAnsCorrect) {
       setScore((prev) => prev + 1);
-    } else {
-      if (!isReviewMode) saveWrongAnswer(questions[currentIndex].questionId);
+    } else if (!isReviewMode) {
+      saveWrongAnswer(questions[currentIndex].questionId);
     }
   };
 
@@ -143,40 +154,56 @@ export const useQuiz = (track: Track | null) => {
     }
   };
 
-  const handleRetryAll = () => {
-    window.location.reload();
+  const handleRetryAll = async () => {
+    if (!track || categoryIds.length === 0) return;
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await quizApi.fetchQuizzes(categoryIds, {
+        trackSlug: track.slug,
+        quizLimit: track.defaults?.questionLimit,
+      });
+      setQuestions(data.data);
+      setIsReviewMode(false);
+      resetSessionUi(secondsPerQuestion);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : '문제 로딩 실패';
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleReviewWrongAnswers = () => {
-    const stored = JSON.parse(localStorage.getItem(wrongStorageKey) || '[]');
+  const handleReviewWrongAnswers = async () => {
+    if (!track) return;
+    const stored = JSON.parse(localStorage.getItem(wrongStorageKey) || '[]') as number[];
     if (stored.length === 0) {
       alert('저장된 오답이 없습니다');
       return;
     }
-    const wrongQuestions = questions.filter(q => stored.includes(q.questionId));
-    if (wrongQuestions.length === 0) {
-      alert('이번 세션에 포함된 오답이 없습니다');
-      return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await quizApi.fetchQuestionsByIds(stored, track.slug);
+      if (!data.data.length) {
+        alert('저장된 오답 문제를 찾을 수 없습니다');
+        return;
+      }
+      setQuestions(data.data);
+      setIsReviewMode(true);
+      resetSessionUi(secondsPerQuestion);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : '오답 로딩 실패';
+      alert(message);
+    } finally {
+      setLoading(false);
     }
-    setQuestions(wrongQuestions);
-    setIsReviewMode(true);
-    setCurrentIndex(0);
-    setScore(0);
-    setIsFinished(false);
-    setSelectedAnswer(null);
-    setShowExplanation(false);
-    setIsCorrect(null);
-    setSubjectiveInput('');
-    setTimeLeft(secondsPerQuestion);
   };
 
   const clearWrongAnswers = () => {
     localStorage.removeItem(wrongStorageKey);
     alert('오답 노트 초기화 완료');
-  };
-
-  const handleChangeTrack = () => {
-    window.location.reload();
   };
 
   return {
@@ -193,7 +220,6 @@ export const useQuiz = (track: Track | null) => {
       handleRetryAll,
       handleReviewWrongAnswers,
       clearWrongAnswers,
-      handleChangeTrack,
     }
   };
 };
