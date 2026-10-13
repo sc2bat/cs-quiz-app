@@ -74,3 +74,18 @@ export function useAuth() {
 export function getStoredNickname() {
   return localStorage.getItem(STORAGE_KEYS.AUTH_NICKNAME);
 }
+
+export function getTokenRole(): string | null {
+  const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1] || ''));
+    return typeof payload.role === 'string'
+      ? payload.role
+      : typeof payload.user_role === 'string'
+        ? payload.user_role
+        : null;
+  } catch {
+    return null;
+  }
+}

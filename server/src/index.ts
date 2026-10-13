@@ -7,6 +7,7 @@ import { globalErrorHandler } from './utils/errorHandler';
 import systemRoutes from './routes/systemRoutes';
 import passport from 'passport';
 import authRoutes from './routes/authRoutes';
+import adminRoutes from './routes/adminRoutes';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/api/tracks', trackRoutes);
 app.use('/api/quiz', quizRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/system', systemRoutes);
 app.use('/api/auth', authRoutes);
 

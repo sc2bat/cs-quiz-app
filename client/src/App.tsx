@@ -6,6 +6,7 @@ import QuizPage from './pages/QuizPage';
 import LoginSuccessPage from './pages/LoginSuccessPage';
 import LoginFailedPage from './pages/LoginFailedPage';
 import HistoryPage from './pages/HistoryPage';
+import AdminPage from './pages/AdminPage';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Route path="/login/success" element={<LoginSuccessPage />} />
       <Route path="/login/failed" element={<LoginFailedPage />} />
       <Route path="/history" element={<HistoryPage />} />
+      <Route path="/admin" element={<AdminPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

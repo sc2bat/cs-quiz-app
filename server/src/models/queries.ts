@@ -289,3 +289,72 @@ export const WRONG_ANSWER_QUERIES = {
                 AND track_id = ?
     `,
 } as const;
+
+export const ADMIN_QUERIES = {
+    GET_ALL_TRACKS: `
+        SELECT track_id, slug, name, description, defaults, is_active, created_at, updated_at
+        FROM ${TABLES.TRACKS}
+        ORDER BY track_id
+    `,
+    CREATE_TRACK: `
+        INSERT INTO ${TABLES.TRACKS} (slug, name, description, defaults, is_active)
+        VALUES (?, ?, ?, ?, ?)
+    `,
+    UPDATE_TRACK: `
+        UPDATE ${TABLES.TRACKS}
+        SET slug = ?, name = ?, description = ?, defaults = ?, is_active = ?
+        WHERE track_id = ?
+    `,
+    DELETE_TRACK: `
+        DELETE FROM ${TABLES.TRACKS} WHERE track_id = ?
+    `,
+    CREATE_CATEGORY: `
+        INSERT INTO ${TABLES.CATEGORIES} (track_id, name, sort_order)
+        VALUES (?, ?, ?)
+    `,
+    UPDATE_CATEGORY: `
+        UPDATE ${TABLES.CATEGORIES}
+        SET track_id = ?, name = ?, sort_order = ?
+        WHERE category_id = ?
+    `,
+    DELETE_CATEGORY: `
+        DELETE FROM ${TABLES.CATEGORIES} WHERE category_id = ?
+    `,
+    GET_QUESTIONS_BY_CATEGORY: `
+        SELECT question_id, category_id, question_type, question_text, explanation, subjective_answer, created_at
+        FROM ${TABLES.QUESTIONS}
+        WHERE category_id = ?
+        ORDER BY question_id DESC
+    `,
+    CREATE_QUESTION: `
+        INSERT INTO ${TABLES.QUESTIONS}
+            (category_id, question_type, question_text, explanation, subjective_answer)
+        VALUES (?, ?, ?, ?, ?)
+    `,
+    UPDATE_QUESTION: `
+        UPDATE ${TABLES.QUESTIONS}
+        SET category_id = ?, question_type = ?, question_text = ?, explanation = ?, subjective_answer = ?
+        WHERE question_id = ?
+    `,
+    DELETE_QUESTION: `
+        DELETE FROM ${TABLES.QUESTIONS} WHERE question_id = ?
+    `,
+    CREATE_CHOICE: `
+        INSERT INTO ${TABLES.CHOICES} (question_id, choice_text, is_correct, sort_order)
+        VALUES (?, ?, ?, ?)
+    `,
+    DELETE_CHOICES_BY_QUESTION: `
+        DELETE FROM ${TABLES.CHOICES} WHERE question_id = ?
+    `,
+    GET_QUESTION_WITH_ANSWER: `
+        SELECT question_id, category_id, question_type, question_text, explanation, subjective_answer
+        FROM ${TABLES.QUESTIONS}
+        WHERE question_id = ?
+        LIMIT 1
+    `,
+    CREATE_QUIZ_SUBMISSION: `
+        INSERT INTO ${TABLES.QUIZ_SUBMISSIONS}
+            (quiz_record_id, question_id, choice_id, subjective_answer, is_correct, answered_at)
+        VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    `,
+} as const;

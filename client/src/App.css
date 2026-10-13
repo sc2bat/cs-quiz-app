@@ -261,8 +261,68 @@ a.auth-bar__link {
   background: #f7f8ff;
 }
 
+.category-select__starts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .category-select__start {
   width: 100%;
+}
+
+.category-select__start--exam {
+  background-color: #455a64;
+}
+
+.admin-page {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.admin-section {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.admin-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.admin-form--col {
+  flex-direction: column;
+}
+
+.admin-form input,
+.admin-form textarea,
+.admin-form select,
+.admin-section select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.admin-msg {
+  color: #2e7d32;
+}
+
+.exam-review-list {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  max-width: 640px;
+  margin: 16px auto;
+}
+
+.exam-review-item {
+  margin-bottom: 12px;
 }
 
 .category-select__start:disabled {

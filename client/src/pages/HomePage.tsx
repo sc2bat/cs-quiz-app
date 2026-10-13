@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { TrackSelect } from '../components';
 import { trackApi } from '../api/trackApi';
 import { authApi } from '../api/authApi';
-import { getStoredNickname, useAuth } from '../auth/AuthContext';
+import { getStoredNickname, getTokenRole, useAuth } from '../auth/AuthContext';
 import type { Track } from '../types';
 
 export default function HomePage() {
@@ -13,6 +13,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const nickname = getStoredNickname();
+  const isAdmin = getTokenRole() === 'ADMIN';
 
   useEffect(() => {
     const load = async () => {
@@ -37,6 +38,11 @@ export default function HomePage() {
             <button type="button" className="ghost-btn" onClick={() => navigate('/history')}>
               풀이 기록
             </button>
+            {isAdmin && (
+              <button type="button" className="ghost-btn" onClick={() => navigate('/admin')}>
+                Admin
+              </button>
+            )}
             <button type="button" className="ghost-btn" onClick={() => logout()}>
               로그아웃
             </button>
