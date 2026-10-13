@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import quizRoutes from './routes/quizRoutes';
+import trackRoutes from './routes/trackRoutes';
 import { globalErrorHandler } from './utils/errorHandler';
 import systemRoutes from './routes/systemRoutes';
 import passport from 'passport';
@@ -32,6 +33,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Welcome to CS Quiz Server! 🚀');
 });
 
+app.use('/api/tracks', trackRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/system', systemRoutes);
 app.use('/api/auth', authRoutes);

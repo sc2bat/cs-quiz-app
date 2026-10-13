@@ -1,4 +1,5 @@
 export const TABLES ={
+    TRACKS: 'tracks',
     CATEGORIES: 'categories',
     CHOICES: 'choices',
     QUESTIONS: 'questions',

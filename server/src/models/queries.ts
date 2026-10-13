@@ -10,26 +10,48 @@ export const COMMON_QUERIES = {
     `,
 } as const;
 
+export const TRACK_QUERIES = {
+    GET_ACTIVE_TRACKS: `
+        SELECT track_id, slug, name, description, defaults, is_active
+        FROM ${TABLES.TRACKS}
+            WHERE is_active = 1
+        ORDER BY track_id
+    `,
+    GET_TRACK_BY_SLUG: `
+        SELECT track_id, slug, name, description, defaults, is_active
+        FROM ${TABLES.TRACKS}
+            WHERE slug = ?
+            LIMIT 1
+    `,
+} as const;
+
 export const QUIZ_QUERIES = {
-    // category
     GET_ALL_CATEGORIES: `
-        SELECT * FROM ${TABLES.CATEGORIES}
+        SELECT category_id, track_id, name, sort_order
+        FROM ${TABLES.CATEGORIES}
+        ORDER BY sort_order, category_id
     `,
 
-    // question
+    GET_CATEGORIES_BY_TRACK_ID: `
+        SELECT category_id, track_id, name, sort_order
+        FROM ${TABLES.CATEGORIES}
+            WHERE track_id = ?
+        ORDER BY sort_order, category_id
+    `,
+
     GET_ALL_RANDOM_QUESTIONS: `
         SELECT * FROM ${TABLES.QUESTIONS}
             ORDER BY RAND()
     `,
 
     GET_RANDOM_QUESTIONS_BY_CATEGORY_IDS: `
-        SELECT 
-            q.question_id, 
-            q.question_type, 
-            q.question_text, 
-            q.explanation, 
-            q.created_at, 
-            q.subjective_answer, 
+        SELECT
+            q.question_id,
+            q.question_type,
+            q.question_text,
+            q.explanation,
+            q.created_at,
+            q.subjective_answer,
             q.category_id,
             c.name AS category_name
         FROM ${TABLES.QUESTIONS} q
@@ -40,17 +62,34 @@ export const QUIZ_QUERIES = {
             LIMIT ?
     `,
 
-    // choices
+    GET_RANDOM_QUESTIONS_BY_TRACK_AND_CATEGORY_IDS: `
+        SELECT
+            q.question_id,
+            q.question_type,
+            q.question_text,
+            q.explanation,
+            q.created_at,
+            q.subjective_answer,
+            q.category_id,
+            c.name AS category_name
+        FROM ${TABLES.QUESTIONS} q
+            JOIN ${TABLES.CATEGORIES} c ON q.category_id = c.category_id
+                WHERE c.track_id = ?
+                    AND q.category_id IN (?)
+        ORDER BY RAND()
+            LIMIT ?
+    `,
+
     GET_ALL_CHOICES: `
         SELECT * FROM ${TABLES.CHOICES}
     `,
-    
+
     GET_CHOICES_BY_QUESTIONS_IDS: `
         SELECT * FROM ${TABLES.CHOICES}
             WHERE question_id IN (?)
                 ORDER BY choice_id
     `,
-} as const
+} as const;
 
 export const USER_QUERIES = {
     GET_USER_BY_SNS_ID: `

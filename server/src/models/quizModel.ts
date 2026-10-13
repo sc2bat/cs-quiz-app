@@ -1,7 +1,6 @@
 import { db } from "../config/db";
-import { QuestionRow, ChoiceRow, CategoryRow, QuizRecordRow, CreateQuizRecordDto } from "../types/quiz";
-import { CreateUserDto } from "../types/user";
-import { QUIZ_QUERIES, QUIZ_RECORD_QUERIES } from "./queries";
+import { QuestionRow, ChoiceRow, CategoryRow } from "../types/quiz";
+import { QUIZ_QUERIES } from "./queries";
 
 // refactor: convert arrow functions to method shorthand
 export const quizModel = {
@@ -19,14 +18,25 @@ export const quizModel = {
     },
     async getQuestionsByCategoryIds(categoryIds: number[], limit: number): Promise<QuestionRow[]> {
         const [rows] = await db.query<QuestionRow[]>(
-            QUIZ_QUERIES.GET_RANDOM_QUESTIONS_BY_CATEGORY_IDS, 
+            QUIZ_QUERIES.GET_RANDOM_QUESTIONS_BY_CATEGORY_IDS,
             [categoryIds, limit]
+        );
+        return rows;
+    },
+    async getQuestionsByTrackAndCategoryIds(
+        trackId: number,
+        categoryIds: number[],
+        limit: number
+    ): Promise<QuestionRow[]> {
+        const [rows] = await db.query<QuestionRow[]>(
+            QUIZ_QUERIES.GET_RANDOM_QUESTIONS_BY_TRACK_AND_CATEGORY_IDS,
+            [trackId, categoryIds, limit]
         );
         return rows;
     },
     async getChoicesByQuestionsIds(questionIds: number[]): Promise<ChoiceRow[]> {
         const [rows] = await db.query<ChoiceRow[]>(
-            QUIZ_QUERIES.GET_CHOICES_BY_QUESTIONS_IDS, 
+            QUIZ_QUERIES.GET_CHOICES_BY_QUESTIONS_IDS,
             [questionIds]
         );
         return rows;
@@ -34,6 +44,13 @@ export const quizModel = {
     async getCategories(): Promise<CategoryRow[]> {
         const [rows] = await db.query<CategoryRow[]>(
             QUIZ_QUERIES.GET_ALL_CATEGORIES
+        );
+        return rows;
+    },
+    async getCategoriesByTrackId(trackId: number): Promise<CategoryRow[]> {
+        const [rows] = await db.query<CategoryRow[]>(
+            QUIZ_QUERIES.GET_CATEGORIES_BY_TRACK_ID,
+            [trackId]
         );
         return rows;
     },
