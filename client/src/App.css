@@ -149,6 +149,67 @@ button.link-btn:focus-visible {
   align-items: center;
 }
 
+.auth-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+  max-width: 640px;
+  margin: 0 auto 1rem;
+}
+
+.auth-bar__user {
+  font-size: 0.9rem;
+  color: #555;
+  margin-right: auto;
+}
+
+a.auth-bar__link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.history-page {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.history-filter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 12px 0 16px;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.history-item__meta {
+  font-size: 0.85rem;
+  color: #777;
+}
+
 .category-select {
   max-width: 560px;
   margin: 0 auto;

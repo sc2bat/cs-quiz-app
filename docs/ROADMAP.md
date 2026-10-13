@@ -86,15 +86,15 @@
 
 **목표:** OAuth·JWT·quiz records를 클라이언트와 연결한다.
 
-| 작업 | 설명 |
-|------|------|
-| `/login/success` | 토큰 수신·저장, 홈 이동 |
-| JWT 전달 | 쿼리스트링 대신 code 교환 또는 HttpOnly 쿠키 |
-| OAuth redirect | 환경별 `CORS_ORIGIN_*` 선택 |
-| `logout` 라우트 등록 | `authRoutes.ts` |
-| Records UI | 세션 종료 시 `POST /api/quiz/records` (`trackId` 포함) |
-| History | `GET /api/quiz/records` 트랙 필터 |
-| 오답 동기화 | 로그인 시 localStorage → `wrong_answers` merge |
+| 작업 | 상태 | 설명 |
+|------|------|------|
+| `/login/success` | 완료 | code 교환 후 토큰 저장 |
+| JWT 전달 | 완료 | one-time `code` → `POST /api/auth/exchange` |
+| OAuth redirect | 완료 | `CLIENT_APP_URL` / `CORS_ORIGIN_PROD` 우선 |
+| `logout` 라우트 | 완료 | `POST /api/auth/logout` |
+| Records UI | 완료 | 퀴즈 종료 시 저장 + `/history` |
+| History | 완료 | `trackId` 필터·삭제 |
+| 오답 동기화 | 완료 | login/finish 시 `wrong_answers` merge |
 
 **Definition of Done**
 

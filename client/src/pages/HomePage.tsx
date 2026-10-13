@@ -2,13 +2,17 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrackSelect } from '../components';
 import { trackApi } from '../api/trackApi';
+import { authApi } from '../api/authApi';
+import { getStoredNickname, useAuth } from '../auth/AuthContext';
 import type { Track } from '../types';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { isLoggedIn, logout } = useAuth();
   const [tracks, setTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const nickname = getStoredNickname();
 
   useEffect(() => {
     const load = async () => {
@@ -25,11 +29,36 @@ export default function HomePage() {
   }, []);
 
   return (
-    <TrackSelect
-      tracks={tracks}
-      loading={loading}
-      error={error}
-      onSelect={(track) => navigate(`/tracks/${track.slug}`)}
-    />
+    <div>
+      <div className="auth-bar">
+        {isLoggedIn ? (
+          <>
+            <span className="auth-bar__user">{nickname || '로그인됨'}</span>
+            <button type="button" className="ghost-btn" onClick={() => navigate('/history')}>
+              풀이 기록
+            </button>
+            <button type="button" className="ghost-btn" onClick={() => logout()}>
+              로그아웃
+            </button>
+          </>
+        ) : (
+          <>
+            <a className="ghost-btn auth-bar__link" href={authApi.getGoogleLoginUrl()}>
+              Google 로그인
+            </a>
+            <a className="ghost-btn auth-bar__link" href={authApi.getGithubLoginUrl()}>
+              GitHub 로그인
+            </a>
+          </>
+        )}
+      </div>
+
+      <TrackSelect
+        tracks={tracks}
+        loading={loading}
+        error={error}
+        onSelect={(track) => navigate(`/tracks/${track.slug}`)}
+      />
+    </div>
   );
 }

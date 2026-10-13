@@ -1,14 +1,20 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ProgressBar, QuizCard, ResultScreen } from '../components';
 import { useQuiz } from '../hooks/useQuiz';
 import { useTrack } from '../hooks/useTrack';
+import { useAuth } from '../auth/AuthContext';
+import { recordApi } from '../api/recordApi';
+import { wrongAnswerApi } from '../api/wrongAnswerApi';
+import { STORAGE_KEYS } from '../constants';
 
 export default function QuizPage() {
   const { slug = '' } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
   const { track, loading: trackLoading, error: trackError } = useTrack(slug);
+  const savedRecordRef = useRef(false);
 
   const categoryIds = useMemo(
     () =>
@@ -24,6 +30,51 @@ export default function QuizPage() {
     categoryIds,
     enabled: Boolean(track) && categoryIds.length > 0,
   });
+
+  useEffect(() => {
+    savedRecordRef.current = false;
+  }, [slug, categoryIds.join(',')]);
+
+  useEffect(() => {
+    if (!state.isFinished || state.isReviewMode || !track || !isLoggedIn) return;
+    if (savedRecordRef.current) return;
+    savedRecordRef.current = true;
+
+    const persist = async () => {
+      try {
+        await recordApi.create({
+          trackId: track.trackId,
+          score: state.score,
+          totalQuestions: state.questions.length,
+        });
+      } catch (err) {
+        console.warn('failed to save quiz record', err);
+      }
+
+      try {
+        const key = `${STORAGE_KEYS.WRONG_ANSWER}:${track.slug}`;
+        const local = JSON.parse(localStorage.getItem(key) || '[]') as number[];
+        if (local.length > 0) {
+          const merged = await wrongAnswerApi.merge(track.trackId, local);
+          localStorage.setItem(
+            key,
+            JSON.stringify(merged.map((row) => row.questionId))
+          );
+        }
+      } catch (err) {
+        console.warn('failed to sync wrong answers', err);
+      }
+    };
+
+    persist();
+  }, [
+    state.isFinished,
+    state.isReviewMode,
+    state.score,
+    state.questions.length,
+    track,
+    isLoggedIn,
+  ]);
 
   if (trackLoading || state.loading) {
     return <div className="loading">문제 로딩 중...</div>;
@@ -81,7 +132,16 @@ export default function QuizPage() {
         isReviewMode={state.isReviewMode}
         onRetryAll={actions.handleRetryAll}
         onRetryWrong={actions.handleReviewWrongAnswers}
-        onClearWrong={actions.clearWrongAnswers}
+        onClearWrong={async () => {
+          actions.clearWrongAnswers();
+          if (isLoggedIn && track) {
+            try {
+              await wrongAnswerApi.clearTrack(track.trackId);
+            } catch (err) {
+              console.warn('failed to clear server wrong answers', err);
+            }
+          }
+        }}
         onChangeCategories={() => navigate(`/tracks/${slug}`)}
         onChangeTrack={() => navigate('/')}
       />

@@ -88,7 +88,9 @@ DB_NAME=cs_quiz
 DB_USER_DEV=root
 DB_PASSWORD_DEV=yourpassword
 JWT_SECRET=your_jwt_secret
+CLIENT_APP_URL=http://localhost:5173
 CORS_ORIGIN_LOCAL=http://localhost:5173
+CORS_ORIGIN_PROD=http://dev-dero.shop:10000
 # OAuth (사용 시)
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
