@@ -1,139 +1,147 @@
 # cs-quiz-app
 
-### 💻 CS Interview Master (CS 면접 대비 퀴즈 서비스)
+### 멀티 트랙 퀴즈 학습 플랫폼
 
-"단순 암기는 지루하니까, 직접 만든 서비스로 재미있게 학습하자."
+CS 면접, 정보처리기사, SQLP, AWS 등 **여러 학습 트랙**을 하나의 퀴즈 엔진으로 풀기 위한 개인 학습용 웹 앱입니다.
 
-개발자 면접을 준비하며 CS(Computer Science) 지식을 체계적으로 학습하기 위해 개발한 웹 애플리케이션입니다.
+- **설계:** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- **구현 순서:** [docs/ROADMAP.md](docs/ROADMAP.md)
 
 ---
 
-### 📅 프로젝트 개요
-개발 기간: 2025.11.30 ~ 2025.XX.XX (예정)
+### 프로젝트 개요
 
-개발 인원: 1인 (개인 프로젝트)
+| 항목 | 내용 |
+|------|------|
+| 개발 기간 | 2025.11.30 ~ (진행 중) |
+| 개발 인원 | 1인 (개인 프로젝트) |
+| 구조 | `client/` + `server/` 이중 패키지 (루트 monorepo 아님) |
 
-목표:
+**목표**
 
-React와 Node.js 환경에서 TypeScript를 도입하여 타입 안정성이 보장된 풀스택 개발 경험.
+- TypeScript 풀스택(React + Express + MySQL) 경험
+- 트랙(Track) 단위로 콘텐츠를 나누는 확장 가능한 퀴즈 도메인
+- Practice(타이머·오답·해설) 중심 UX, 이후 Exam·Admin·기록 연동
 
-RESTful API 설계 및 RDBMS(MySQL) 모델링 경험.
+---
 
-단순 CRUD를 넘어 상태 관리(타이머, 오답 노트) 로직 구현.
+### Tech Stack
 
-🛠 Tech Stack (기술 스택)
-Frontend
+**Frontend**
+
 <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=React&logoColor=black"/> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=TypeScript&logoColor=white"/> <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=Vite&logoColor=white"/>
 
-Vite: 빠른 개발 서버 구동과 HMR(Hot Module Replacement)을 위해 채택.
+- Vite, React 19, Axios
+- 스타일: CSS (`App.css` 등)
 
-Axios: 백엔드 API와의 비동기 통신 처리.
+**Backend**
 
-CSS/Styled-components: 
-<!-- (사용하시는 스타일 라이브러리에 맞춰 수정하세요) -->
-
-Backend
 <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=Node.js&logoColor=white"/> <img src="https://img.shields.io/badge/Express-000000?style=flat-square&logo=Express&logoColor=white"/> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=TypeScript&logoColor=white"/>
 
-Express: 가볍고 유연한 라우팅 처리를 위해 사용.
+- Express 5, Passport (Google/GitHub OAuth), JWT
+- MySQL2 (connection pool), Winston
 
-MySQL2: DB 커넥션 풀 관리 및 쿼리 실행.
+**Database**
 
-Database
 <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=MySQL&logoColor=white"/>
 
-RDBMS: 문제(Questions)와 보기(Choices)의 관계형 데이터 모델링.
+- `categories` → `questions` → `choices` (+ `users`, `quiz_records`)
+- 목표 스키마: `tracks` 및 트랙별 카테고리 — [ARCHITECTURE.md](docs/ARCHITECTURE.md) 참고
 
 ---
 
-### 📌 Key Features (핵심 기능)
+### Key Features
 
-#### 1. 퀴즈 풀기 (Core)
+#### 구현됨 (현재)
 
-카테고리별 학습: OS, Network, Data Structure 등 주제별 문제 풀이 가능.
+- 객관식 / 주관식 퀴즈, 문제당 30초 타이머
+- 랜덤 출제 (`ORDER BY RAND()`)
+- 즉시 정오답·해설 UI
+- 오답 ID localStorage 저장 및 결과 화면에서 복습(현재 세션 문제 기준 — [ROADMAP Phase 3](docs/ROADMAP.md))
+- 백엔드: OAuth, JWT, quiz records API
 
-다양한 문제 유형:
+#### 로드맵 (예정)
 
-객관식: 4~5지 선다형.
+| 기능 | Phase |
+|------|-------|
+| 트랙 선택 (CS / 정보처리기사 등) | 2 |
+| 카테고리 선택 UI, 오답 ID 재조회 | 3 |
+| 로그인·풀이 기록 UI | 4 |
+| Admin 문제 CRUD | 5 |
+| Exam 모드(서버 채점) | 6 |
 
-주관식: 핵심 키워드 단답형 입력.
-
-랜덤 출제: 매번 문제 순서를 섞어 단순 위치 암기 방지 (ORDER BY RAND() 및 클라이언트 셔플 활용).
-
-#### 2. 학습 보조 기능 (Advanced)
-
-⏱ 타임 어택: setInterval을 활용하여 한 문제당 30초 제한 기능 구현. 긴장감 조성 및 실제 면접 환경 모사.
-
-📝 오답 노트: 틀린 문제는 LocalStorage에 ID를 저장하여, 서버 로그인 없이도 브라우저 기반으로 다시 풀기 기능 제공.
-
-즉시 피드백: 답안 제출 시 정답 여부와 상세 해설(Explanation) 즉시 모달/UI로 노출.
-
-#### 3. 관리자 (Admin)
-
-별도의 관리자 페이지를 통해 CS 문제 CRUD(생성, 조회, 수정, 삭제) 관리.
-
-🗂 Database Schema (ERD)
-주관식과 객관식을 모두 수용하기 위해 다음과 같이 정규화하였습니다.
-
-Questions: 문제 본문, 카테고리, 해설, (주관식 정답)
-
-Choices: 객관식 보기 내용, 정답 여부 플래그 (is_correct)
-
-<!-- (추후 이곳에 ERD 다이어그램 이미지를 캡처해서 넣으면 베스트입니다) -->
+자세한 완료 조건은 [ROADMAP.md](docs/ROADMAP.md)를 본다.
 
 ---
-### 🚀 Getting Started (실행 방법)
-이 프로젝트는 Monorepo 구조로 되어 있습니다.
 
-### 1. 환경 변수 설정 (.env)
-루트 디렉토리에 .env 파일을 생성하고 DB 정보를 입력해야 합니다.
+### Getting Started
 
+#### 1. 환경 변수
 
-DB_HOST=localhost
-DB_USER=root
-DB_PASS=yourpassword
-DB_NAME=cs_quiz
+**Server** — `server/.env` 예시:
+
+```env
 PORT=8081
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=cs_quiz
+DB_USER_DEV=root
+DB_PASSWORD_DEV=yourpassword
+JWT_SECRET=your_jwt_secret
+CORS_ORIGIN_LOCAL=http://localhost:5173
+# OAuth (사용 시)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_CALLBACK_URL=
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+GITHUB_CALLBACK_URL=
+```
 
-### 2. 설치 및 실행
-### 레포지토리 클론
+**Client** — `client/.env` (Vite):
+
+```env
+VITE_PORT=5173
+VITE_QUIZ_API_BASE_URL=http://localhost:8081
+VITE_ALLOW_HOST=localhost
+VITE_ALLOW_HOST_WWW=
+```
+
+`axiosClient.ts`는 `VITE_QUIZ_API_BASE_URL`을 baseURL로 사용한다.
+
+#### 2. 설치 및 실행
+
+```bash
 git clone https://github.com/sc2bat/cs-quiz-app.git
+cd cs-quiz-app
 
-### 1. Backend 실행
-cd server
-npm install
-npm run dev
+# Backend
+cd server && npm install && npm run dev
 
-### 2. Frontend 실행 (새 터미널)
-cd client
-npm install
-npm run dev
+# Frontend (새 터미널)
+cd client && npm install && npm run dev
+```
 
 ---
-### 🧐 Retrospective (개발 회고 & 트러블 슈팅)
-<!-- (프로젝트를 진행하면서 겪은 어려움과 해결 과정을 이곳에 한두 줄씩 추가해 나가세요. 포트폴리오의 핵심입니다.)
 
-문제점: React와 Node.js 양쪽에서 TypeScript 타입을 공유하지 못해 중복 정의가 발생함.
+### Retrospective (개발 회고)
 
-해결: (예: types 폴더를 공통으로 빼거나, 백엔드의 타입을 프론트에서 import 하는 방식 고민 중)
+<!-- 진행하며 이 섹션에 트러블슈팅을 추가 -->
 
-문제점: 타이머가 페이지를 이동해도 계속 돌아가거나 중복 실행되는 메모리 누수 발생.
+- **타입 중복:** client/server 각각 `types/` — 공유 패키지는 ARCHITECTURE 중기 목표
+- **타이머:** `useEffect` cleanup으로 `clearInterval` 처리
 
-해결: useEffect의 cleanup 함수(return () => clearInterval(timer))를 사용하여 컴포넌트 언마운트 시 타이머 해제. -->
 ---
-### 📝 Commit Convention
 
-이 프로젝트는 **Git Conventional Commits** 규칙을 준수하여, 체계적인 변경 이력 관리를 지향합니다.
+### Commit Convention
 
-| Tag | Description | 사용 예시 |
+**Git Conventional Commits** (`type: subject`, subject는 명령문)
+
+| Tag | Description | 예시 |
 |:---:|:---|:---|
-|  `feat` | 새로운 기능 추가 | `feat: add timer component` |
-|  `fix` | 버그 수정 | `fix: correct typo in main page` |
-|  `docs` | 문서 수정 | `docs: update README tech stack` |
-|  `style` | 코드 포맷팅 (로직 변경 없음) | `style: fix indentation` |
-|  `refactor` | 코드 리팩토링 | `refactor: simplify quiz logic` |
-|  `chore` | 설정 변경 및 기타 작업 | `chore: update .gitignore` |
-
-**작성 규칙:**
-* `type: subject` 형식을 따릅니다.
-* `subject`는 명령문으로 작성합니다.
+| `feat` | 새 기능 | `feat: add track list API` |
+| `fix` | 버그 수정 | `fix: cursor pagination SQL` |
+| `docs` | 문서 | `docs: add architecture` |
+| `style` | 포맷 (로직 무) | `style: fix indentation` |
+| `refactor` | 리팩터 | `refactor: quiz service DTO` |
+| `chore` | 설정 등 | `chore: update gitignore` |
