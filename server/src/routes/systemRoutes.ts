@@ -1,10 +1,17 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { systemController } from '../controllers/systemController';
 
 const router = Router();
 
-// GET /api/system 주소로 요청시
-router.get('/db-check', systemController.checkDatabase);
+/** Block sensitive system probes outside development */
+function allowDevOnly(req: Request, res: Response, next: NextFunction) {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(404).json({ message: 'Not found' });
+  }
+  return next();
+}
+
+router.get('/db-check', allowDevOnly, systemController.checkDatabase);
 router.get('/date', systemController.getServerTime);
 
 export default router;

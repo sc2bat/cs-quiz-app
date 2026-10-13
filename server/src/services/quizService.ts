@@ -3,8 +3,12 @@ import { quizModel } from "../models/quizModel";
 
 export const quizService = {
     async getCategories() {
-        const categoryRow = await quizModel.getCategories();
-        return categoryRow;
+        const rows = await quizModel.getCategories();
+        return rows.map((row) => ({
+            categoryId: row.category_id,
+            trackId: row.track_id,
+            name: row.name,
+        }));
     },
     async getQuizzesByCategoryIds(
         categoryId: number[], 

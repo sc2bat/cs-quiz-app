@@ -8,7 +8,7 @@ export const globalErrorHandler = (
     next: NextFunction
 ) => {
     const statusCode = error.status || 500;
-    const errorMessage = error.mesage || 'An internal server error occurred.';
+    const errorMessage = error.message || 'An internal server error occurred.';
 
 
     if (statusCode === 500) {

@@ -6,7 +6,7 @@ export interface Choice {
 
 export interface Question {
   questionId: number;
-  categoryId: string;
+  categoryId: number;
   categoryName: string;
   type: string;
   question: string;
@@ -22,5 +22,6 @@ export interface ApiResponse {
 
 export interface Category {
   categoryId: number;
-  categoryName: string;
+  trackId: number;
+  name: string;
 }

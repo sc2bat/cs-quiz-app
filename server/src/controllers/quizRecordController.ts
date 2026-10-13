@@ -1,5 +1,4 @@
-import { Request, Response } from 'express';
-import { quizService } from '../services/quizService';
+import { Response } from 'express';
 import logger from '../utils/logger';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AuthRequest } from '../types/auth';
@@ -17,23 +16,18 @@ export const quizRecordController = {
         const userId = req.user.user_id;
         logger.debug(`userId >> ${userId}`);
 
-        const { categoryId, score, totalQuestions } = req.body;
-        if (!categoryId || score == undefined || !totalQuestions) {
+        const { trackId, score, totalQuestions } = req.body;
+        if (!trackId || score == undefined || !totalQuestions) {
           logger.debug(`quiz controller create quiz record error`);
-          logger.debug(`categoryId >> ${categoryId}`);
-          logger.debug(`scroe >> ${score}`);
+          logger.debug(`trackId >> ${trackId}`);
+          logger.debug(`score >> ${score}`);
           logger.debug(`totalQuestions >> ${totalQuestions}`);
-          return res.status(400).json({ message: 'Missing required fields' });
+          return res.status(400).json({ message: 'Missing required fields (trackId, score, totalQuestions)' });
         }
-
-        // logger.debug(`userId >> ${userId}`);
-        // logger.debug(`category_id >> ${categoryId}`);
-        // logger.debug(`score >> ${score}`);
-        // logger.debug(`total_questions >> ${totalQuestions}`);
 
         const recordId = await quizRecordService.createQuizRecord({
           user_id: userId,
-          category_id: categoryId,
+          track_id: Number(trackId),
           score: score,
           total_questions: totalQuestions,
         });

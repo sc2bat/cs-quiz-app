@@ -17,21 +17,23 @@ export interface ChoiceRow extends RowDataPacket {
   is_correct: number;
 }
 
-export interface CategoryRow extends RowDataPacket{
-  id: number;
+export interface CategoryRow extends RowDataPacket {
+  category_id: number;
+  track_id: number;
   name: string;
+  sort_order: number;
 }
 
-export interface QuizRecordRow extends RowDataPacket{
+export interface QuizRecordRow extends RowDataPacket {
   quiz_record_id: number;
   user_id: number;
-  category_id: number;
+  track_id: number;
   score: number;
   total_questions: number;
   taken_at: Date;
 }
 
 export type CreateQuizRecordDto = Pick<
-  QuizRecordRow, 
-  'user_id' | 'category_id' | 'score' | 'user_id' | 'total_questions'
->; 
+  QuizRecordRow,
+  'user_id' | 'track_id' | 'score' | 'total_questions'
+>;

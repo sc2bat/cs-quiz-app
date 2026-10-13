@@ -70,7 +70,7 @@ export default function CategoryFilter({
                   checked={selectedIds.includes(category.categoryId)}
                   onChange={() => onToggle(category.categoryId)}
                 />
-                {category.categoryName}
+                {category.name}
               </label>
             ))}
           </div>

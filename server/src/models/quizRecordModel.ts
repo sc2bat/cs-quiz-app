@@ -10,7 +10,7 @@ export const quizRecordModel = {
             QUIZ_RECORD_QUERIES.CREATE_QUIZ_RECORD,
             [
                 dto.user_id,
-                dto.category_id,
+                dto.track_id,
                 dto.score,
                 dto.total_questions,
             ]

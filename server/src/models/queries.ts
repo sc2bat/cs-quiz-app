@@ -124,57 +124,59 @@ export const USER_QUERIES = {
 export const QUIZ_RECORD_QUERIES = {
     CREATE_QUIZ_RECORD: `
         INSERT INTO ${TABLES.QUIZ_RECORDS} (
-            user_id, 
-            category_id, 
-            score, 
-            total_questions, 
+            user_id,
+            track_id,
+            score,
+            total_questions,
             taken_at
             )
         VALUES(
-            ?, 
-            ?, 
-            ?, 
+            ?,
+            ?,
+            ?,
             ?,
             CURRENT_TIMESTAMP
         )
     `,
     GET_ALL_QUIZ_RECORDS: `
         SELECT
-            quiz_record_id, 
-            user_id, 
-            category_id, 
-            score, 
-            total_questions, 
+            quiz_record_id,
+            user_id,
+            track_id,
+            score,
+            total_questions,
             taken_at
         FROM ${TABLES.QUIZ_RECORDS}
             WHERE user_id = ?
     `,
     GET_RECENT_QUIZ_RECORDS: `
         SELECT
-            quiz_record_id, 
-            user_id, 
-            category_id, 
-            score, 
-            total_questions, 
+            quiz_record_id,
+            user_id,
+            track_id,
+            score,
+            total_questions,
             taken_at
         FROM ${TABLES.QUIZ_RECORDS}
             WHERE user_id = ?
-            ORDER BY taken_at DESC, quiz_record_id DESC 
+            ORDER BY taken_at DESC, quiz_record_id DESC
             LIMIT ?
     `,
     GET_QUIZ_RECORDS_BY_CURSOR: `
         SELECT
-            quiz_record_id, 
-            user_id, 
-            category_id, 
-            score, 
-            total_questions, 
+            quiz_record_id,
+            user_id,
+            track_id,
+            score,
+            total_questions,
             taken_at
         FROM ${TABLES.QUIZ_RECORDS}
             WHERE user_id = ?
-                AND (taken_at < ?
-                     OR (taken_at = ? AND quiz_record_id < ?)
-            ORDER BY taken_at DESC, quiz_record_id DESC 
+                AND (
+                    taken_at < ?
+                    OR (taken_at = ? AND quiz_record_id < ?)
+                )
+            ORDER BY taken_at DESC, quiz_record_id DESC
             LIMIT ?
     `,
     DELETE_QUIZ_RECORDS: `
