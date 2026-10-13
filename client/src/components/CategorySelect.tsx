@@ -10,6 +10,7 @@ interface Props {
   onSelectAll: () => void;
   onClear: () => void;
   onStart: () => void;
+  onStartExam?: () => void;
   onBack: () => void;
 }
 
@@ -23,6 +24,7 @@ export default function CategorySelect({
   onSelectAll,
   onClear,
   onStart,
+  onStartExam,
   onBack,
 }: Props) {
   if (loading) return <div className="loading">카테고리 불러오는 중...</div>;
@@ -67,14 +69,26 @@ export default function CategorySelect({
         </ul>
       )}
 
-      <button
-        type="button"
-        className="next-btn category-select__start"
-        disabled={selectedIds.length === 0}
-        onClick={onStart}
-      >
-        퀴즈 시작 ({selectedIds.length})
-      </button>
+      <div className="category-select__starts">
+        <button
+          type="button"
+          className="next-btn category-select__start"
+          disabled={selectedIds.length === 0}
+          onClick={onStart}
+        >
+          Practice 시작 ({selectedIds.length})
+        </button>
+        {onStartExam && (
+          <button
+            type="button"
+            className="next-btn category-select__start category-select__start--exam"
+            disabled={selectedIds.length === 0}
+            onClick={onStartExam}
+          >
+            Exam 시작 ({selectedIds.length})
+          </button>
+        )}
+      </div>
     </div>
   );
 }

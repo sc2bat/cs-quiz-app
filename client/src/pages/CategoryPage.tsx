@@ -64,6 +64,9 @@ export default function CategoryPage() {
       onStart={() =>
         navigate(`/tracks/${slug}/quiz?cats=${selectedIds.join(',')}`)
       }
+      onStartExam={() =>
+        navigate(`/tracks/${slug}/exam?cats=${selectedIds.join(',')}`)
+      }
     />
   );
 }

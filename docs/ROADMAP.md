@@ -107,12 +107,12 @@
 
 **목표:** 코드 배포 없이 트랙·문제를 추가할 수 있는 최소 Admin을 제공한다.
 
-| 작업 | 설명 |
-|------|------|
-| `requireAdmin` 미들웨어 | `user_role === ADMIN` |
-| Admin API | 트랙·카테고리·문제·보기 CRUD |
-| Admin UI | 별도 `/admin` 라우트 (간단한 폼 CRUD) |
-| 운영 가이드 | 시드·Admin으로 SQLP/AWS 트랙 추가 절차 문서화 |
+| 작업 | 상태 | 설명 |
+|------|------|------|
+| `requireAdmin` 미들웨어 | 완료 | JWT `role/user_role === ADMIN` |
+| Admin API | 완료 | `/api/admin/*` CRUD |
+| Admin UI | 완료 | `/admin` |
+| 운영 가이드 | 완료 | `docs/ADMIN.md` |
 
 **Definition of Done**
 
@@ -124,12 +124,12 @@
 
 **목표:** 시험형 세션 — 서버 채점, 정답 비노출, 해설 지연.
 
-| 작업 | 설명 |
-|------|------|
-| 출제 API variant | `mode=exam` 시 choices without `isCorrect`, no `subjectiveAnswer` |
-| Submit API | 문항별 답안 제출, 서버 채점 |
-| `quiz_submissions` | 저장·재채점·감사 (테이블 도입 또는 기존 상수 정리) |
-| Client Exam UI | 전체 제한 시간, 종료 후 일괄 해설 |
+| 작업 | 상태 | 설명 |
+|------|------|------|
+| 출제 API variant | 완료 | `mode=exam` 정답 필드 제외 |
+| Submit API | 완료 | `POST /api/quiz/exam/submit` |
+| `quiz_submissions` | 완료 | 로그인 시 기록과 함께 저장 |
+| Client Exam UI | 완료 | `/tracks/:slug/exam` |
 
 **Definition of Done**
 

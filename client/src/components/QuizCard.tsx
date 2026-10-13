@@ -38,14 +38,14 @@ const QuizCard = ({
                     let btnClass = 'answer-btn';
                     if (selectedAnswer !== null) {
                         if (choice.isCorrect) btnClass += ' correct';
-                        if (choice.choiceId === selectedAnswer && !choice.isCorrect) btnClass += ' wrong';
+                        if (choice.choiceId === selectedAnswer && choice.isCorrect === false) btnClass += ' wrong';
                     }
 
                     return (
                         <button
                             key={choice.choiceId}
                             className={btnClass}
-                            onClick={() => onChoiceClick(choice.choiceId, choice.isCorrect)}
+                            onClick={() => onChoiceClick(choice.choiceId, Boolean(choice.isCorrect))}
                             disabled={selectedAnswer !== null}
                         >
                             {choice.choiceText}

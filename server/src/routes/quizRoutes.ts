@@ -9,6 +9,7 @@ const router = Router();
 router.get('/categories', quizController.getCategories);
 router.get('/quizzes', quizController.getQuizzes);
 router.get('/questions', quizController.getQuestionsByIds);
+router.post('/exam/submit', quizController.submitExam);
 
 router.get('/records', authenticateToken, quizRecordController.getQuizRecords);
 router.post('/records', authenticateToken, quizRecordController.createQuizRecord);

@@ -3,6 +3,7 @@ import './App.css';
 import HomePage from './pages/HomePage';
 import CategoryPage from './pages/CategoryPage';
 import QuizPage from './pages/QuizPage';
+import ExamPage from './pages/ExamPage';
 import LoginSuccessPage from './pages/LoginSuccessPage';
 import LoginFailedPage from './pages/LoginFailedPage';
 import HistoryPage from './pages/HistoryPage';
@@ -14,6 +15,7 @@ function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/tracks/:slug" element={<CategoryPage />} />
       <Route path="/tracks/:slug/quiz" element={<QuizPage />} />
+      <Route path="/tracks/:slug/exam" element={<ExamPage />} />
       <Route path="/login/success" element={<LoginSuccessPage />} />
       <Route path="/login/failed" element={<LoginFailedPage />} />
       <Route path="/history" element={<HistoryPage />} />
