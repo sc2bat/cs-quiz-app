@@ -1,13 +1,66 @@
+import { useEffect, useState } from 'react';
 import './App.css';
-import { ProgressBar, ResultScreen, QuizCard } from './components';
+import { ProgressBar, ResultScreen, QuizCard, TrackSelect } from './components';
 import { useQuiz } from './hooks/useQuiz';
+import { trackApi } from './api/trackApi';
+import type { Track } from './types';
 
 function App() {
-  const {state, actions} = useQuiz();
+  const [tracks, setTracks] = useState<Track[]>([]);
+  const [tracksLoading, setTracksLoading] = useState(true);
+  const [tracksError, setTracksError] = useState<string | null>(null);
+  const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
 
-  if (state.loading) return <div className="loading">⏳ 문제 로딩 중...</div>;
-  if (state.error) return <div className="error">❌ {state.error}</div>;
-  if (state.questions.length === 0) return <div>등록된 문제가 없습니다.</div>;
+  const { state, actions } = useQuiz(selectedTrack);
+
+  useEffect(() => {
+    const loadTracks = async () => {
+      try {
+        setTracksLoading(true);
+        const data = await trackApi.fetchTracks();
+        setTracks(data);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : '트랙 로딩 실패';
+        setTracksError(message);
+      } finally {
+        setTracksLoading(false);
+      }
+    };
+    loadTracks();
+  }, []);
+
+  if (!selectedTrack) {
+    return (
+      <TrackSelect
+        tracks={tracks}
+        loading={tracksLoading}
+        error={tracksError}
+        onSelect={setSelectedTrack}
+      />
+    );
+  }
+
+  if (state.loading) return <div className="loading">문제 로딩 중...</div>;
+  if (state.error) {
+    return (
+      <div className="error-panel">
+        <div className="error">{state.error}</div>
+        <button type="button" className="next-btn" onClick={actions.handleChangeTrack}>
+          트랙 다시 선택
+        </button>
+      </div>
+    );
+  }
+  if (state.questions.length === 0) {
+    return (
+      <div className="error-panel">
+        <div>등록된 문제가 없습니다.</div>
+        <button type="button" className="next-btn" onClick={actions.handleChangeTrack}>
+          트랙 다시 선택
+        </button>
+      </div>
+    );
+  }
 
   if (state.isFinished) {
     return (
@@ -23,10 +76,19 @@ function App() {
   }
 
   return (
-    <div className='quiz-container'>
-      {state.isReviewMode && <div className='badge' style={{ marginBottom: '10px', backgroundColor: '#ff9800' }}>
-        오답 복습 모드
-      </div>}
+    <div className="quiz-container">
+      <div className="quiz-header">
+        <span className="badge">{selectedTrack.name}</span>
+        <button type="button" className="link-btn" onClick={actions.handleChangeTrack}>
+          트랙 변경
+        </button>
+      </div>
+
+      {state.isReviewMode && (
+        <div className="badge" style={{ marginBottom: '10px', backgroundColor: '#ff9800' }}>
+          오답 복습 모드
+        </div>
+      )}
 
       <ProgressBar
         current={state.currentIndex + 1}

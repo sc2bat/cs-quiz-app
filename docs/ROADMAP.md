@@ -52,9 +52,9 @@
 |------|------|------|
 | 마이그레이션 | 완료 | `server/sql/` + `cs_quiz` / `cs_quiz_legacy` |
 | 시드 | 완료 | cs-interview, engineer-ipe, sqlp, aws-saa |
-| API | 대기 | `GET /api/tracks`, `GET /api/tracks/:slug/categories` |
-| 출제 API | 대기 | `GET /api/quiz/quizzes`에 `track` 필터 |
-| Client | 대기 | 트랙 선택 화면(홈) |
+| API | 완료 | `GET /api/tracks`, `GET /api/tracks/:slug/categories` |
+| 출제 API | 완료 | quizzes/categories에 `track` 쿼리 지원 |
+| Client | 완료 | TrackSelect → 트랙별 퀴즈 세션 |
 
 **Definition of Done**
 

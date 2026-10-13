@@ -48,6 +48,85 @@
   margin: 0 auto;
 }
 
+.track-select {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.track-select__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+}
+
+.track-select__subtitle {
+  margin: 0 0 1.5rem;
+  color: #555;
+}
+
+.track-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.track-card {
+  width: 100%;
+  text-align: left;
+  padding: 16px 18px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.track-card:hover {
+  border-color: #646cff;
+  background: #f7f8ff;
+}
+
+.track-card__name {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.track-card__desc {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #646cff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+}
+
+.error-panel {
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
 .badge {
   background-color: #646cff;
   color: white;
