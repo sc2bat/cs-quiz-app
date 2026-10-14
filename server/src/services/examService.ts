@@ -1,7 +1,8 @@
+import { ResultSetHeader } from 'mysql2';
 import { quizModel } from '../models/quizModel';
 import { trackModel } from '../models/trackModel';
-import { adminModel } from '../models/adminModel';
-import { quizRecordModel } from '../models/quizRecordModel';
+import { db } from '../config/db';
+import { QUIZ_RECORD_QUERIES, ADMIN_QUERIES } from '../models/queries';
 import { QUIZ_SETTINGS } from '../models/constants';
 
 function toExamPayload(
@@ -111,23 +112,25 @@ export const examService = {
 
     let quizRecordId: number | null = null;
     if (userId) {
-      quizRecordId = await quizRecordModel.createQuizRecord({
-        user_id: userId,
-        track_id: trackId,
-        score,
-        total_questions: answers.length,
-      });
+      quizRecordId = await db.transaction(async (conn) => {
+        const [recordResult] = await conn.execute<ResultSetHeader>(
+          QUIZ_RECORD_QUERIES.CREATE_QUIZ_RECORD,
+          [userId, trackId, score, answers.length]
+        );
+        const recordId = recordResult.insertId;
 
-      for (const answer of answers) {
-        const detail = details.find((d) => d.questionId === answer.questionId);
-        await adminModel.createSubmission({
-          quizRecordId,
-          questionId: answer.questionId,
-          choiceId: answer.choiceId ?? null,
-          subjectiveAnswer: answer.subjectiveAnswer ?? null,
-          isCorrect: detail?.isCorrect ?? false,
-        });
-      }
+        for (const answer of answers) {
+          const detail = details.find((d) => d.questionId === answer.questionId);
+          await conn.execute(ADMIN_QUERIES.CREATE_QUIZ_SUBMISSION, [
+            recordId,
+            answer.questionId,
+            answer.choiceId ?? null,
+            answer.subjectiveAnswer ?? null,
+            detail?.isCorrect ? 1 : 0,
+          ]);
+        }
+        return recordId;
+      });
     }
 
     return {

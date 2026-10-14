@@ -160,9 +160,16 @@ button.link-btn:focus-visible {
 }
 
 .auth-bar__user {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.9rem;
   color: #555;
   margin-right: auto;
+}
+
+.auth-bar__icon {
+  font-size: 1.1rem;
 }
 
 a.auth-bar__link {
@@ -170,6 +177,113 @@ a.auth-bar__link {
   align-items: center;
   text-decoration: none;
   color: inherit;
+}
+
+.login-btn-trigger {
+  background-color: transparent;
+  border: 1px solid #646cff;
+  color: #646cff;
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.login-btn-trigger:hover {
+  background-color: #646cff;
+  color: #fff;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal-content {
+  background: #fff;
+  color: #222;
+  padding: 28px 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 360px;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+}
+
+.modal-desc {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0 0 22px;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sso-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.sso-btn:hover {
+  opacity: 0.92;
+}
+
+.sso-btn.google {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.sso-btn.github {
+  background-color: #24292e;
+  color: #fff;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .history-page {

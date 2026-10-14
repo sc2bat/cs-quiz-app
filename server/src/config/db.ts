@@ -1,8 +1,8 @@
-import mysql, { ResultSetHeader } from 'mysql2/promise'; // 비동기 처리를 위해 promise 버전 사용
+import mysql, { PoolConnection, ResultSetHeader } from 'mysql2/promise';
 import dotenv from 'dotenv';
 import logger from '../utils/logger';
 
-dotenv.config(); // .env 파일 로드
+dotenv.config();
 
 export const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -11,17 +11,20 @@ export const pool = mysql.createPool({
   database: process.env.DB_NAME,
   port: Number(process.env.DB_PORT) || 3306,
   waitForConnections: true,
-  connectionLimit: 10, // 동시에 최대 10개 연결 허용
-  queueLimit: 0
+  connectionLimit: 10,
+  queueLimit: 0,
 });
 
 export const db = {
   async query<T extends mysql.RowDataPacket[]>(sql: string, params?: any[]) {
+    const start = Date.now();
     try {
-      logger.debug(`[SQL QUERY] ${sql}`)
-
+      logger.debug(`[SQL QUERY] ${sql}`);
       const [rows, fields] = await pool.query<T>(sql, params);
-
+      const duration = Date.now() - start;
+      if (Array.isArray(rows)) {
+        logger.debug(`[SQL RESULT] (${duration}ms) Fetched ${rows.length} rows`);
+      }
       return [rows, fields] as const;
     } catch (error: any) {
       logger.error(`[SQL QUERY ERROR] ${error.message} \nQuery: ${sql}`);
@@ -29,25 +32,45 @@ export const db = {
     }
   },
   async execute(sql: string, params?: any[]): Promise<ResultSetHeader> {
+    const start = Date.now();
     try {
       logger.debug(`[SQL EXECUTE] ${sql}`);
       const [result] = await pool.execute<ResultSetHeader>(sql, params);
+      const duration = Date.now() - start;
+      logger.debug(
+        `[SQL RESULT] (${duration}ms) Affected: ${result.affectedRows}, InsertId: ${result.insertId}`
+      );
       return result;
     } catch (error: any) {
       logger.error(`[SQL EXECUTE ERROR] ${error.message} \nQuery: ${sql}`);
       throw error;
     }
-  }
+  },
+  async transaction<T>(callback: (conn: PoolConnection) => Promise<T>): Promise<T> {
+    const conn = await pool.getConnection();
+    try {
+      await conn.beginTransaction();
+      logger.debug('[Transaction] STARTED');
+      const result = await callback(conn);
+      await conn.commit();
+      logger.debug('[Transaction] COMMITTED');
+      return result;
+    } catch (error) {
+      await conn.rollback();
+      logger.error('[Transaction] ROLLED BACK', error);
+      throw error;
+    } finally {
+      conn.release();
+    }
+  },
 };
 
-// 연결 테스트용 로그
-pool.getConnection()
+pool
+  .getConnection()
   .then((conn) => {
-    console.log('(O) MySQL Database Connected Successfully!');
     logger.info('(O) MySQL Database Connected Successfully!');
-    conn.release(); // 연결 반납
+    conn.release();
   })
   .catch((err) => {
-    console.error('(X) Database Connection Failed:', err);
     logger.error('(X) Database Connection Failed:', err);
   });
