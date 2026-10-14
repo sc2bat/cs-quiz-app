@@ -40,3 +40,6 @@ cd server
 
 `tracks` → `categories` → `questions` → `choices`  
 `users`, `quiz_records`(+`track_id`), `quiz_record_categories`, `quiz_submissions`, `wrong_answers`
+
+추가 마이그레이션:
+- `004_questions_is_active.sql` — 문제 soft-delete (`is_active`)

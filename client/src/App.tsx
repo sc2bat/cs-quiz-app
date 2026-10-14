@@ -7,7 +7,10 @@ import ExamPage from './pages/ExamPage';
 import LoginSuccessPage from './pages/LoginSuccessPage';
 import LoginFailedPage from './pages/LoginFailedPage';
 import HistoryPage from './pages/HistoryPage';
-import AdminPage from './pages/AdminPage';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminTracksPage from './pages/admin/AdminTracksPage';
+import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
+import AdminQuestionsPage from './pages/admin/AdminQuestionsPage';
 
 function App() {
   return (
@@ -19,7 +22,14 @@ function App() {
       <Route path="/login/success" element={<LoginSuccessPage />} />
       <Route path="/login/failed" element={<LoginFailedPage />} />
       <Route path="/history" element={<HistoryPage />} />
-      <Route path="/admin" element={<AdminPage />} />
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<AdminTracksPage />} />
+        <Route path="tracks/:trackId" element={<AdminCategoriesPage />} />
+        <Route
+          path="tracks/:trackId/categories/:categoryId"
+          element={<AdminQuestionsPage />}
+        />
+      </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

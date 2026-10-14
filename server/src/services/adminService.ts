@@ -162,9 +162,8 @@ export const adminService = {
     return { updated: n };
   },
   async deleteQuestion(questionId: number) {
-    await adminModel.replaceChoices(questionId, []);
     const n = await adminModel.deleteQuestion(questionId);
     if (!n) throw Object.assign(new Error('Question not found'), { status: 404 });
-    return { deleted: n };
+    return { deactivated: n };
   },
 };

@@ -8,7 +8,7 @@ import type { Track } from '../types';
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, sessionExpired, acknowledgeSessionExpired } = useAuth();
   const [tracks, setTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,8 +30,17 @@ export default function HomePage() {
     load();
   }, []);
 
+  useEffect(() => {
+    if (sessionExpired) setLoginOpen(true);
+  }, [sessionExpired]);
+
   return (
     <div>
+      {sessionExpired && (
+        <p className="error" style={{ maxWidth: 640, margin: '0 auto 12px' }}>
+          세션이 만료되었습니다. 다시 로그인해 주세요.
+        </p>
+      )}
       <div className="auth-bar">
         {isLoggedIn ? (
           <>
@@ -62,7 +71,13 @@ export default function HomePage() {
         )}
       </div>
 
-      <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
+      <LoginModal
+        isOpen={loginOpen}
+        onClose={() => {
+          setLoginOpen(false);
+          acknowledgeSessionExpired();
+        }}
+      />
 
       <TrackSelect
         tracks={tracks}
