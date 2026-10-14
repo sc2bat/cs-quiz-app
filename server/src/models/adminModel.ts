@@ -126,7 +126,8 @@ export const adminModel = {
     return result.affectedRows;
   },
   async deleteQuestion(questionId: number) {
-    const result = await db.execute(ADMIN_QUERIES.DELETE_QUESTION, [questionId]);
+    // Soft delete — keep row for quiz_submissions / wrong_answers FK history
+    const result = await db.execute(ADMIN_QUERIES.DEACTIVATE_QUESTION, [questionId]);
     return result.affectedRows;
   },
   async replaceChoices(

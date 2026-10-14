@@ -395,6 +395,14 @@ a.auth-bar__link {
   text-align: left;
 }
 
+.admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
 .admin-breadcrumb {
   display: flex;
   flex-wrap: wrap;

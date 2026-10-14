@@ -30,6 +30,17 @@ Admin은 **드릴다운** 구조입니다. 브레드크럼으로 현재 위치�
    - 객관식: 보기마다 입력란 + 정답 라디오 (textarea 한 칸 아님)
 4. 홈 → 해당 트랙 → Practice/Exam에서 바로 확인
 
+## 문제 삭제(비활성화)
+
+`quiz_submissions` 등 이력이 `question_id`를 참조하므로 **hard DELETE 하지 않습니다.**  
+Admin의 “비활성화”는 `questions.is_active = 0` (tracks의 `is_active`와 동일 개념, use_yn N에 해당)이며, 출제·Admin 목록에서만 제외됩니다.
+
+DB 마이그레이션: `server/sql/004_questions_is_active.sql`
+
+## 세션 만료
+
+JWT 만료 시 Admin에 머물지 않고 재로그인 안내(홈/로그인 모달)로 보냅니다.
+
 ## API 요약
 
 | Method | Path | 설명 |

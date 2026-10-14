@@ -313,17 +313,23 @@ export default function AdminQuestionsPage() {
               type="button"
               className="ghost-btn"
               onClick={async () => {
-                if (!confirm('이 문제를 삭제할까요?')) return;
+                if (
+                  !confirm(
+                    '이 문제를 비활성화할까요?\n(풀이 이력은 남기고, 출제 목록에서만 제외됩니다)'
+                  )
+                ) {
+                  return;
+                }
                 try {
                   await adminApi.deleteQuestion(q.questionId);
-                  setMessage('문제 삭제됨');
+                  setMessage('문제를 비활성화했습니다');
                   await reload();
                 } catch (e: unknown) {
                   setError(adminApi.errMessage(e));
                 }
               }}
             >
-              삭제
+              비활성화
             </button>
           </li>
         ))}

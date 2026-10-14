@@ -60,11 +60,13 @@ CREATE TABLE questions (
   question_text TEXT NOT NULL,
   explanation TEXT DEFAULT NULL,
   subjective_answer VARCHAR(255) DEFAULT NULL,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (question_id),
   KEY idx_questions_category_id (category_id),
   KEY idx_questions_type (question_type),
+  KEY idx_questions_active (is_active),
   CONSTRAINT fk_q_category
     FOREIGN KEY (category_id) REFERENCES categories (category_id)
     ON DELETE RESTRICT ON UPDATE CASCADE

@@ -41,6 +41,7 @@ export const QUIZ_QUERIES = {
 
     GET_ALL_RANDOM_QUESTIONS: `
         SELECT * FROM ${TABLES.QUESTIONS}
+            WHERE is_active = 1
             ORDER BY RAND()
     `,
 
@@ -57,6 +58,7 @@ export const QUIZ_QUERIES = {
         FROM ${TABLES.QUESTIONS} q
             JOIN ${TABLES.CATEGORIES} c ON q.category_id = c.category_id
                 WHERE 1=1
+                    AND q.is_active = 1
                     AND q.category_id IN (?)
         ORDER BY RAND()
             LIMIT ?
@@ -75,6 +77,7 @@ export const QUIZ_QUERIES = {
         FROM ${TABLES.QUESTIONS} q
             JOIN ${TABLES.CATEGORIES} c ON q.category_id = c.category_id
                 WHERE c.track_id = ?
+                    AND q.is_active = 1
                     AND q.category_id IN (?)
         ORDER BY RAND()
             LIMIT ?
@@ -321,23 +324,28 @@ export const ADMIN_QUERIES = {
         DELETE FROM ${TABLES.CATEGORIES} WHERE category_id = ?
     `,
     GET_QUESTIONS_BY_CATEGORY: `
-        SELECT question_id, category_id, question_type, question_text, explanation, subjective_answer, created_at
+        SELECT question_id, category_id, question_type, question_text, explanation, subjective_answer, is_active, created_at
         FROM ${TABLES.QUESTIONS}
         WHERE category_id = ?
+            AND is_active = 1
         ORDER BY question_id DESC
     `,
     CREATE_QUESTION: `
         INSERT INTO ${TABLES.QUESTIONS}
-            (category_id, question_type, question_text, explanation, subjective_answer)
-        VALUES (?, ?, ?, ?, ?)
+            (category_id, question_type, question_text, explanation, subjective_answer, is_active)
+        VALUES (?, ?, ?, ?, ?, 1)
     `,
     UPDATE_QUESTION: `
         UPDATE ${TABLES.QUESTIONS}
         SET category_id = ?, question_type = ?, question_text = ?, explanation = ?, subjective_answer = ?
         WHERE question_id = ?
+            AND is_active = 1
     `,
-    DELETE_QUESTION: `
-        DELETE FROM ${TABLES.QUESTIONS} WHERE question_id = ?
+    DEACTIVATE_QUESTION: `
+        UPDATE ${TABLES.QUESTIONS}
+        SET is_active = 0
+        WHERE question_id = ?
+            AND is_active = 1
     `,
     CREATE_CHOICE: `
         INSERT INTO ${TABLES.CHOICES} (question_id, choice_text, is_correct, sort_order)
