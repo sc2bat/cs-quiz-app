@@ -21,10 +21,13 @@ role을 올린 뒤에는 **로그아웃 → 다시 로그인** 해야 버튼이 
 
 ## 새 트랙(SQLP / AWS 등) 추가 절차
 
-1. `/admin` → Tracks에서 slug/name 생성  
+Admin은 **드릴다운** 구조입니다. 브레드크럼으로 현재 위치를 확인하세요.
+
+1. `/admin` → 트랙 카드 선택 (또는 트랙 추가)  
    - 예: slug `sqlp`, name `SQL Developer (SQLP)`
-2. Categories에서 해당 trackId로 과목/카테고리 추가
-3. Questions에서 카테고리 선택 후 객관식/주관식 등록
+2. `/admin/tracks/:trackId` → 해당 트랙의 카테고리(과목) 추가·선택
+3. `/admin/tracks/:trackId/categories/:categoryId` → 문제 추가  
+   - 객관식: 보기마다 입력란 + 정답 라디오 (textarea 한 칸 아님)
 4. 홈 → 해당 트랙 → Practice/Exam에서 바로 확인
 
 ## API 요약
