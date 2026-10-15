@@ -159,13 +159,29 @@
 
 **현행:**
 
+- 런타임: **Node.js 26** (CI `node-version`, client/server `engines`, 배포 호스트 pm2)
+- Client 빌드: **Vite 8** (+ `@vitejs/plugin-react` 6)
 - push `main` → SSH deploy (`deploy.yml`: `npm install/build` → pm2 restart)
-- push/PR (`main`, `dev`) → CI (`ci.yml`: client eslint + `tsc -b`, server `tsc`)
+- push/PR (`main`, `dev`) → CI (`ci.yml`):
+  - client: eslint + `tsc -b`
+  - server: `tsc` + MySQL 8 service + schema + `npm test`
+
+**Server API 통합 테스트 (완료):**
+
+| Suite | 범위 |
+|-------|------|
+| tracks | `GET /api/tracks`, `/:slug/categories`, unknown slug 404 |
+| exam | `mode=exam` 정답·해설·`isCorrect` 비노출 vs practice; `POST /api/quiz/exam/submit` |
+| adminAuth | `GET /api/admin/tracks` — 401 / 403 / USER 403 / ADMIN 200 |
+
+- 하네스: Vitest + Supertest, `createApp()`, `.env.test`, `server/tests/`
+- 로컬 테스트 DB는 런타임과 호스트·계정 공유·DB명만 분리 가능 (예: `cs_quiz_legacy`)
+- Client RTL/E2E, OAuth 콜백, Admin CRUD 전체는 범위 외
 
 **목표 (추가 권장):**
 
-- (Phase 3+) 핵심 훅/API 통합 테스트 최소 1 suite
-- feature → `dev` PR → `main` 병합 흐름을 다시 쓰려면 `dev`를 `main`에 맞추거나 리베이스 필요 (현재 분기 분기됨)
+- Client 단위/컴포넌트 테스트 (선택)
+- feature → `dev` PR → `main` 병합 흐름 유지
 
 ---
 

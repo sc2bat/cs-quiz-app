@@ -31,15 +31,17 @@ CS 면접, 정보처리기사, SQLP, AWS 등 **여러 학습 트랙**을 하나�
 
 <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=React&logoColor=black"/> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=TypeScript&logoColor=white"/> <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=Vite&logoColor=white"/>
 
-- Vite, React 19, Axios
+- Vite 8, React 19, Axios
 - 스타일: CSS (`App.css` 등)
+- 런타임: **Node.js >= 26** (`engines`)
 
 **Backend**
 
 <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=Node.js&logoColor=white"/> <img src="https://img.shields.io/badge/Express-000000?style=flat-square&logo=Express&logoColor=white"/> <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=TypeScript&logoColor=white"/>
 
-- Express 5, Passport (Google/GitHub OAuth), JWT
+- Node.js **26** (CI·로컬·배포 런타임), Express 5, Passport (Google/GitHub OAuth), JWT
 - MySQL2 (connection pool), Winston
+- API 통합 테스트: Vitest + Supertest (`server/tests/`)
 
 **Database**
 
@@ -66,9 +68,10 @@ CS 면접, 정보처리기사, SQLP, AWS 등 **여러 학습 트랙**을 하나�
 | 항목 | 상태 |
 |------|------|
 | Phase 0–6 (설계 → Exam) | 완료 — [ROADMAP.md](docs/ROADMAP.md) |
-| CI (PR/push lint·tsc) | `.github/workflows/ci.yml` |
+| Node 26 + Vite 8 | 완료 (`engines`, CI `node-version: '26'`) |
+| CI (lint·tsc + server 통합 테스트) | `.github/workflows/ci.yml` (MySQL service + `npm test`) |
+| Server API 통합 테스트 | 완료 — tracks / exam fetch·submit / admin auth gate |
 | 콘텐츠 보강 (SQLP/AWS 문제) | Admin/시드로 확장 |
-| 통합 테스트 suite | 예정 |
 
 ---
 
@@ -111,6 +114,8 @@ VITE_ALLOW_HOST_WWW=
 
 #### 2. 설치 및 실행
 
+Node **26** 권장 (`nvm use 26`).
+
 ```bash
 git clone https://github.com/sc2bat/cs-quiz-app.git
 cd cs-quiz-app
@@ -121,6 +126,14 @@ cd server && npm install && npm run dev
 # Frontend (새 터미널)
 cd client && npm install && npm run dev
 ```
+
+#### 3. 서버 통합 테스트
+
+1. 테스트 전용 DB에 `server/sql/001_schema.sql` 적용 (로컬 예: `cs_quiz_legacy`)
+2. `server/.env.test.example` → `server/.env.test` 복사 후 `quiz_dev` / DB명 설정
+3. `cd server && npm test` (Vitest + Supertest)
+
+범위: `GET /api/tracks`, exam 출제 비노출·submit 채점, `GET /api/admin/tracks` 게이트. Client RTL/E2E는 포함하지 않음.
 
 ---
 
