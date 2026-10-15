@@ -1,10 +1,11 @@
 {
   "name": "server",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "start": "node dist/index.js",
     "build": "tsc",
     "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts"
@@ -29,12 +30,18 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.10.1",
+    "@types/node": "^26.6.5",
     "@types/passport": "^1.0.17",
     "@types/passport-github2": "^1.2.9",
     "@types/passport-google-oauth20": "^2.0.17",
+    "@types/supertest": "^7.2.1",
     "nodemon": "^3.1.11",
+    "supertest": "^7.3.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.4"
+  },
+  "engines": {
+    "node": ">=26"
   }
 }

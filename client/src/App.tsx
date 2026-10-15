@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
+import { VersionBadge } from './components';
 import HomePage from './pages/HomePage';
 import CategoryPage from './pages/CategoryPage';
 import QuizPage from './pages/QuizPage';
@@ -14,6 +15,8 @@ import AdminQuestionsPage from './pages/admin/AdminQuestionsPage';
 
 function App() {
   return (
+    <>
+    <VersionBadge />
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/tracks/:slug" element={<CategoryPage />} />
@@ -32,6 +35,7 @@ function App() {
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   );
 }
 

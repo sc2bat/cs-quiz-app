@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { systemService } from "../services/systemService";
 import { asyncHandler } from "../utils/asyncHandler";
 import logger from '../utils/logger';
+import { getPackageVersion } from '../utils/packageInfo';
 
 export const systemController = {
     checkDatabase:
@@ -28,6 +29,16 @@ export const systemController = {
                     status: 'success',
                     serverTime: new Date(),
                     databaseDateTime: databaseDateTime
+                });
+            }
+        ),
+    getVersion:
+        asyncHandler(
+            async function(_req: Request, res: Response) {
+                logger.debug(`systemController getVersion`);
+                res.json({
+                    status: 'success',
+                    version: getPackageVersion(),
                 });
             }
         ),
