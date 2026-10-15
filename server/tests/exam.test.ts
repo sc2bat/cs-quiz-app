@@ -61,6 +61,8 @@ describe('Exam API', () => {
         (q) => q.questionId === seed.multipleQuestionId
       );
       expect(multiple).toBeDefined();
+      if (!multiple) return;
+
       expect(multiple.explanation).toBe('basic arithmetic');
       expect(multiple.choices.some((c: { isCorrect: boolean }) => c.isCorrect)).toBe(true);
     });
