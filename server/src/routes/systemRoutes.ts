@@ -12,6 +12,7 @@ function allowDevOnly(req: Request, res: Response, next: NextFunction) {
 }
 
 router.get('/db-check', allowDevOnly, systemController.checkDatabase);
+router.get('/version', allowDevOnly, systemController.getVersion);
 router.get('/date', systemController.getServerTime);
 
 export default router;
