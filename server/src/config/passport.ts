@@ -6,7 +6,9 @@ import logger from "../utils/logger";
 import { authService } from "../services/authService";
 import dotenv from 'dotenv';
 
-dotenv.config();
+if (process.env.NODE_ENV !== 'test') {
+  dotenv.config();
+}
 
 async function socialCallback (
     accessToken: string,
