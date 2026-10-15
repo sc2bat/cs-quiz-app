@@ -8,6 +8,7 @@ node_modules/
 # 2. 환경변수 및 보안 파일 (해킹 방지 - 가장 중요!)
 .env
 .env.*
+!.env.test.example
 *.local
 .DS_Store
 
