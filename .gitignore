@@ -49,3 +49,6 @@ client/logs/
 # 9. 개발 서버 on off
 dev-*.pid
 dev-manager.sh
+
+# 10. cursor
+.cursor/

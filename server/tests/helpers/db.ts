@@ -1,6 +1,6 @@
 import { pool, db } from '../../src/config/db';
 
-/** Truncate domain tables (FK-safe order). Schema must already exist on cs_quiz_test. */
+/** Truncate domain tables (FK-safe order). Schema must already exist on the test DB. */
 export async function truncateAll(): Promise<void> {
   await db.query('SET FOREIGN_KEY_CHECKS = 0');
   await db.query('TRUNCATE TABLE quiz_submissions');
