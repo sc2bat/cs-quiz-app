@@ -11,10 +11,10 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Deploy to Server using SSH
-        uses: appleboy/ssh-action@v1.0.3 # SSH 접속을 도와주는 플러그인
+        uses: appleboy/ssh-action@v1.2.5 # SSH 접속을 도와주는 플러그인
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.WHITE_USERNAME }}
@@ -23,6 +23,11 @@ jobs:
           script: |
             REPO_URL="https://github.com/sc2bat/cs-quiz-app.git"
             TARGET_DIR="/home/apps/cs-quiz-app"
+
+            echo "=== Deploy host runtime ==="
+            which node
+            node -v
+            npm -v
 
             cd $TARGET_DIR
             echo "Target Directory: $TARGET_DIR"
