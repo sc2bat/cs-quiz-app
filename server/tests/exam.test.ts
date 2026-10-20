@@ -1,17 +1,26 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../src/app';
-import { closePool, seedFixtures, truncateAll, type SeedIds } from './helpers/db';
+import {
+  closePool,
+  seedFixtures,
+  seedPassRuleFixtures,
+  truncateAll,
+  type PassRuleSeedIds,
+  type SeedIds,
+} from './helpers/db';
 import { userToken } from './helpers/auth';
 
 const app = createApp();
 
 describe('Exam API', () => {
   let seed: SeedIds;
+  let passSeed: PassRuleSeedIds;
 
   beforeAll(async () => {
     await truncateAll();
     seed = await seedFixtures();
+    passSeed = await seedPassRuleFixtures();
   });
 
   afterAll(async () => {
@@ -91,6 +100,19 @@ describe('Exam API', () => {
       expect(res.body.data.score).toBe(2);
       expect(res.body.data.total).toBe(2);
       expect(res.body.data.quizRecordId).toBeNull();
+      expect(res.body.data.passed).toBeNull();
+      expect(res.body.data.passRule).toBeNull();
+      expect(res.body.data.average).toBe(100);
+      expect(res.body.data.byCategory).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            categoryId: seed.categoryId,
+            correct: 2,
+            total: 2,
+            score: 100,
+          }),
+        ])
+      );
       expect(res.body.data.details).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
@@ -140,6 +162,80 @@ describe('Exam API', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.message).toMatch(/trackId and answers/);
+    });
+
+    it('passRule: passed true when all categories >= 40 and average >= 60', async () => {
+      // CatA 1/2=50, CatB 2/2=100 → avg 75
+      const res = await request(app)
+        .post('/api/quiz/exam/submit')
+        .send({
+          trackId: passSeed.trackId,
+          answers: [
+            {
+              questionId: passSeed.catA[0].questionId,
+              choiceId: passSeed.catA[0].correctChoiceId,
+            },
+            {
+              questionId: passSeed.catA[1].questionId,
+              choiceId: passSeed.catA[1].wrongChoiceId,
+            },
+            {
+              questionId: passSeed.catB[0].questionId,
+              choiceId: passSeed.catB[0].correctChoiceId,
+            },
+            {
+              questionId: passSeed.catB[1].questionId,
+              choiceId: passSeed.catB[1].correctChoiceId,
+            },
+          ],
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.passRule).toEqual({
+        minPerCategory: 40,
+        minAverage: 60,
+      });
+      expect(res.body.data.average).toBe(75);
+      expect(res.body.data.passed).toBe(true);
+      expect(res.body.data.byCategory).toHaveLength(2);
+    });
+
+    it('passRule: passed false when a category is below 40', async () => {
+      // CatA 0/2=0, CatB 2/2=100 → avg 50
+      const res = await request(app)
+        .post('/api/quiz/exam/submit')
+        .send({
+          trackId: passSeed.trackId,
+          answers: [
+            {
+              questionId: passSeed.catA[0].questionId,
+              choiceId: passSeed.catA[0].wrongChoiceId,
+            },
+            {
+              questionId: passSeed.catA[1].questionId,
+              choiceId: passSeed.catA[1].wrongChoiceId,
+            },
+            {
+              questionId: passSeed.catB[0].questionId,
+              choiceId: passSeed.catB[0].correctChoiceId,
+            },
+            {
+              questionId: passSeed.catB[1].questionId,
+              choiceId: passSeed.catB[1].correctChoiceId,
+            },
+          ],
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.passed).toBe(false);
+      expect(res.body.data.byCategory).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            categoryId: passSeed.categoryAId,
+            score: 0,
+          }),
+        ])
+      );
     });
   });
 });

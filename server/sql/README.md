@@ -43,3 +43,4 @@ cd server
 
 추가 마이그레이션:
 - `004_questions_is_active.sql` — 문제 soft-delete (`is_active`)
+- `005_ipe_pass_rule.sql` — `engineer-ipe` defaults에 Exam `passRule` (과목당 40·평균 60)

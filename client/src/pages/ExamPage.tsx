@@ -46,6 +46,19 @@ export default function ExamPage() {
       isCorrect: boolean;
       explanation: string | null;
     }[];
+    byCategory: {
+      categoryId: number;
+      categoryName: string;
+      correct: number;
+      total: number;
+      score: number;
+    }[];
+    average: number;
+    passed: boolean | null;
+    passRule: {
+      minPerCategory: number;
+      minAverage: number;
+    } | null;
   } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const finishedRef = useRef(false);
@@ -96,6 +109,10 @@ export default function ExamPage() {
         score: data.score,
         total: data.total,
         details: data.details,
+        byCategory: data.byCategory ?? [],
+        average: data.average ?? 0,
+        passed: data.passed ?? null,
+        passRule: data.passRule ?? null,
       });
       setFinished(true);
     } catch (err: unknown) {
@@ -143,8 +160,35 @@ export default function ExamPage() {
       <div className="result-container">
         <h1>Exam 결과</h1>
         <p>
-          점수: {result.score} / {result.total}
+          문항: {result.score} / {result.total}
         </p>
+        {result.passed !== null && (
+          <p>
+            <strong style={{ color: result.passed ? 'green' : 'crimson' }}>
+              {result.passed ? '합격' : '불합격'}
+            </strong>
+            {result.passRule && (
+              <span>
+                {' '}
+                (과목당 {result.passRule.minPerCategory}점 이상, 평균{' '}
+                {result.passRule.minAverage}점 이상)
+              </span>
+            )}
+          </p>
+        )}
+        {result.byCategory.length > 0 && (
+          <div className="exam-category-scores">
+            <h2>과목별 점수</h2>
+            <p>평균: {result.average}점</p>
+            <ul className="exam-review-list">
+              {result.byCategory.map((c) => (
+                <li key={c.categoryId} className="exam-review-item">
+                  <strong>{c.categoryName}</strong>: {c.score}점 ({c.correct}/{c.total})
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <ul className="exam-review-list">
           {questions.map((q) => {
             const detail = result.details.find((d) => d.questionId === q.questionId);

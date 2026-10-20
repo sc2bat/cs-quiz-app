@@ -25,6 +25,44 @@ export type SeedIds = {
   userId: number;
 };
 
+export type PassRuleSeedIds = {
+  trackId: number;
+  categoryAId: number;
+  categoryBId: number;
+  /** category A: 2 MULTIPLE questions */
+  catA: { questionId: number; correctChoiceId: number; wrongChoiceId: number }[];
+  /** category B: 2 MULTIPLE questions */
+  catB: { questionId: number; correctChoiceId: number; wrongChoiceId: number }[];
+};
+
+async function insertMultipleQuestion(
+  categoryId: number,
+  text: string
+): Promise<{ questionId: number; correctChoiceId: number; wrongChoiceId: number }> {
+  const q = await db.execute(
+    `INSERT INTO questions
+       (category_id, question_type, question_text, explanation, is_active)
+     VALUES (?, 'MULTIPLE', ?, ?, 1)`,
+    [categoryId, text, 'fixture']
+  );
+  const questionId = q.insertId;
+  const correct = await db.execute(
+    `INSERT INTO choices (question_id, choice_text, is_correct, sort_order)
+     VALUES (?, ?, 1, 0)`,
+    [questionId, 'correct']
+  );
+  const wrong = await db.execute(
+    `INSERT INTO choices (question_id, choice_text, is_correct, sort_order)
+     VALUES (?, ?, 0, 1)`,
+    [questionId, 'wrong']
+  );
+  return {
+    questionId,
+    correctChoiceId: correct.insertId,
+    wrongChoiceId: wrong.insertId,
+  };
+}
+
 /** Minimal fixtures for tracks / exam / admin suites. */
 export async function seedFixtures(): Promise<SeedIds> {
   const track = await db.execute(
@@ -81,6 +119,44 @@ export async function seedFixtures(): Promise<SeedIds> {
     wrongChoiceId: wrong.insertId,
     subjectiveQuestionId: subjective.insertId,
     userId: user.insertId,
+  };
+}
+
+/** Track with passRule + 2 categories × 2 MULTIPLE questions (for pass/fail cases). */
+export async function seedPassRuleFixtures(): Promise<PassRuleSeedIds> {
+  const defaults = JSON.stringify({
+    questionLimit: 10,
+    secondsPerQuestion: 30,
+    passRule: { minPerCategory: 40, minAverage: 60 },
+  });
+  const track = await db.execute(
+    `INSERT INTO tracks (slug, name, description, defaults, is_active)
+     VALUES (?, ?, ?, ?, 1)`,
+    ['ipe-pass-track', 'IPE Pass Track', 'passRule fixture', defaults]
+  );
+  const trackId = track.insertId;
+
+  const catA = await db.execute(
+    `INSERT INTO categories (track_id, name, sort_order) VALUES (?, ?, 0)`,
+    [trackId, 'Subject A']
+  );
+  const catB = await db.execute(
+    `INSERT INTO categories (track_id, name, sort_order) VALUES (?, ?, 1)`,
+    [trackId, 'Subject B']
+  );
+
+  return {
+    trackId,
+    categoryAId: catA.insertId,
+    categoryBId: catB.insertId,
+    catA: [
+      await insertMultipleQuestion(catA.insertId, 'A1?'),
+      await insertMultipleQuestion(catA.insertId, 'A2?'),
+    ],
+    catB: [
+      await insertMultipleQuestion(catB.insertId, 'B1?'),
+      await insertMultipleQuestion(catB.insertId, 'B2?'),
+    ],
   };
 }
 

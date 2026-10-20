@@ -58,7 +58,7 @@ CS 면접, 정보처리기사, SQLP, AWS 등 **여러 학습 트랙**을 하나�
 
 - **멀티 트랙:** CS Interview / 정보처리기사 / SQLP / AWS 등 트랙 선택 후 학습
 - **Practice:** 카테고리 선택 출제, 문제당 타이머, 즉시 정오답·해설, 오답 localStorage + ID 재조회 복습
-- **Exam:** 진행 중 정답 비노출, `POST /api/quiz/exam/submit` 서버 채점, 종료 후 해설
+- **Exam:** 진행 중 정답 비노출, `POST /api/quiz/exam/submit` 서버 채점·과목별 점수, `passRule` 트랙(정보처리기사)은 과목당 40·평균 60 합격 판정, 종료 후 해설
 - **계정·이력:** Google/GitHub OAuth, JWT(one-time code 교환), `/history` 기록·삭제, `wrong_answers` 동기화
 - **Admin:** `/admin` + `/api/admin/*` 트랙·카테고리·문제 CRUD (`docs/ADMIN.md`)
 - 랜덤 출제 (`ORDER BY RAND()`), React Router (`/` → `/tracks/:slug` → quiz|exam)
@@ -71,6 +71,7 @@ CS 면접, 정보처리기사, SQLP, AWS 등 **여러 학습 트랙**을 하나�
 | Node 26 + Vite 8 | 완료 (`engines`, CI `node-version: '26'`) |
 | CI (lint·tsc + server 통합 테스트) | `.github/workflows/ci.yml` (MySQL service + `npm test`) |
 | Server API 통합 테스트 | 완료 — tracks / exam fetch·submit / admin auth gate |
+| Exam 과목별 점수·합격 판정 | 완료 — `passRule` (IPE 필기 40/60); 공식 시간표는 미구현 |
 | 콘텐츠 보강 (SQLP/AWS 문제) | Admin/시드로 확장 |
 
 ---

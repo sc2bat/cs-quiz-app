@@ -144,7 +144,9 @@ erDiagram
 **설계 결정**
 
 - `tracks.slug`: `cs-interview`, `engineer-ipe`, `sqlp`, `aws-saa` 등 URL·API 식별자
-- `tracks.defaults` 예: `{ "questionLimit": 10, "secondsPerQuestion": 30 }`
+- `tracks.defaults` 예: `{ "questionLimit": 10, "secondsPerQuestion": 30, "passRule": { "minPerCategory": 40, "minAverage": 60 } }`
+  - `passRule`은 선택. Exam submit 시 과목(카테고리)별 100점 환산·평균·합격(`passed`)에만 사용
+  - 정보처리기사(`engineer-ipe`) 필기: 과목당 40 이상 + 평균 60 이상
 - `categories.track_id`: 트랙별 카테고리 격리. 마이그레이션 시 기존 row는 기본 트랙(예: `cs-interview`)에 귀속
 - `quiz_records.track_id`: 트랙별 약점·이력 분석
 - **게스트:** localStorage 오답 ID (키는 트랙 slug 포함 권장)
@@ -157,13 +159,18 @@ erDiagram
 |------|------|-----------|
 | **Practice** | 트랙 → 카테고리 선택 → 타이머 → 즉시 해설 | 클라이언트 즉시 피드백 허용 (학습 UX) |
 | **Review** | 저장된 오답 ID로 API 재조회 후 Practice와 동일 | 동일 |
-| **Exam** (후순위) | 제한 시간, 해설 지연 | 서버 제출·채점 필수, 정답 미포함 응답 |
+| **Exam** | 학습용 시뮬: `문항수 × secondsPerQuestion` 전체 타이머, 해설 지연 | 서버 `POST /api/quiz/exam/submit` 채점; 출제 시 정답 미포함; `passRule` 있으면 과목별 점수·합격 판정 |
+
+**Exam 범위 (학습 시뮬)**
+
+- 타이머는 트랙 `defaults.secondsPerQuestion` 기반. 공식 시험 시간표(과목당 30분 등)·과목당 고정 문항 수는 **미구현**
+- 합격 규칙은 트랙 `defaults.passRule`이 있을 때만 적용 (`passed: null`이면 점수만 표시)
 
 **보안 원칙**
 
 - 공식 **점수·랭킹·DB 기록**은 서버 채점 API 결과만 신뢰한다.
 - Practice/Review는 개인 학습용으로 정답 필드 노출을 허용할 수 있다.
-- Exam 모드는 출제 API에서 정답 제외 + `POST /api/quiz/submit`(가칭)으로 채점한다.
+- Exam 모드는 출제 API에서 정답 제외 + `POST /api/quiz/exam/submit`으로 채점한다.
 
 ### API 경계 (목표)
 

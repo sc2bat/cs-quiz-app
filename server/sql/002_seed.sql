@@ -11,7 +11,11 @@ INSERT INTO tracks (slug, name, description, defaults) VALUES
   'engineer-ipe',
   'Information Processing Engineer',
   'Korean information processing engineer certification study',
-  JSON_OBJECT('questionLimit', 10, 'secondsPerQuestion', 30)
+  JSON_OBJECT(
+    'questionLimit', 10,
+    'secondsPerQuestion', 30,
+    'passRule', JSON_OBJECT('minPerCategory', 40, 'minAverage', 60)
+  )
 ),
 (
   'sqlp',
