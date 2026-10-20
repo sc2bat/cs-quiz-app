@@ -57,6 +57,19 @@ export const quizApi = {
                 correctChoiceIds: number[];
                 subjectiveAnswer: string | null;
             }[];
+            byCategory: {
+                categoryId: number;
+                categoryName: string;
+                correct: number;
+                total: number;
+                score: number;
+            }[];
+            average: number;
+            passed: boolean | null;
+            passRule: {
+                minPerCategory: number;
+                minAverage: number;
+            } | null;
         };
     },
 };

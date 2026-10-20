@@ -130,10 +130,13 @@
 | Submit API | 완료 | `POST /api/quiz/exam/submit` |
 | `quiz_submissions` | 완료 | 로그인 시 기록과 함께 저장 |
 | Client Exam UI | 완료 | `/tracks/:slug/exam` |
+| 과목별 점수·합격 판정 | 완료 | `defaults.passRule` (IPE: 과목당 40 + 평균 60); 타이머는 `secondsPerQuestion` 유지 |
+| 공식 시간표·과목당 20문항 | 미구현 | 학습 시뮬 범위 외 (후속) |
 
 **Definition of Done**
 
 - Exam 세션 점수는 서버 채점 결과와만 일치하며, 진행 중 네트워크로 정답을 알 수 없다.
+- `passRule`이 있는 트랙은 submit 응답에 `byCategory`·`average`·`passed`가 포함된다.
 
 ---
 
@@ -171,7 +174,7 @@
 | Suite | 범위 |
 |-------|------|
 | tracks | `GET /api/tracks`, `/:slug/categories`, unknown slug 404 |
-| exam | `mode=exam` 정답·해설·`isCorrect` 비노출 vs practice; `POST /api/quiz/exam/submit` |
+| exam | `mode=exam` 정답·해설·`isCorrect` 비노출 vs practice; submit 채점·`byCategory`/`passed`(passRule) |
 | adminAuth | `GET /api/admin/tracks` — 401 / 403 / USER 403 / ADMIN 200 |
 
 - 하네스: Vitest + Supertest, `createApp()`, `.env.test`, `server/tests/`
