@@ -96,7 +96,7 @@ export const QUIZ_QUERIES = {
     GET_CHOICES_BY_QUESTIONS_IDS: `
         SELECT * FROM ${TABLES.CHOICES}
             WHERE question_id IN (?)
-                ORDER BY choice_id
+                ORDER BY RAND()
     `,
 
     GET_QUESTIONS_BY_IDS: `
