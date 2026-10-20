@@ -29,22 +29,27 @@ jobs:
             node -v
             npm -v
 
+            set -e
             cd $TARGET_DIR
             echo "Target Directory: $TARGET_DIR"
-            
-            git pull origin main
-            
+
+            # Always sync deploy clone to origin/main
+            git fetch origin main
+            git checkout -B main origin/main
+            git reset --hard origin/main
+            echo "Deploy HEAD=$(git rev-parse --short HEAD) branch=$(git rev-parse --abbrev-ref HEAD)"
+
             # --- Backend ---
             echo "Deploying Backend..."
             cd server
             npm install
             npm run build
             pm2 restart quiz-api || pm2 start dist/index.js --name "quiz-api"
-            
+
             # --- Frontend ---
             echo "Deploying Frontend..."
             cd ../client
             npm install
             npm run build
-            
+
             echo "Deployment Finished!"
