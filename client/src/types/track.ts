@@ -1,6 +1,9 @@
 export interface TrackPassRule {
   minPerCategory: number;
-  minAverage: number;
+  /** IPE-style: arithmetic mean of category scores (0–100) */
+  minAverage?: number;
+  /** SQLP-style: overall correct/total × 100 */
+  minOverall?: number;
 }
 
 export interface Track {

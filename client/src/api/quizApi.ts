@@ -65,10 +65,12 @@ export const quizApi = {
                 score: number;
             }[];
             average: number;
+            overall: number;
             passed: boolean | null;
             passRule: {
                 minPerCategory: number;
-                minAverage: number;
+                minAverage?: number;
+                minOverall?: number;
             } | null;
         };
     },

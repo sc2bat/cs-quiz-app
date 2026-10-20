@@ -54,10 +54,12 @@ export default function ExamPage() {
       score: number;
     }[];
     average: number;
+    overall: number;
     passed: boolean | null;
     passRule: {
       minPerCategory: number;
-      minAverage: number;
+      minAverage?: number;
+      minOverall?: number;
     } | null;
   } | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -111,6 +113,7 @@ export default function ExamPage() {
         details: data.details,
         byCategory: data.byCategory ?? [],
         average: data.average ?? 0,
+        overall: data.overall ?? 0,
         passed: data.passed ?? null,
         passRule: data.passRule ?? null,
       });
@@ -170,8 +173,14 @@ export default function ExamPage() {
             {result.passRule && (
               <span>
                 {' '}
-                (과목당 {result.passRule.minPerCategory}점 이상, 평균{' '}
-                {result.passRule.minAverage}점 이상)
+                (과목당 {result.passRule.minPerCategory}점 이상
+                {result.passRule.minAverage != null
+                  ? `, 평균 ${result.passRule.minAverage}점 이상`
+                  : ''}
+                {result.passRule.minOverall != null
+                  ? `, 총점 ${result.passRule.minOverall}점 이상`
+                  : ''}
+                )
               </span>
             )}
           </p>
@@ -179,7 +188,9 @@ export default function ExamPage() {
         {result.byCategory.length > 0 && (
           <div className="exam-category-scores">
             <h2>과목별 점수</h2>
-            <p>평균: {result.average}점</p>
+            <p>
+              평균: {result.average}점 · 총점: {result.overall}점
+            </p>
             <ul className="exam-review-list">
               {result.byCategory.map((c) => (
                 <li key={c.categoryId} className="exam-review-item">

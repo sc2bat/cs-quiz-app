@@ -20,8 +20,12 @@ INSERT INTO tracks (slug, name, description, defaults) VALUES
 (
   'sqlp',
   'SQL Developer (SQLP)',
-  'SQLP certification preparation',
-  JSON_OBJECT('questionLimit', 10, 'secondsPerQuestion', 30)
+  'SQLP certification preparation (written subjects; practical essay not simulated)',
+  JSON_OBJECT(
+    'questionLimit', 10,
+    'secondsPerQuestion', 30,
+    'passRule', JSON_OBJECT('minPerCategory', 40, 'minOverall', 75)
+  )
 ),
 (
   'aws-saa',
@@ -37,4 +41,10 @@ SELECT track_id, 'Software Development', 2 FROM tracks WHERE slug = 'engineer-ip
 UNION ALL
 SELECT track_id, 'Database', 3 FROM tracks WHERE slug = 'engineer-ipe'
 UNION ALL
-SELECT track_id, 'Information System Construction', 4 FROM tracks WHERE slug = 'engineer-ipe';
+SELECT track_id, 'Information System Construction', 4 FROM tracks WHERE slug = 'engineer-ipe'
+UNION ALL
+SELECT track_id, 'Data Modeling', 1 FROM tracks WHERE slug = 'sqlp'
+UNION ALL
+SELECT track_id, 'SQL Basics', 2 FROM tracks WHERE slug = 'sqlp'
+UNION ALL
+SELECT track_id, 'SQL Advanced Tuning', 3 FROM tracks WHERE slug = 'sqlp';

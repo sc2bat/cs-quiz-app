@@ -130,8 +130,8 @@
 | Submit API | 완료 | `POST /api/quiz/exam/submit` |
 | `quiz_submissions` | 완료 | 로그인 시 기록과 함께 저장 |
 | Client Exam UI | 완료 | `/tracks/:slug/exam` |
-| 과목별 점수·합격 판정 | 완료 | `defaults.passRule` (IPE: 과목당 40 + 평균 60); 타이머는 `secondsPerQuestion` 유지 |
-| 공식 시간표·과목당 20문항 | 미구현 | 학습 시뮬 범위 외 (후속) |
+| 과목별 점수·합격 판정 | 완료 | `passRule`: IPE 과목당 40+평균 60, SQLP 과목당 40+총점 75; 타이머는 `secondsPerQuestion` 유지 |
+| 공식 시간표·과목당 고정 문항·SQLP 실기 | 미구현 | 학습 시뮬 범위 외 (후속) |
 
 **Definition of Done**
 

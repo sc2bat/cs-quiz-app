@@ -5,7 +5,12 @@ import { db } from '../config/db';
 import { QUIZ_RECORD_QUERIES, ADMIN_QUERIES } from '../models/queries';
 import { QUIZ_SETTINGS } from '../models/constants';
 
-type PassRule = { minPerCategory: number; minAverage: number };
+/** At least one of minAverage / minOverall must be set (with minPerCategory). */
+type PassRule = {
+  minPerCategory: number;
+  minAverage?: number;
+  minOverall?: number;
+};
 
 type CategoryScore = {
   categoryId: number;
@@ -33,9 +38,34 @@ function parsePassRule(defaults: Record<string, unknown> | null): PassRule | nul
   if (raw == null || typeof raw !== 'object') return null;
   const rule = raw as Record<string, unknown>;
   const minPerCategory = Number(rule.minPerCategory);
-  const minAverage = Number(rule.minAverage);
-  if (!Number.isFinite(minPerCategory) || !Number.isFinite(minAverage)) return null;
-  return { minPerCategory, minAverage };
+  if (!Number.isFinite(minPerCategory)) return null;
+
+  const hasAverage = rule.minAverage != null && rule.minAverage !== '';
+  const hasOverall = rule.minOverall != null && rule.minOverall !== '';
+  const minAverage = hasAverage ? Number(rule.minAverage) : undefined;
+  const minOverall = hasOverall ? Number(rule.minOverall) : undefined;
+  if (hasAverage && !Number.isFinite(minAverage)) return null;
+  if (hasOverall && !Number.isFinite(minOverall)) return null;
+  if (minAverage == null && minOverall == null) return null;
+
+  return {
+    minPerCategory,
+    ...(minAverage != null ? { minAverage } : {}),
+    ...(minOverall != null ? { minOverall } : {}),
+  };
+}
+
+function evaluatePass(
+  passRule: PassRule,
+  byCategory: CategoryScore[],
+  average: number,
+  overall: number
+): boolean {
+  if (byCategory.length === 0) return false;
+  if (!byCategory.every((c) => c.score >= passRule.minPerCategory)) return false;
+  if (passRule.minAverage != null && average < passRule.minAverage) return false;
+  if (passRule.minOverall != null && overall < passRule.minOverall) return false;
+  return true;
 }
 
 function buildCategoryScores(
@@ -183,15 +213,15 @@ export const examService = {
         : Math.round(
             (byCategory.reduce((sum, c) => sum + c.score, 0) / byCategory.length) * 10
           ) / 10;
+    const overall =
+      answers.length === 0 ? 0 : Math.round((score / answers.length) * 100);
 
     const track = await trackModel.getTrackById(trackId);
     const passRule = parsePassRule(parseDefaults(track?.defaults ?? null));
     const passed =
       passRule == null
         ? null
-        : byCategory.length > 0 &&
-          byCategory.every((c) => c.score >= passRule.minPerCategory) &&
-          average >= passRule.minAverage;
+        : evaluatePass(passRule, byCategory, average, overall);
 
     let quizRecordId: number | null = null;
     if (userId) {
@@ -223,6 +253,7 @@ export const examService = {
       details,
       byCategory,
       average,
+      overall,
       passed,
       passRule,
     };

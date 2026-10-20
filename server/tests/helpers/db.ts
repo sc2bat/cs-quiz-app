@@ -122,17 +122,20 @@ export async function seedFixtures(): Promise<SeedIds> {
   };
 }
 
-/** Track with passRule + 2 categories × 2 MULTIPLE questions (for pass/fail cases). */
-export async function seedPassRuleFixtures(): Promise<PassRuleSeedIds> {
+async function seedTwoCategoryPassTrack(
+  slug: string,
+  name: string,
+  passRule: { minPerCategory: number; minAverage?: number; minOverall?: number }
+): Promise<PassRuleSeedIds> {
   const defaults = JSON.stringify({
     questionLimit: 10,
     secondsPerQuestion: 30,
-    passRule: { minPerCategory: 40, minAverage: 60 },
+    passRule,
   });
   const track = await db.execute(
     `INSERT INTO tracks (slug, name, description, defaults, is_active)
      VALUES (?, ?, ?, ?, 1)`,
-    ['ipe-pass-track', 'IPE Pass Track', 'passRule fixture', defaults]
+    [slug, name, 'passRule fixture', defaults]
   );
   const trackId = track.insertId;
 
@@ -150,14 +153,30 @@ export async function seedPassRuleFixtures(): Promise<PassRuleSeedIds> {
     categoryAId: catA.insertId,
     categoryBId: catB.insertId,
     catA: [
-      await insertMultipleQuestion(catA.insertId, 'A1?'),
-      await insertMultipleQuestion(catA.insertId, 'A2?'),
+      await insertMultipleQuestion(catA.insertId, `${slug}-A1?`),
+      await insertMultipleQuestion(catA.insertId, `${slug}-A2?`),
     ],
     catB: [
-      await insertMultipleQuestion(catB.insertId, 'B1?'),
-      await insertMultipleQuestion(catB.insertId, 'B2?'),
+      await insertMultipleQuestion(catB.insertId, `${slug}-B1?`),
+      await insertMultipleQuestion(catB.insertId, `${slug}-B2?`),
     ],
   };
+}
+
+/** IPE-style: minPerCategory 40 + minAverage 60 */
+export async function seedPassRuleFixtures(): Promise<PassRuleSeedIds> {
+  return seedTwoCategoryPassTrack('ipe-pass-track', 'IPE Pass Track', {
+    minPerCategory: 40,
+    minAverage: 60,
+  });
+}
+
+/** SQLP-style: minPerCategory 40 + minOverall 75 */
+export async function seedOverallPassRuleFixtures(): Promise<PassRuleSeedIds> {
+  return seedTwoCategoryPassTrack('sqlp-pass-track', 'SQLP Pass Track', {
+    minPerCategory: 40,
+    minOverall: 75,
+  });
 }
 
 export async function closePool(): Promise<void> {

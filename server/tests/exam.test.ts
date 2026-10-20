@@ -4,6 +4,7 @@ import { createApp } from '../src/app';
 import {
   closePool,
   seedFixtures,
+  seedOverallPassRuleFixtures,
   seedPassRuleFixtures,
   truncateAll,
   type PassRuleSeedIds,
@@ -16,11 +17,13 @@ const app = createApp();
 describe('Exam API', () => {
   let seed: SeedIds;
   let passSeed: PassRuleSeedIds;
+  let overallSeed: PassRuleSeedIds;
 
   beforeAll(async () => {
     await truncateAll();
     seed = await seedFixtures();
     passSeed = await seedPassRuleFixtures();
+    overallSeed = await seedOverallPassRuleFixtures();
   });
 
   afterAll(async () => {
@@ -236,6 +239,72 @@ describe('Exam API', () => {
           }),
         ])
       );
+    });
+
+    it('passRule minOverall: passed true when overall >= 75 and categories >= 40', async () => {
+      // CatA 1/2=50, CatB 2/2=100 → overall 75
+      const res = await request(app)
+        .post('/api/quiz/exam/submit')
+        .send({
+          trackId: overallSeed.trackId,
+          answers: [
+            {
+              questionId: overallSeed.catA[0].questionId,
+              choiceId: overallSeed.catA[0].correctChoiceId,
+            },
+            {
+              questionId: overallSeed.catA[1].questionId,
+              choiceId: overallSeed.catA[1].wrongChoiceId,
+            },
+            {
+              questionId: overallSeed.catB[0].questionId,
+              choiceId: overallSeed.catB[0].correctChoiceId,
+            },
+            {
+              questionId: overallSeed.catB[1].questionId,
+              choiceId: overallSeed.catB[1].correctChoiceId,
+            },
+          ],
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.passRule).toEqual({
+        minPerCategory: 40,
+        minOverall: 75,
+      });
+      expect(res.body.data.overall).toBe(75);
+      expect(res.body.data.passed).toBe(true);
+    });
+
+    it('passRule minOverall: passed false when overall < 75', async () => {
+      // CatA 1/2=50, CatB 1/2=50 → overall 50
+      const res = await request(app)
+        .post('/api/quiz/exam/submit')
+        .send({
+          trackId: overallSeed.trackId,
+          answers: [
+            {
+              questionId: overallSeed.catA[0].questionId,
+              choiceId: overallSeed.catA[0].correctChoiceId,
+            },
+            {
+              questionId: overallSeed.catA[1].questionId,
+              choiceId: overallSeed.catA[1].wrongChoiceId,
+            },
+            {
+              questionId: overallSeed.catB[0].questionId,
+              choiceId: overallSeed.catB[0].correctChoiceId,
+            },
+            {
+              questionId: overallSeed.catB[1].questionId,
+              choiceId: overallSeed.catB[1].wrongChoiceId,
+            },
+          ],
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.overall).toBe(50);
+      expect(res.body.data.passed).toBe(false);
     });
   });
 });

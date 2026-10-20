@@ -144,9 +144,12 @@ erDiagram
 **설계 결정**
 
 - `tracks.slug`: `cs-interview`, `engineer-ipe`, `sqlp`, `aws-saa` 등 URL·API 식별자
-- `tracks.defaults` 예: `{ "questionLimit": 10, "secondsPerQuestion": 30, "passRule": { "minPerCategory": 40, "minAverage": 60 } }`
-  - `passRule`은 선택. Exam submit 시 과목(카테고리)별 100점 환산·평균·합격(`passed`)에만 사용
-  - 정보처리기사(`engineer-ipe`) 필기: 과목당 40 이상 + 평균 60 이상
+- `tracks.defaults` 예:
+  - IPE: `{ "questionLimit": 10, "secondsPerQuestion": 30, "passRule": { "minPerCategory": 40, "minAverage": 60 } }`
+  - SQLP: `{ ..., "passRule": { "minPerCategory": 40, "minOverall": 75 } }`
+  - `passRule`은 선택. Exam submit 시 과목별 100점 환산·`average`·`overall`·`passed`에 사용
+  - `minAverage`: 과목 점수 산술 평균 (정보처리기사 필기)
+  - `minOverall`: 세션 전체 정답률 × 100 (SQLP 필기 총점; 실기 서술형은 미시뮬)
 - `categories.track_id`: 트랙별 카테고리 격리. 마이그레이션 시 기존 row는 기본 트랙(예: `cs-interview`)에 귀속
 - `quiz_records.track_id`: 트랙별 약점·이력 분석
 - **게스트:** localStorage 오답 ID (키는 트랙 slug 포함 권장)
