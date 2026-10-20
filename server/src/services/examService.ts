@@ -5,6 +5,72 @@ import { db } from '../config/db';
 import { QUIZ_RECORD_QUERIES, ADMIN_QUERIES } from '../models/queries';
 import { QUIZ_SETTINGS } from '../models/constants';
 
+type PassRule = { minPerCategory: number; minAverage: number };
+
+type CategoryScore = {
+  categoryId: number;
+  categoryName: string;
+  correct: number;
+  total: number;
+  score: number;
+};
+
+function parseDefaults(raw: unknown): Record<string, unknown> | null {
+  if (raw == null) return null;
+  if (typeof raw === 'object') return raw as Record<string, unknown>;
+  if (typeof raw === 'string') {
+    try {
+      return JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+function parsePassRule(defaults: Record<string, unknown> | null): PassRule | null {
+  const raw = defaults?.passRule;
+  if (raw == null || typeof raw !== 'object') return null;
+  const rule = raw as Record<string, unknown>;
+  const minPerCategory = Number(rule.minPerCategory);
+  const minAverage = Number(rule.minAverage);
+  if (!Number.isFinite(minPerCategory) || !Number.isFinite(minAverage)) return null;
+  return { minPerCategory, minAverage };
+}
+
+function buildCategoryScores(
+  answers: { questionId: number }[],
+  questions: Awaited<ReturnType<typeof quizModel.getQuestionsByIds>>,
+  details: { questionId: number; isCorrect: boolean }[]
+): CategoryScore[] {
+  const byCat = new Map<
+    number,
+    { categoryName: string; correct: number; total: number }
+  >();
+
+  for (const answer of answers) {
+    const question = questions.find((q) => q.question_id === answer.questionId);
+    if (!question) continue;
+    const detail = details.find((d) => d.questionId === answer.questionId);
+    const existing = byCat.get(question.category_id) ?? {
+      categoryName: question.category_name,
+      correct: 0,
+      total: 0,
+    };
+    existing.total += 1;
+    if (detail?.isCorrect) existing.correct += 1;
+    byCat.set(question.category_id, existing);
+  }
+
+  return [...byCat.entries()].map(([categoryId, row]) => ({
+    categoryId,
+    categoryName: row.categoryName,
+    correct: row.correct,
+    total: row.total,
+    score: row.total === 0 ? 0 : Math.round((row.correct / row.total) * 100),
+  }));
+}
+
 function toExamPayload(
   questions: Awaited<ReturnType<typeof quizModel.getQuestionsByCategoryIds>>,
   choices: Awaited<ReturnType<typeof quizModel.getChoicesByQuestionsIds>>
@@ -110,6 +176,23 @@ export const examService = {
       });
     }
 
+    const byCategory = buildCategoryScores(answers, questions, details);
+    const average =
+      byCategory.length === 0
+        ? 0
+        : Math.round(
+            (byCategory.reduce((sum, c) => sum + c.score, 0) / byCategory.length) * 10
+          ) / 10;
+
+    const track = await trackModel.getTrackById(trackId);
+    const passRule = parsePassRule(parseDefaults(track?.defaults ?? null));
+    const passed =
+      passRule == null
+        ? null
+        : byCategory.length > 0 &&
+          byCategory.every((c) => c.score >= passRule.minPerCategory) &&
+          average >= passRule.minAverage;
+
     let quizRecordId: number | null = null;
     if (userId) {
       quizRecordId = await db.transaction(async (conn) => {
@@ -138,6 +221,10 @@ export const examService = {
       total: answers.length,
       quizRecordId,
       details,
+      byCategory,
+      average,
+      passed,
+      passRule,
     };
   },
 };

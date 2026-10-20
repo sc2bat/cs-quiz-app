@@ -23,6 +23,12 @@ export const TRACK_QUERIES = {
             WHERE slug = ?
             LIMIT 1
     `,
+    GET_TRACK_BY_ID: `
+        SELECT track_id, slug, name, description, defaults, is_active
+        FROM ${TABLES.TRACKS}
+            WHERE track_id = ?
+            LIMIT 1
+    `,
 } as const;
 
 export const QUIZ_QUERIES = {

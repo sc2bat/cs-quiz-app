@@ -1,3 +1,8 @@
+export interface TrackPassRule {
+  minPerCategory: number;
+  minAverage: number;
+}
+
 export interface Track {
   trackId: number;
   slug: string;
@@ -6,5 +11,6 @@ export interface Track {
   defaults: {
     questionLimit?: number;
     secondsPerQuestion?: number;
+    passRule?: TrackPassRule;
   } | null;
 }
